@@ -10,4 +10,6 @@ LIC_FILES_CHKSUM += "\
 
 SRC_URI += " \
  file://0001-Make-base-numerics-build-with-GCC.patch \
+ file://0001-Fix-compilation-for-ATK-accessibility.patch \
+ file://0001-Fix-compilation-failures-for-arm64.patch \
 "
