@@ -61,7 +61,7 @@ def write_toolchain_file(d, file_path):
         'extra_cppflags': d.expand('${TARGET_CPPFLAGS}'),
         'extra_cxxflags': d.expand('${TARGET_CXXFLAGS}'),
         'extra_ldflags': d.expand('${TARGET_LDFLAGS}'),
-	'strip': '',
+        'strip': '',
     }
 
     with open(file_path, 'w') as toolchain_file:
