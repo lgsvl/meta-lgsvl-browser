@@ -1,0 +1,40 @@
+From 366c27b283c6d94f9cdc4657c3443c3ef0627aad Mon Sep 17 00:00:00 2001
+From: Maksim Sisov <msisov@igalia.com>
+Date: Fri, 29 Sep 2017 00:19:09 +0300
+Subject: [PATCH] Add missing deps
+
+---
+ tools/gn/bootstrap/bootstrap.py | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/tools/gn/bootstrap/bootstrap.py b/tools/gn/bootstrap/bootstrap.py
+index 004d81cef5a2..0300b761c090 100755
+--- a/tools/gn/bootstrap/bootstrap.py
++++ b/tools/gn/bootstrap/bootstrap.py
+@@ -456,6 +456,7 @@ def write_gn_ninja(path, root_gen_dir, options):
+       'base/message_loop/message_pump.cc',
+       'base/message_loop/message_pump_default.cc',
+       'base/metrics/bucket_ranges.cc',
++      'base/metrics/field_trial_params.cc',
+       'base/metrics/field_trial.cc',
+       'base/metrics/field_trial_param_associator.cc',
+       'base/metrics/histogram.cc',
+@@ -508,6 +509,7 @@ def write_gn_ninja(path, root_gen_dir, options):
+       'base/task_scheduler/scheduler_single_thread_task_runner_manager.cc',
+       'base/task_scheduler/scheduler_worker.cc',
+       'base/task_scheduler/scheduler_worker_pool_impl.cc',
++      'base/task_scheduler/scheduler_worker_pool.cc',
+       'base/task_scheduler/scheduler_worker_pool_params.cc',
+       'base/task_scheduler/scheduler_worker_stack.cc',
+       'base/task_scheduler/scoped_set_task_priority_for_current_thread.cc',
+@@ -522,6 +524,7 @@ def write_gn_ninja(path, root_gen_dir, options):
+       'base/third_party/dmg_fp/g_fmt.cc',
+       'base/third_party/icu/icu_utf.cc',
+       'base/third_party/nspr/prtime.cc',
++      'base/threading/scoped_blocking_call.cc',
+       'base/threading/post_task_and_reply_impl.cc',
+       'base/threading/sequence_local_storage_map.cc',
+       'base/threading/sequenced_task_runner_handle.cc',
+-- 
+2.11.0
+
