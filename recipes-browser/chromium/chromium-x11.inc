@@ -268,6 +268,7 @@ do_configure() {
 	gn gen --args='${GN_ARGS}' "${B}"
 }
 
+do_compile[progress] = "outof:^\[(\d+)/(\d+)\]\s+"
 do_compile() {
 	ninja -v "${PARALLEL_MAKE}" chrome chrome_sandbox
 }
