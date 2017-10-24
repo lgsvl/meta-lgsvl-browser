@@ -209,6 +209,9 @@ GN_ARGS_append_armv6 += 'use_allocator="none"'
 # https://bugs.chromium.org/p/webrtc/issues/detail?id=6574
 GN_ARGS_append_armv6 += 'arm_use_neon=false'
 
+# For Raspberry PI, default arm_arch setting is not valid and caused warnings
+GN_ARGS_append_raspberrypi3 += 'arm_arch="armv7ve"'
+
 # V8's JIT infrastructure requires binaries such as mksnapshot and
 # mkpeephole to be run in the host during the build. However, these
 # binaries must have the same bit-width as the target (e.g. a x86_64
