@@ -1,3 +1,4 @@
+require chromium-upstream-tarball.inc
 require chromium-gn.inc
 
 DEPENDS += "\
