@@ -6,6 +6,8 @@ SRC_URI[sha256sum] = "4135968cac6623c1d2b224494600cd274098cce41c298f8c3908b354a3
 LIC_FILES_CHKSUM += "\
   file://${S}/third_party/ffmpeg/CREDITS.chromium;md5=3adeb0fd8df4d2f0d81a7e4db49e4a37 \
   file://${S}/third_party/libsrtp/LICENSE;md5=2909fcf6f09ffff8430463d91c08c4e1\
+  file://${S}/third_party/libva/COPYING;md5=2e48940f94acb0af582e5ef03537800f \
+  file://${S}/third_party/yasm/source/patched-yasm/COPYING;md5=26c9f3d11f88911950f9ff62189d3d4f \
 "
 
 SRC_URI += " \
