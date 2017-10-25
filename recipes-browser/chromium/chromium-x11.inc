@@ -1,4 +1,5 @@
-require chromium-gn.inc
+require chromium.inc
+require chromium-upstream-tarball.inc
 require chromium-unbundle.inc
 require gn-utils.inc
 
