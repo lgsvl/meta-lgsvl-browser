@@ -1,7 +1,7 @@
 require chromium-lge.inc
 
-SRC_URI[md5sum] = "9fe9af85faeaf617cb61997c431a02e2"
-SRC_URI[sha256sum] = "0bfb6318af1c3cf82e8ac872e3da34cd3c013aadaab446d5097228101cec065e"
+SRC_URI[md5sum] = "cd320716d6595a77f480f38b5dbbcc07"
+SRC_URI[sha256sum] = "b7fe59a1a3a5cda79afca819a1ae3096834307ce017f19a2d3c652af8d23b9d7"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/ios/third_party/requirejs/LICENSE;md5=6c5c3cca8d53e6a11dd78c7376b6ec9c \
