@@ -1,5 +1,5 @@
-SRC_URI = "https://commondatastorage.googleapis.com/chromium-browser-official/chromium-${PV}.tar.xz"
-S = "${WORKDIR}/chromium-${PV}"
+SRC_URI = "https://tmp.igalia.com/chromium-tarballs/chromium-ozone-wayland-${PV}.tar.xz"
+S = "${WORKDIR}/chromium-ozone-wayland-${PV}"
 
 # Chromium itself is licensed under the 3-clause BSD license. However, it
 # depends upon several other projects whose copyright files are listed in
