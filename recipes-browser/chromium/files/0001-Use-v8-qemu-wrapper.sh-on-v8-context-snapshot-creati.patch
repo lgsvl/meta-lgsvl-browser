@@ -1,0 +1,24 @@
+From 9d152277cacac69eacddfa336e2f884b57272262 Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jose.dapena@lge.com>
+Date: Fri, 3 Nov 2017 09:56:44 +0100
+Subject: Use v8-qemu-wrapper.sh on v8 context snapshot creation.
+
+Upstream-Status: Inappropriate [embedded specific]
+
+Signed-off-by: Jose Dapena Paz <jose.dapena@lge.com>
+
+diff --git a/tools/v8_context_snapshot/BUILD.gn b/tools/v8_context_snapshot/BUILD.gn
+index 9f2d3db24622..5012a7de8c0e 100644
+--- a/tools/v8_context_snapshot/BUILD.gn
++++ b/tools/v8_context_snapshot/BUILD.gn
+@@ -50,6 +50,7 @@ if (use_v8_context_snapshot) {
+     output_path = rebase_path(output_file, root_build_dir)
+ 
+     args = [
++      "./v8-qemu-wrapper.sh",
+       "./" + rebase_path(
+               get_label_info(
+                       ":v8_context_snapshot_generator($v8_snapshot_toolchain)",
+-- 
+2.11.0
+
