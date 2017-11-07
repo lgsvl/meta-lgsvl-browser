@@ -1,7 +1,7 @@
 require chromium-x11.inc
 
-SRC_URI[md5sum] = "d0be1d84c33defcf16cb6f116cab9ddc"
-SRC_URI[sha256sum] = "f2a3657c65d06fcc95ccb1f9e4cfb5bc1996772ff0ce84affdd0bc35fbc957d2"
+SRC_URI[md5sum] = "8c7f450d2c432f664038006013765e76"
+SRC_URI[sha256sum] = "ab210326029213eda0290db71f6ddbdf5c42e2d94c3461dee094637a34571219"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/third_party/breakpad/LICENSE;md5=828152b41153892a725f0e7f56faff73 \
@@ -12,8 +12,6 @@ LIC_FILES_CHKSUM += "\
 "
 
 SRC_URI += " \
- file://0001-To-M63-Fix-the-build-of-base-numerics-with-GCC.patch \
  file://0001-IWYU-Include-math.h-for-round-3.patch;patchdir=third_party/webrtc \
- file://0001-To-M63-Cannot-compile-media-filters-source_buffer_st.patch \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
 "
