@@ -41,7 +41,6 @@ LIC_FILES_CHKSUM = "\
     file://${S}/native_client/LICENSE;md5=cbbd27594afd089daa160d3a16dd515a \
     file://${S}/native_client_sdk/src/libraries/third_party/newlib-extras/README;md5=e944d73ca3817b7ca8656eafb9497fed \
     file://${S}/net/third_party/nss/LICENSE;md5=3b1e88e1b9c0b5a4b2881d46cce06a18 \
-    file://${S}/sdch/open-vcdiff/COPYING;md5=ff820d4ddc1ba05b6fd37b41a21506f9 \
     file://${S}/third_party/SPIRV-Tools/LICENSE;md5=ce523927d7bcd789d6c3af579d03ad73 \
     file://${S}/third_party/WebKit/LICENSE_FOR_ABOUT_CREDITS;md5=11e90d553b211de885f245900c4ccf89 \
     file://${S}/third_party/accessibility-audit/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \

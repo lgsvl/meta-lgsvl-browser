@@ -9,6 +9,7 @@ SRC_URI[sha256sum] = "1f394b48dc5f3815d051f7af724873ff0785086578aadc0d8d4395e102
 
 LIC_FILES_CHKSUM += "\
   file://${S}/breakpad/LICENSE;md5=828152b41153892a725f0e7f56faff73 \
+  file://${S}/sdch/open-vcdiff/COPYING;md5=ff820d4ddc1ba05b6fd37b41a21506f9 \
   file://${S}/third_party/expat/files/COPYING;md5=9c3ee559c6f9dcee1043ead112139f4f \
   file://${S}/third_party/ffmpeg/CREDITS.chromium;md5=3adeb0fd8df4d2f0d81a7e4db49e4a37 \
   file://${S}/third_party/google_toolbox_for_mac/LICENSE;md5=740fe57c4bba4c18b3a3bafd39cb70f8 \
