@@ -9,8 +9,11 @@ LIC_FILES_CHKSUM += "\
   file://${S}/sdch/open-vcdiff/COPYING;md5=ff820d4ddc1ba05b6fd37b41a21506f9 \
   file://${S}/third_party/expat/files/COPYING;md5=9c3ee559c6f9dcee1043ead112139f4f \
   file://${S}/third_party/ffmpeg/CREDITS.chromium;md5=09ddf4f14717898086b11c57b94dcd95 \
+  file://${S}/third_party/google_toolbox_for_mac/LICENSE;md5=740fe57c4bba4c18b3a3bafd39cb70f8 \
+  file://${S}/third_party/libpng/LICENSE;md5=b3edd1241cafd9e736d04c08d5017ff4 \
   file://${S}/third_party/libsrtp/LICENSE;md5=15bc16b9d2e305974dde47e733883714 \
   file://${S}/third_party/libva/COPYING;md5=2e48940f94acb0af582e5ef03537800f \
+  file://${S}/third_party/ots/LICENSE;md5=c2c05f9bdd5fc0b458037c2d1fb8d95e \
   file://${S}/third_party/yasm/source/patched-yasm/COPYING;md5=26c9f3d11f88911950f9ff62189d3d4f \
 "
 
