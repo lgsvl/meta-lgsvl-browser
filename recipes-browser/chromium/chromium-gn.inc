@@ -76,6 +76,10 @@ PACKAGECONFIG[root-profile] = ",,,"
 # webrtc: Whether to build Chromium with support for WebRTC.
 PACKAGECONFIG[webrtc] = "enable_webrtc=true,enable_webrtc=false"
 
+PACKAGECONFIG ??= " use-gold"
+# use-gold: Whether to link Chromium with ld-gold or not.
+PACKAGECONFIG[use-gold] = "use_gold=true"
+
 # Base GN arguments, mostly related to features we want to enable or disable.
 GN_ARGS = "\
         ${PACKAGECONFIG_CONFARGS} \
