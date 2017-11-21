@@ -57,7 +57,7 @@ DEPENDS_append_x86-64 = "yasm-native"
 # The wrapper script we use from upstream requires bash.
 RDEPENDS_${PN} = "bash"
 
-PACKAGECONFIG ??= "ftp webrtc"
+PACKAGECONFIG ??= "ftp webrtc use-gold"
 # ftp: Whether to build Chromium with support for the FTP protocol.
 PACKAGECONFIG[ftp] = "disable_ftp_support=false,disable_ftp_support=true"
 # proprietary-codecs: If enabled, this option will build Chromium with support
@@ -75,7 +75,6 @@ PACKAGECONFIG[root-profile] = ",,,"
 # webrtc: Whether to build Chromium with support for WebRTC.
 PACKAGECONFIG[webrtc] = "enable_webrtc=true,enable_webrtc=false"
 
-PACKAGECONFIG ??= " use-gold"
 # use-gold: Whether to link Chromium with ld-gold or not.
 PACKAGECONFIG[use-gold] = "use_gold=true"
 
