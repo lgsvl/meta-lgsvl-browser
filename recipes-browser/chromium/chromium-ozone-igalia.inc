@@ -7,7 +7,7 @@ DEPENDS += "\
 "
 
 GN_ARGS += "\
- enable_package_mash_services=true \
+ enable_mus=true \
  use_ozone=true \
  ozone_auto_platforms=false \
  ozone_platform_headless=true \
