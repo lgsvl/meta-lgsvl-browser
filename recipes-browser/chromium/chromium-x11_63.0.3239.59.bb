@@ -1,7 +1,7 @@
 require chromium-x11.inc
 
-SRC_URI[md5sum] = "8c30807782304a0a239b03b2a09c5208"
-SRC_URI[sha256sum] = "d1063027ff1d2e17f3076fe00abebad4a3e43d5fd3291a8c9bace298b7d666de"
+SRC_URI[md5sum] = "d6ae8eefd8301542c521caa088948d49"
+SRC_URI[sha256sum] = "62aec842b706d7240e86f2a46d852ae1e6d521be69295615d778af595af3467a"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/third_party/breakpad/LICENSE;md5=828152b41153892a725f0e7f56faff73 \
