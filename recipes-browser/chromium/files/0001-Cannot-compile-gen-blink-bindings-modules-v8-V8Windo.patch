@@ -1,0 +1,69 @@
+From 3a53ea8b5469be3d15684bba7d1248bc77e3dc36 Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jose.dapena@lge.com>
+Date: Fri, 17 Nov 2017 08:24:10 +0000
+Subject: Cannot compile gen/blink/bindings/modules/v8/V8WindowPartial.cpp on
+ GCC.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This is a fix for a build regression in GCC caused by this commit:
+    commit f3ce2901174c13c13a318dc68f5473cad413199b
+    Author: Yuta Kitamura <yutak@chromium.org>
+    Date:   Thu Nov 9 09:02:40 2017 +0000
+
+    Split WTF::CrossThreadFunction out of WTF::Function.
+
+After this change, the class passed to CrossThreadPersistent need to
+be completely defined, so a forward class declare is not enough.
+
+Bug: 785965
+Change-Id: Ie0c06686a394ad9b531c3023e36f850af4bf0361
+Reviewed-on: https://chromium-review.googlesource.com/774747
+Reviewed-by: Kentaro Hara <haraken@chromium.org>
+Commit-Queue: José Dapena Paz <jose.dapena@lge.com>
+Cr-Commit-Position: refs/heads/master@{#517340}
+
+diff --git a/third_party/WebKit/Source/modules/webdatabase/Database.h b/third_party/WebKit/Source/modules/webdatabase/Database.h
+index d9b19dd13161..d5d192a65e19 100644
+--- a/third_party/WebKit/Source/modules/webdatabase/Database.h
++++ b/third_party/WebKit/Source/modules/webdatabase/Database.h
+@@ -28,6 +28,7 @@
+ 
+ #include "modules/webdatabase/DatabaseBasicTypes.h"
+ #include "modules/webdatabase/DatabaseError.h"
++#include "modules/webdatabase/SQLTransactionBackend.h"
+ #include "modules/webdatabase/sqlite/SQLiteDatabase.h"
+ #include "platform/bindings/ScriptWrappable.h"
+ #include "platform/bindings/TraceWrapperMember.h"
+@@ -42,7 +43,6 @@ class DatabaseAuthorizer;
+ class DatabaseContext;
+ class ExecutionContext;
+ class SQLTransaction;
+-class SQLTransactionBackend;
+ class SQLTransactionCallback;
+ class SQLTransactionClient;
+ class SQLTransactionCoordinator;
+diff --git a/third_party/WebKit/Source/modules/webdatabase/SQLTransactionBackend.h b/third_party/WebKit/Source/modules/webdatabase/SQLTransactionBackend.h
+index 9626f04d4f97..ff87ba01c72a 100644
+--- a/third_party/WebKit/Source/modules/webdatabase/SQLTransactionBackend.h
++++ b/third_party/WebKit/Source/modules/webdatabase/SQLTransactionBackend.h
+@@ -31,6 +31,7 @@
+ #include <memory>
+ #include "modules/webdatabase/DatabaseBasicTypes.h"
+ #include "modules/webdatabase/SQLStatement.h"
++#include "modules/webdatabase/SQLStatementBackend.h"
+ #include "modules/webdatabase/SQLTransactionStateMachine.h"
+ #include "platform/heap/Handle.h"
+ #include "platform/wtf/Deque.h"
+@@ -42,7 +43,6 @@ namespace blink {
+ class Database;
+ class SQLErrorData;
+ class SQLiteTransaction;
+-class SQLStatementBackend;
+ class SQLTransaction;
+ class SQLTransactionBackend;
+ class SQLValue;
+-- 
+2.14.1
+

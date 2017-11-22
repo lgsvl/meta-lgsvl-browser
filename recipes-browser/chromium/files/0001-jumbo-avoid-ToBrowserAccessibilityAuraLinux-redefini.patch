@@ -1,0 +1,64 @@
+From b1622826665b8e03c6732bb8ecdb16ed736cc358 Mon Sep 17 00:00:00 2001
+From: Mostyn Bramley-Moore <mostynb@vewd.com>
+Date: Wed, 15 Nov 2017 07:05:13 +0000
+Subject: [jumbo] avoid ToBrowserAccessibilityAuraLinux redefinition
+
+Followup to https://chromium-review.googlesource.com/762316
+
+Bug: 783447,746953
+Change-Id: I7935a609ff9f460d02a1373c0e4528887dcd8955
+Reviewed-on: https://chromium-review.googlesource.com/769948
+Reviewed-by: Avi Drissman <avi@chromium.org>
+Commit-Queue: Mostyn Bramley-Moore <mostynb@vewd.com>
+Cr-Commit-Position: refs/heads/master@{#516620}
+
+diff --git a/content/browser/accessibility/browser_accessibility_atk_hyperlink.cc b/content/browser/accessibility/browser_accessibility_atk_hyperlink.cc
+index 90952601481c..28632fe22c0a 100644
+--- a/content/browser/accessibility/browser_accessibility_atk_hyperlink.cc
++++ b/content/browser/accessibility/browser_accessibility_atk_hyperlink.cc
+@@ -101,15 +101,6 @@ static void browser_accessibility_atk_hyperlink_class_init(
+ // AtkAction interface.
+ //
+ 
+-static BrowserAccessibilityAuraLinux* ToBrowserAccessibilityAuraLinux(
+-    AtkAction* atk_action) {
+-  if (!IS_BROWSER_ACCESSIBILITY_ATK_HYPERLINK(atk_action))
+-    return nullptr;
+-
+-  return ToBrowserAccessibilityAuraLinux(
+-      BROWSER_ACCESSIBILITY_ATK_HYPERLINK(atk_action));
+-}
+-
+ static gboolean browser_accessibility_atk_hyperlink_do_action(AtkAction* action,
+                                                               gint index) {
+   g_return_val_if_fail(ATK_IS_ACTION(action), FALSE);
+diff --git a/content/browser/accessibility/browser_accessibility_auralinux.cc b/content/browser/accessibility/browser_accessibility_auralinux.cc
+index dfd5036ef2c0..c3f7436b5984 100644
+--- a/content/browser/accessibility/browser_accessibility_auralinux.cc
++++ b/content/browser/accessibility/browser_accessibility_auralinux.cc
+@@ -42,7 +42,7 @@ BrowserAccessibilityAuraLinux* ToBrowserAccessibilityAuraLinux(
+ // AtkAction interface.
+ //
+ 
+-static BrowserAccessibilityAuraLinux* ToBrowserAccessibilityAuraLinux(
++BrowserAccessibilityAuraLinux* ToBrowserAccessibilityAuraLinux(
+     AtkAction* atk_action) {
+   if (!IS_BROWSER_ACCESSIBILITY(atk_action))
+     return nullptr;
+diff --git a/content/browser/accessibility/browser_accessibility_auralinux.h b/content/browser/accessibility/browser_accessibility_auralinux.h
+index 809e064b52f7..59c96a7be9a9 100644
+--- a/content/browser/accessibility/browser_accessibility_auralinux.h
++++ b/content/browser/accessibility/browser_accessibility_auralinux.h
+@@ -96,6 +96,9 @@ ToBrowserAccessibilityAuraLinux(const BrowserAccessibility* obj);
+ CONTENT_EXPORT BrowserAccessibilityAuraLinux* ToBrowserAccessibilityAuraLinux(
+     BrowserAccessibility* obj);
+ 
++BrowserAccessibilityAuraLinux* ToBrowserAccessibilityAuraLinux(
++    AtkAction* atk_action);
++
+ }  // namespace content
+ 
+ #endif  // CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_AURALINUX_H_
+-- 
+2.14.1
+
