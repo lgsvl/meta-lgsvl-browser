@@ -2,6 +2,7 @@ require chromium-lgsvl-tarball.inc
 require chromium-gn.inc
 
 DEPENDS += " \
+ libxkbcommon \
  virtual/egl \
  wayland \
 "
