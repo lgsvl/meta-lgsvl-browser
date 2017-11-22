@@ -21,6 +21,7 @@ COMPATIBLE_MACHINE_armv7a = "(.*)"
 COMPATIBLE_MACHINE_x86 = "(.*)"
 COMPATIBLE_MACHINE_x86-64 = "(.*)"
 COMPATIBLE_MACHINE_raspberrypi3 = "(.*)"
+COMPATIBLE_MACHINE_raspberrypi2 = "(.*)"
 
 DEPENDS = "\
     alsa-lib \
@@ -120,8 +121,8 @@ DEBUG_FLAGS_remove_armv6 = "-g"
 DEBUG_FLAGS_append_armv6 = "-g1"
 DEBUG_FLAGS_remove_armv7a = "-g"
 DEBUG_FLAGS_append_armv7a = "-g1"
-DEBUG_FLAGS_remove_raspberrypi3 = "-g"
-DEBUG_FLAGS_append_raspberrypi3 = "-g1"
+DEBUG_FLAGS_remove_rpi = "-g"
+DEBUG_FLAGS_append_rpi = "-g1"
 GN_ARGS += "symbol_level=0"
 
 # Disable Chrome Remote Desktop (aka Chromoting) support. Building host support
@@ -198,7 +199,7 @@ GN_ARGS_append_armv6 += 'use_allocator="none"'
 GN_ARGS_append_armv6 += 'arm_use_neon=false'
 
 # For Raspberry PI, default arm_arch setting is not valid and caused warnings
-GN_ARGS_append_raspberrypi3 += 'arm_arch="armv7ve"'
+GN_ARGS_append_armv7ve += 'arm_arch="armv7ve"'
 
 # V8's JIT infrastructure requires binaries such as mksnapshot and
 # mkpeephole to be run in the host during the build. However, these
