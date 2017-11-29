@@ -12,5 +12,6 @@ LIC_FILES_CHKSUM += "\
 "
 
 SRC_URI += " \
+ file://v8-qemu-wrapper.patch \
  file://0001-WebrtcAudioPrivateSetAudioExperimentsFunction-dummy-.patch \
 "

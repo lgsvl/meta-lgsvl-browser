@@ -1,0 +1,50 @@
+From c94ea827601a77cb6e7d7031411dd38a076f6fc4 Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jose.dapena@lge.com>
+Date: Wed, 29 Nov 2017 14:06:17 +0100
+Subject: Build fix for GCC: conflicting declaration of
+ ax_platform_node_auralinux_get_attributes
+
+Build was broken in GCC for Linux, with ATK enabled. There were two methods with
+same name ax_platform_node_auralinux_get_attributes. One for AtkDocument, and the other
+for AtkObject. Rename AtkDocument interfaces to avoid the problem.
+
+Bug: 789525
+Change-Id: I05560a98befccb913c5ea6b2bcd403360662464e
+
+diff --git a/ui/accessibility/platform/ax_platform_node_auralinux.cc b/ui/accessibility/platform/ax_platform_node_auralinux.cc
+index 258fd0cb31e4..784de749432e 100644
+--- a/ui/accessibility/platform/ax_platform_node_auralinux.cc
++++ b/ui/accessibility/platform/ax_platform_node_auralinux.cc
+@@ -398,7 +398,7 @@ static const GInterfaceInfo ActionInfo = {
+ 
+ // AtkDocument interface.
+ 
+-static const gchar* ax_platform_node_auralinux_get_attribute_value(
++static const gchar* ax_platform_node_auralinux_get_document_attribute_value(
+     AtkDocument* atk_doc,
+     const gchar* attribute) {
+   g_return_val_if_fail(ATK_IS_DOCUMENT(atk_doc), nullptr);
+@@ -412,7 +412,7 @@ static const gchar* ax_platform_node_auralinux_get_attribute_value(
+   return obj->GetDocumentAttributeValue(attribute);
+ }
+ 
+-static AtkAttributeSet* ax_platform_node_auralinux_get_attributes(
++static AtkAttributeSet* ax_platform_node_auralinux_get_document_attributes(
+     AtkDocument* atk_doc) {
+   g_return_val_if_fail(ATK_IS_DOCUMENT(atk_doc), 0);
+ 
+@@ -427,8 +427,9 @@ static AtkAttributeSet* ax_platform_node_auralinux_get_attributes(
+ 
+ void ax_document_interface_base_init(AtkDocumentIface* iface) {
+   iface->get_document_attribute_value =
+-      ax_platform_node_auralinux_get_attribute_value;
+-  iface->get_document_attributes = ax_platform_node_auralinux_get_attributes;
++      ax_platform_node_auralinux_get_document_attribute_value;
++  iface->get_document_attributes =
++      ax_platform_node_auralinux_get_document_attributes;
+ }
+ 
+ static const GInterfaceInfo DocumentInfo = {
+-- 
+2.14.1
+

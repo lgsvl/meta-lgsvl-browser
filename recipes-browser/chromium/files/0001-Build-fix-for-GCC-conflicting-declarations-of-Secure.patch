@@ -1,0 +1,827 @@
+From 4ec1d6a2055d0b91ef8226875b1948791ca6ab57 Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jose.dapena@lge.com>
+Date: Wed, 29 Nov 2017 16:00:28 +0100
+Subject: Build fix for GCC: conflicting declarations of SecureContextMode.
+
+ExecutionContext declares the enum SecureContextMode, and also an
+accessor with the same name. That causes a compilation error in
+GCC. This change renames the accessor to be GetSecureContextMode.
+
+The regression was introduced by this commit:
+    commit 98b46470f307a68c8183d628237d7b361af96244
+    Author: Ian Kilpatrick <ikilpatrick@chromium.org>
+    Date:   Tue Nov 21 01:22:24 2017 +0000
+
+    Add secure_context_mode_ to CSSParserContext.
+
+Bug: 789570
+Change-Id: I66b51e9b1c9c6d076eb0439b7de4b93121b42f45
+
+diff --git a/third_party/WebKit/Source/bindings/core/v8/custom/V8CSSStyleDeclarationCustom.cpp b/third_party/WebKit/Source/bindings/core/v8/custom/V8CSSStyleDeclarationCustom.cpp
+index d9df1e3315dd..f0ebb521f380 100644
+--- a/third_party/WebKit/Source/bindings/core/v8/custom/V8CSSStyleDeclarationCustom.cpp
++++ b/third_party/WebKit/Source/bindings/core/v8/custom/V8CSSStyleDeclarationCustom.cpp
+@@ -231,7 +231,7 @@ void V8CSSStyleDeclaration::namedPropertySetterCustom(
+       info.GetIsolate(), ExceptionState::kSetterContext, "CSSStyleDeclaration",
+       getPropertyName(resolveCSSPropertyID(unresolved_property)));
+   impl->SetPropertyInternal(unresolved_property, String(), property_value,
+-                            false, execution_context->SecureContextMode(),
++                            false, execution_context->GetSecureContextMode(),
+                             exception_state);
+ 
+   V8SetReturnValue(info, value);
+diff --git a/third_party/WebKit/Source/core/animation/AnimationInputHelpers.cpp b/third_party/WebKit/Source/core/animation/AnimationInputHelpers.cpp
+index a716c20f826c..13a8a8a295fb 100644
+--- a/third_party/WebKit/Source/core/animation/AnimationInputHelpers.cpp
++++ b/third_party/WebKit/Source/core/animation/AnimationInputHelpers.cpp
+@@ -247,7 +247,7 @@ scoped_refptr<TimingFunction> AnimationInputHelpers::ParseTimingFunction(
+   // Fallback to an insecure parsing mode if we weren't provided with a
+   // document.
+   SecureContextMode secure_context_mode =
+-      document ? document->SecureContextMode()
++      document ? document->GetSecureContextMode()
+                : SecureContextMode::kInsecureContext;
+   const CSSValue* value =
+       CSSParser::ParseSingleValue(CSSPropertyTransitionTimingFunction, string,
+diff --git a/third_party/WebKit/Source/core/animation/AnimationSimTest.cpp b/third_party/WebKit/Source/core/animation/AnimationSimTest.cpp
+index 8fb69190db25..ddb9df18a94c 100644
+--- a/third_party/WebKit/Source/core/animation/AnimationSimTest.cpp
++++ b/third_party/WebKit/Source/core/animation/AnimationSimTest.cpp
+@@ -67,7 +67,7 @@ TEST_F(AnimationSimTest, CustomPropertyBaseComputedStyle) {
+   // target.animate({'--x': '100%'}, 1000);
+   scoped_refptr<StringKeyframe> keyframe = StringKeyframe::Create();
+   keyframe->SetCSSPropertyValue("--x", GetDocument().GetPropertyRegistry(),
+-                                "100%", GetDocument().SecureContextMode(),
++                                "100%", GetDocument().GetSecureContextMode(),
+                                 GetDocument().ElementSheet().Contents());
+   StringKeyframeVector keyframes;
+   keyframes.push_back(std::move(keyframe));
+@@ -88,7 +88,7 @@ TEST_F(AnimationSimTest, CustomPropertyBaseComputedStyle) {
+   // target.animate({'--x': '100%'}, 1000);
+   keyframe = StringKeyframe::Create();
+   keyframe->SetCSSPropertyValue("--x", GetDocument().GetPropertyRegistry(),
+-                                "100%", GetDocument().SecureContextMode(),
++                                "100%", GetDocument().GetSecureContextMode(),
+                                 GetDocument().ElementSheet().Contents());
+   keyframes.clear();
+   keyframes.push_back(std::move(keyframe));
+diff --git a/third_party/WebKit/Source/core/animation/CSSInterpolationType.cpp b/third_party/WebKit/Source/core/animation/CSSInterpolationType.cpp
+index 66d1ee9de426..11c6d03fafaf 100644
+--- a/third_party/WebKit/Source/core/animation/CSSInterpolationType.cpp
++++ b/third_party/WebKit/Source/core/animation/CSSInterpolationType.cpp
+@@ -244,7 +244,7 @@ InterpolationValue CSSInterpolationType::MaybeConvertCustomPropertyDeclaration(
+   const CSSValue* resolved_value =
+       resolved_tokens ? resolved_tokens->ParseForSyntax(
+                             registration_->Syntax(),
+-                            state.GetDocument().SecureContextMode())
++                            state.GetDocument().GetSecureContextMode())
+                       : nullptr;
+   if (!resolved_value) {
+     return nullptr;
+diff --git a/third_party/WebKit/Source/core/animation/EffectInput.cpp b/third_party/WebKit/Source/core/animation/EffectInput.cpp
+index b201b21ed684..9bf7b8a6efc6 100644
+--- a/third_party/WebKit/Source/core/animation/EffectInput.cpp
++++ b/third_party/WebKit/Source/core/animation/EffectInput.cpp
+@@ -92,11 +92,11 @@ void SetKeyframeValue(Element& element,
+             ? keyframe.SetCSSPropertyValue(
+                   AtomicString(property),
+                   element.GetDocument().GetPropertyRegistry(), value,
+-                  element.GetDocument().SecureContextMode(),
++                  element.GetDocument().GetSecureContextMode(),
+                   style_sheet_contents)
+             : keyframe.SetCSSPropertyValue(
+                   css_property, value,
+-                  element.GetDocument().SecureContextMode(),
++                  element.GetDocument().GetSecureContextMode(),
+                   style_sheet_contents);
+     if (!set_result.did_parse && execution_context) {
+       Document& document = ToDocument(*execution_context);
+@@ -113,7 +113,7 @@ void SetKeyframeValue(Element& element,
+                                                                       element);
+   if (css_property != CSSPropertyInvalid) {
+     keyframe.SetPresentationAttributeValue(
+-        css_property, value, element.GetDocument().SecureContextMode(),
++        css_property, value, element.GetDocument().GetSecureContextMode(),
+         style_sheet_contents);
+     return;
+   }
+diff --git a/third_party/WebKit/Source/core/css/CSSGroupingRule.cpp b/third_party/WebKit/Source/core/css/CSSGroupingRule.cpp
+index 92f81465ea2d..5047e64bea01 100644
+--- a/third_party/WebKit/Source/core/css/CSSGroupingRule.cpp
++++ b/third_party/WebKit/Source/core/css/CSSGroupingRule.cpp
+@@ -66,7 +66,7 @@ unsigned CSSGroupingRule::insertRule(const ExecutionContext* execution_context,
+ 
+   CSSStyleSheet* style_sheet = parentStyleSheet();
+   CSSParserContext* context = CSSParserContext::CreateWithStyleSheet(
+-      ParserContext(execution_context->SecureContextMode()), style_sheet);
++      ParserContext(execution_context->GetSecureContextMode()), style_sheet);
+   StyleRuleBase* new_rule = CSSParser::ParseRule(
+       context, style_sheet ? style_sheet->Contents() : nullptr, rule_string);
+   if (!new_rule) {
+diff --git a/third_party/WebKit/Source/core/css/CSSKeyframesRule.cpp b/third_party/WebKit/Source/core/css/CSSKeyframesRule.cpp
+index 31eda9a835f4..8cf65a6c1334 100644
+--- a/third_party/WebKit/Source/core/css/CSSKeyframesRule.cpp
++++ b/third_party/WebKit/Source/core/css/CSSKeyframesRule.cpp
+@@ -102,7 +102,7 @@ void CSSKeyframesRule::appendRule(const ExecutionContext* execution_context,
+ 
+   CSSStyleSheet* style_sheet = parentStyleSheet();
+   CSSParserContext* context = CSSParserContext::CreateWithStyleSheet(
+-      ParserContext(execution_context->SecureContextMode()), style_sheet);
++      ParserContext(execution_context->GetSecureContextMode()), style_sheet);
+   StyleRuleKeyframe* keyframe =
+       CSSParser::ParseKeyframeRule(context, rule_text);
+   if (!keyframe)
+diff --git a/third_party/WebKit/Source/core/css/CSSPageRule.cpp b/third_party/WebKit/Source/core/css/CSSPageRule.cpp
+index e03ee63bc60f..0fb6182771db 100644
+--- a/third_party/WebKit/Source/core/css/CSSPageRule.cpp
++++ b/third_party/WebKit/Source/core/css/CSSPageRule.cpp
+@@ -58,7 +58,7 @@ String CSSPageRule::selectorText() const {
+ void CSSPageRule::setSelectorText(const ExecutionContext* execution_context,
+                                   const String& selector_text) {
+   CSSParserContext* context = CSSParserContext::Create(
+-      ParserContext(execution_context->SecureContextMode()), nullptr);
++      ParserContext(execution_context->GetSecureContextMode()), nullptr);
+   DCHECK(context);
+   CSSSelectorList selector_list = CSSParser::ParsePageSelector(
+       *context, parentStyleSheet() ? parentStyleSheet()->Contents() : nullptr,
+diff --git a/third_party/WebKit/Source/core/css/CSSPaintValue.cpp b/third_party/WebKit/Source/core/css/CSSPaintValue.cpp
+index a784bd0d2876..34c9c9e6cee8 100644
+--- a/third_party/WebKit/Source/core/css/CSSPaintValue.cpp
++++ b/third_party/WebKit/Source/core/css/CSSPaintValue.cpp
+@@ -81,7 +81,8 @@ bool CSSPaintValue::ParseInputArguments(const Document& document) {
+ 
+   for (size_t i = 0; i < argument_variable_data_.size(); ++i) {
+     // If we are parsing a paint() function, we must be a secure context.
+-    DCHECK_EQ(SecureContextMode::kSecureContext, document.SecureContextMode());
++    DCHECK_EQ(SecureContextMode::kSecureContext,
++              document.GetSecureContextMode());
+     const CSSValue* parsed_value = argument_variable_data_[i]->ParseForSyntax(
+         input_argument_types[i], SecureContextMode::kSecureContext);
+     if (!parsed_value) {
+diff --git a/third_party/WebKit/Source/core/css/CSSStyleDeclaration.h b/third_party/WebKit/Source/core/css/CSSStyleDeclaration.h
+index 888a0608ae66..9930c18dfc80 100644
+--- a/third_party/WebKit/Source/core/css/CSSStyleDeclaration.h
++++ b/third_party/WebKit/Source/core/css/CSSStyleDeclaration.h
+@@ -50,7 +50,7 @@ class CORE_EXPORT CSSStyleDeclaration : public ScriptWrappable {
+                    const String& value,
+                    ExceptionState& exception_state) {
+     SetPropertyInternal(CSSPropertyFloat, String(), value, false,
+-                        execution_context->SecureContextMode(),
++                        execution_context->GetSecureContextMode(),
+                         exception_state);
+   }
+   virtual String cssText() const = 0;
+diff --git a/third_party/WebKit/Source/core/css/CSSStyleRule.cpp b/third_party/WebKit/Source/core/css/CSSStyleRule.cpp
+index 107653abdc6f..46fccda10ea2 100644
+--- a/third_party/WebKit/Source/core/css/CSSStyleRule.cpp
++++ b/third_party/WebKit/Source/core/css/CSSStyleRule.cpp
+@@ -69,7 +69,7 @@ String CSSStyleRule::selectorText() const {
+ void CSSStyleRule::setSelectorText(const ExecutionContext* execution_context,
+                                    const String& selector_text) {
+   const CSSParserContext* context = CSSParserContext::Create(
+-      ParserContext(execution_context->SecureContextMode()), nullptr);
++      ParserContext(execution_context->GetSecureContextMode()), nullptr);
+   CSSSelectorList selector_list = CSSParser::ParseSelector(
+       context, parentStyleSheet() ? parentStyleSheet()->Contents() : nullptr,
+       selector_text);
+diff --git a/third_party/WebKit/Source/core/css/DOMWindowCSS.cpp b/third_party/WebKit/Source/core/css/DOMWindowCSS.cpp
+index 0685b7ed902a..86c133ccfe44 100644
+--- a/third_party/WebKit/Source/core/css/DOMWindowCSS.cpp
++++ b/third_party/WebKit/Source/core/css/DOMWindowCSS.cpp
+@@ -51,7 +51,7 @@ bool DOMWindowCSS::supports(const ExecutionContext* execution_context,
+     bool is_animation_tainted = false;
+     return CSSParser::ParseValueForCustomProperty(
+                dummy_style, "--valid", nullptr, value, false,
+-               execution_context->SecureContextMode(), nullptr,
++               execution_context->GetSecureContextMode(), nullptr,
+                is_animation_tainted)
+         .did_parse;
+   }
+@@ -65,14 +65,14 @@ bool DOMWindowCSS::supports(const ExecutionContext* execution_context,
+   MutableCSSPropertyValueSet* dummy_style =
+       MutableCSSPropertyValueSet::Create(kHTMLStandardMode);
+   return CSSParser::ParseValue(dummy_style, unresolved_property, value, false,
+-                               execution_context->SecureContextMode())
++                               execution_context->GetSecureContextMode())
+       .did_parse;
+ }
+ 
+ bool DOMWindowCSS::supports(const ExecutionContext* execution_context,
+                             const String& condition_text) {
+   return CSSParser::ParseSupportsCondition(
+-      condition_text, execution_context->SecureContextMode());
++      condition_text, execution_context->GetSecureContextMode());
+ }
+ 
+ String DOMWindowCSS::escape(const String& ident) {
+diff --git a/third_party/WebKit/Source/core/css/FontFaceSetDocument.cpp b/third_party/WebKit/Source/core/css/FontFaceSetDocument.cpp
+index e5d67063719a..1632dae126c7 100644
+--- a/third_party/WebKit/Source/core/css/FontFaceSetDocument.cpp
++++ b/third_party/WebKit/Source/core/css/FontFaceSetDocument.cpp
+@@ -145,7 +145,7 @@ bool FontFaceSetDocument::ResolveFontStyle(const String& font_string,
+   MutableCSSPropertyValueSet* parsed_style =
+       MutableCSSPropertyValueSet::Create(kHTMLStandardMode);
+   CSSParser::ParseValue(parsed_style, CSSPropertyFont, font_string, true,
+-                        GetDocument()->SecureContextMode());
++                        GetDocument()->GetSecureContextMode());
+   if (parsed_style->IsEmpty())
+     return false;
+ 
+diff --git a/third_party/WebKit/Source/core/css/FontFaceSetWorker.cpp b/third_party/WebKit/Source/core/css/FontFaceSetWorker.cpp
+index d12b5b6b51ea..287f0492e04e 100644
+--- a/third_party/WebKit/Source/core/css/FontFaceSetWorker.cpp
++++ b/third_party/WebKit/Source/core/css/FontFaceSetWorker.cpp
+@@ -75,7 +75,7 @@ bool FontFaceSetWorker::ResolveFontStyle(const String& font_string,
+   MutableCSSPropertyValueSet* parsed_style =
+       MutableCSSPropertyValueSet::Create(kHTMLStandardMode);
+   CSSParser::ParseValue(parsed_style, CSSPropertyFont, font_string, true,
+-                        GetExecutionContext()->SecureContextMode());
++                        GetExecutionContext()->GetSecureContextMode());
+   if (parsed_style->IsEmpty())
+     return false;
+ 
+diff --git a/third_party/WebKit/Source/core/css/PropertySetCSSStyleDeclaration.cpp b/third_party/WebKit/Source/core/css/PropertySetCSSStyleDeclaration.cpp
+index 947a920246ee..0d9a185ac5f2 100644
+--- a/third_party/WebKit/Source/core/css/PropertySetCSSStyleDeclaration.cpp
++++ b/third_party/WebKit/Source/core/css/PropertySetCSSStyleDeclaration.cpp
+@@ -180,7 +180,7 @@ void AbstractPropertySetCSSStyleDeclaration::setCSSText(
+   WillMutate();
+ 
+   PropertySet().ParseDeclarationList(
+-      text, execution_context->SecureContextMode(), ContextStyleSheet());
++      text, execution_context->GetSecureContextMode(), ContextStyleSheet());
+ 
+   DidMutate(kPropertyChanged);
+ 
+@@ -249,7 +249,8 @@ void AbstractPropertySetCSSStyleDeclaration::setProperty(
+     return;
+ 
+   SetPropertyInternal(property_id, property_name, value, important,
+-                      execution_context->SecureContextMode(), exception_state);
++                      execution_context->GetSecureContextMode(),
++                      exception_state);
+ }
+ 
+ String AbstractPropertySetCSSStyleDeclaration::removeProperty(
+diff --git a/third_party/WebKit/Source/core/css/cssom/CSSStyleValue.cpp b/third_party/WebKit/Source/core/css/cssom/CSSStyleValue.cpp
+index c3f6ce501c25..8a04dfe1a2f6 100644
+--- a/third_party/WebKit/Source/core/css/cssom/CSSStyleValue.cpp
++++ b/third_party/WebKit/Source/core/css/cssom/CSSStyleValue.cpp
+@@ -35,7 +35,7 @@ CSSStyleValueVector ParseCSSStyleValue(
+   }
+ 
+   const auto style_values = StyleValueFactory::FromString(
+-      property_id, value, execution_context->SecureContextMode());
++      property_id, value, execution_context->GetSecureContextMode());
+   if (style_values.IsEmpty()) {
+     exception_state.ThrowDOMException(
+         kSyntaxError, "The value provided ('" + value +
+@@ -76,7 +76,8 @@ Nullable<CSSStyleValueVector> CSSStyleValue::parseAll(
+ 
+ String CSSStyleValue::toString(
+     const ExecutionContext* execution_context) const {
+-  const CSSValue* result = ToCSSValue(execution_context->SecureContextMode());
++  const CSSValue* result =
++      ToCSSValue(execution_context->GetSecureContextMode());
+   // TODO(meade): Remove this once all the number and length types are
+   // rewritten.
+   return result ? result->CssText() : "";
+diff --git a/third_party/WebKit/Source/core/css/cssom/CSSTransformComponent.cpp b/third_party/WebKit/Source/core/css/cssom/CSSTransformComponent.cpp
+index dc2ef3c6e564..2c99d12ebc6c 100644
+--- a/third_party/WebKit/Source/core/css/cssom/CSSTransformComponent.cpp
++++ b/third_party/WebKit/Source/core/css/cssom/CSSTransformComponent.cpp
+@@ -54,7 +54,8 @@ CSSTransformComponent* CSSTransformComponent::FromCSSValue(
+ 
+ String CSSTransformComponent::toString(
+     const ExecutionContext* execution_context) const {
+-  const CSSValue* result = ToCSSValue(execution_context->SecureContextMode());
++  const CSSValue* result =
++      ToCSSValue(execution_context->GetSecureContextMode());
+   // TODO(meade): Remove this once all the number and length types are
+   // rewritten.
+   return result ? result->CssText() : "";
+diff --git a/third_party/WebKit/Source/core/css/cssom/StylePropertyMap.cpp b/third_party/WebKit/Source/core/css/cssom/StylePropertyMap.cpp
+index d959dbe8cac5..bfaa0c852f3d 100644
+--- a/third_party/WebKit/Source/core/css/cssom/StylePropertyMap.cpp
++++ b/third_party/WebKit/Source/core/css/cssom/StylePropertyMap.cpp
+@@ -80,7 +80,7 @@ void StylePropertyMap::set(const ExecutionContext* execution_context,
+     CSSValueList* result = CssValueListForPropertyID(property_id);
+     for (const auto& value : values) {
+       const CSSValue* css_value = CoerceStyleValueOrStringToCSSValue(
+-          property_id, value, execution_context->SecureContextMode());
++          property_id, value, execution_context->GetSecureContextMode());
+       if (!css_value || (css_value->IsCSSWideKeyword() && values.size() > 1)) {
+         exception_state.ThrowTypeError("Invalid type for property");
+         return;
+@@ -100,7 +100,7 @@ void StylePropertyMap::set(const ExecutionContext* execution_context,
+     }
+ 
+     const CSSValue* result = CoerceStyleValueOrStringToCSSValue(
+-        property_id, values[0], execution_context->SecureContextMode());
++        property_id, values[0], execution_context->GetSecureContextMode());
+     if (!result) {
+       exception_state.ThrowTypeError("Invalid type for property");
+       return;
+@@ -146,7 +146,7 @@ void StylePropertyMap::append(const ExecutionContext* execution_context,
+ 
+   for (auto& value : values) {
+     const CSSValue* css_value = CoerceStyleValueOrStringToCSSValue(
+-        property_id, value, execution_context->SecureContextMode());
++        property_id, value, execution_context->GetSecureContextMode());
+     if (!css_value) {
+       exception_state.ThrowTypeError("Invalid type for property");
+       return;
+diff --git a/third_party/WebKit/Source/core/css/parser/CSSParserContext.cpp b/third_party/WebKit/Source/core/css/parser/CSSParserContext.cpp
+index 707dd5c7467b..64131965fe3c 100644
+--- a/third_party/WebKit/Source/core/css/parser/CSSParserContext.cpp
++++ b/third_party/WebKit/Source/core/css/parser/CSSParserContext.cpp
+@@ -28,7 +28,7 @@ CSSParserContext* CSSParserContext::Create(const ExecutionContext& context) {
+ 
+   return new CSSParserContext(
+       context.Url(), WTF::TextEncoding(), kHTMLStandardMode, kHTMLStandardMode,
+-      kDynamicProfile, referrer, true, false, context.SecureContextMode(),
++      kDynamicProfile, referrer, true, false, context.GetSecureContextMode(),
+       policy_disposition,
+       context.IsDocument() ? &ToDocument(context) : nullptr);
+ }
+@@ -133,7 +133,7 @@ CSSParserContext* CSSParserContext::Create(
+   return new CSSParserContext(
+       base_url_override, charset, mode, match_mode, profile, referrer,
+       document.IsHTMLDocument(), use_legacy_background_size_shorthand_behavior,
+-      document.SecureContextMode(), policy_disposition, &document);
++      document.GetSecureContextMode(), policy_disposition, &document);
+ }
+ 
+ CSSParserContext::CSSParserContext(
+diff --git a/third_party/WebKit/Source/core/css/resolver/CSSVariableResolver.cpp b/third_party/WebKit/Source/core/css/resolver/CSSVariableResolver.cpp
+index 68d3e8674fbe..468b0ce6e60a 100644
+--- a/third_party/WebKit/Source/core/css/resolver/CSSVariableResolver.cpp
++++ b/third_party/WebKit/Source/core/css/resolver/CSSVariableResolver.cpp
+@@ -78,7 +78,7 @@ CSSVariableData* CSSVariableResolver::ValueForCustomProperty(
+   const CSSValue* parsed_value = nullptr;
+   if (new_variable_data) {
+     parsed_value = new_variable_data->ParseForSyntax(
+-        registration->Syntax(), state_.GetDocument().SecureContextMode());
++        registration->Syntax(), state_.GetDocument().GetSecureContextMode());
+     if (!parsed_value)
+       new_variable_data = nullptr;
+   }
+diff --git a/third_party/WebKit/Source/core/css/resolver/StyleBuilderCustom.cpp b/third_party/WebKit/Source/core/css/resolver/StyleBuilderCustom.cpp
+index 7244718d042d..216f3693c771 100644
+--- a/third_party/WebKit/Source/core/css/resolver/StyleBuilderCustom.cpp
++++ b/third_party/WebKit/Source/core/css/resolver/StyleBuilderCustom.cpp
+@@ -880,7 +880,7 @@ void StyleBuilderFunctions::applyValueCSSPropertyVariable(
+     }
+ 
+     const CSSValue* parsed_value = declaration.Value()->ParseForSyntax(
+-        registration->Syntax(), state.GetDocument().SecureContextMode());
++        registration->Syntax(), state.GetDocument().GetSecureContextMode());
+     if (parsed_value) {
+       DCHECK(parsed_value);
+       if (is_inherited_property)
+diff --git a/third_party/WebKit/Source/core/dom/Element.cpp b/third_party/WebKit/Source/core/dom/Element.cpp
+index cfff7c78231e..1877eb60236e 100644
+--- a/third_party/WebKit/Source/core/dom/Element.cpp
++++ b/third_party/WebKit/Source/core/dom/Element.cpp
+@@ -4399,7 +4399,7 @@ inline void Element::SetInlineStyleFromString(
+     DCHECK(inline_style->IsMutable());
+     static_cast<MutableCSSPropertyValueSet*>(inline_style.Get())
+         ->ParseDeclarationList(new_style_string,
+-                               GetDocument().SecureContextMode(),
++                               GetDocument().GetSecureContextMode(),
+                                GetDocument().ElementSheet().Contents());
+   }
+ }
+@@ -4488,7 +4488,7 @@ bool Element::SetInlineStyleProperty(CSSPropertyID property_id,
+   DCHECK(IsStyledElement());
+   bool did_change = EnsureMutableInlineStyle()
+                         .SetProperty(property_id, value, important,
+-                                     GetDocument().SecureContextMode(),
++                                     GetDocument().GetSecureContextMode(),
+                                      GetDocument().ElementSheet().Contents())
+                         .did_change;
+   if (did_change)
+@@ -4547,7 +4547,7 @@ void Element::AddPropertyToPresentationAttributeStyle(
+     const String& value) {
+   DCHECK(IsStyledElement());
+   style->SetProperty(property_id, value, false,
+-                     GetDocument().SecureContextMode());
++                     GetDocument().GetSecureContextMode());
+ }
+ 
+ void Element::AddPropertyToPresentationAttributeStyle(
+diff --git a/third_party/WebKit/Source/core/dom/ExecutionContext.h b/third_party/WebKit/Source/core/dom/ExecutionContext.h
+index 72109e5cb236..eb2d1fcb3237 100644
+--- a/third_party/WebKit/Source/core/dom/ExecutionContext.h
++++ b/third_party/WebKit/Source/core/dom/ExecutionContext.h
+@@ -175,7 +175,7 @@ class CORE_EXPORT ExecutionContext : public ContextLifecycleNotifier,
+   virtual bool IsSecureContext(String& error_message) const = 0;
+   virtual bool IsSecureContext() const;
+ 
+-  SecureContextMode SecureContextMode() const {
++  SecureContextMode GetSecureContextMode() const {
+     return IsSecureContext() ? SecureContextMode::kSecureContext
+                              : SecureContextMode::kInsecureContext;
+   }
+diff --git a/third_party/WebKit/Source/core/editing/EditingStyle.cpp b/third_party/WebKit/Source/core/editing/EditingStyle.cpp
+index c41c3977ffbe..adc31992eebe 100644
+--- a/third_party/WebKit/Source/core/editing/EditingStyle.cpp
++++ b/third_party/WebKit/Source/core/editing/EditingStyle.cpp
+@@ -233,7 +233,7 @@ void HTMLElementEquivalent::AddToStyle(Element* element,
+                                        EditingStyle* style) const {
+   style->SetProperty(property_id_, identifier_value_->CssText(),
+                      /* important */ false,
+-                     element->GetDocument().SecureContextMode());
++                     element->GetDocument().GetSecureContextMode());
+ }
+ 
+ class HTMLTextDecorationEquivalent final : public HTMLElementEquivalent {
+@@ -338,7 +338,7 @@ void HTMLAttributeEquivalent::AddToStyle(Element* element,
+                                          EditingStyle* style) const {
+   if (const CSSValue* value = AttributeValueAsCSSValue(element)) {
+     style->SetProperty(property_id_, value->CssText(), /* important */ false,
+-                       element->GetDocument().SecureContextMode());
++                       element->GetDocument().GetSecureContextMode());
+   }
+ }
+ 
+@@ -352,7 +352,7 @@ const CSSValue* HTMLAttributeEquivalent::AttributeValueAsCSSValue(
+   MutableCSSPropertyValueSet* dummy_style = nullptr;
+   dummy_style = MutableCSSPropertyValueSet::Create(kHTMLQuirksMode);
+   dummy_style->SetProperty(property_id_, value, /* important */ false,
+-                           element->GetDocument().SecureContextMode());
++                           element->GetDocument().GetSecureContextMode());
+   return dummy_style->GetPropertyCSSValue(property_id_);
+ }
+ 
+@@ -498,13 +498,13 @@ void EditingStyle::Init(Node* node, PropertiesToInclude properties_to_include) {
+             EditingStyleUtilities::BackgroundColorValueInEffect(node)) {
+       mutable_style_->SetProperty(CSSPropertyBackgroundColor, value->CssText(),
+                                   /* important */ false,
+-                                  node->GetDocument().SecureContextMode());
++                                  node->GetDocument().GetSecureContextMode());
+     }
+     if (const CSSValue* value = computed_style_at_position->GetPropertyCSSValue(
+             GetCSSPropertyWebkitTextDecorationsInEffect())) {
+       mutable_style_->SetProperty(CSSPropertyTextDecoration, value->CssText(),
+                                   /* important */ false,
+-                                  node->GetDocument().SecureContextMode());
++                                  node->GetDocument().GetSecureContextMode());
+     }
+   }
+ 
+@@ -524,13 +524,13 @@ void EditingStyle::Init(Node* node, PropertiesToInclude properties_to_include) {
+           CSSPrimitiveValue::Create(computed_style->SpecifiedFontSize(),
+                                     CSSPrimitiveValue::UnitType::kPixels)
+               ->CssText(),
+-          /* important */ false, node->GetDocument().SecureContextMode());
++          /* important */ false, node->GetDocument().GetSecureContextMode());
+     }
+ 
+     RemoveInheritedColorsIfNeeded(computed_style);
+-    ReplaceFontSizeByKeywordIfPossible(computed_style,
+-                                       node->GetDocument().SecureContextMode(),
+-                                       computed_style_at_position);
++    ReplaceFontSizeByKeywordIfPossible(
++        computed_style, node->GetDocument().GetSecureContextMode(),
++        computed_style_at_position);
+   }
+ 
+   is_monospace_font_ = computed_style_at_position->IsMonospaceFont();
+@@ -920,7 +920,7 @@ bool EditingStyle::ConflictsWithInlineStyleOfElement(
+             CSSPropertyTextDecorationLine,
+             inline_style->GetPropertyValue(CSSPropertyTextDecorationLine),
+             inline_style->PropertyIsImportant(CSSPropertyTextDecorationLine),
+-            element->GetDocument().SecureContextMode());
++            element->GetDocument().GetSecureContextMode());
+       }
+       continue;
+     }
+@@ -937,7 +937,7 @@ bool EditingStyle::ConflictsWithInlineStyleOfElement(
+         extracted_style->SetProperty(
+             property_id, inline_style->GetPropertyValue(property_id),
+             inline_style->PropertyIsImportant(property_id),
+-            element->GetDocument().SecureContextMode());
++            element->GetDocument().GetSecureContextMode());
+       }
+     }
+ 
+@@ -950,7 +950,7 @@ bool EditingStyle::ConflictsWithInlineStyleOfElement(
+       extracted_style->SetProperty(
+           property_id, inline_style->GetPropertyValue(property_id),
+           inline_style->PropertyIsImportant(property_id),
+-          element->GetDocument().SecureContextMode());
++          element->GetDocument().GetSecureContextMode());
+     }
+   }
+ 
+@@ -1097,7 +1097,7 @@ bool EditingStyle::StyleIsPresentInComputedStyleOfNode(Node* node) const {
+   return !mutable_style_ ||
+          GetPropertiesNotIn(mutable_style_.Get(),
+                             CSSComputedStyleDeclaration::Create(node),
+-                            node->GetDocument().SecureContextMode())
++                            node->GetDocument().GetSecureContextMode())
+              ->IsEmpty();
+ }
+ 
+@@ -1442,7 +1442,7 @@ void EditingStyle::RemoveStyleFromRulesAndContext(Element* element,
+   DCHECK(element->GetDocument().IsActive());
+ 
+   SecureContextMode secure_context_mode =
+-      element->GetDocument().SecureContextMode();
++      element->GetDocument().GetSecureContextMode();
+ 
+   // 1. Remove style from matched rules because style remain without repeating
+   // it in inline style declaration
+@@ -1590,11 +1590,11 @@ StyleChange::StyleChange(EditingStyle* style, const Position& position)
+   CSSComputedStyleDeclaration* computed_style = EnsureComputedStyle(position);
+   // FIXME: take care of background-color in effect
+   MutableCSSPropertyValueSet* mutable_style = GetPropertiesNotIn(
+-      style->Style(), computed_style, document->SecureContextMode());
++      style->Style(), computed_style, document->GetSecureContextMode());
+   DCHECK(mutable_style);
+ 
+   ReconcileTextDecorationProperties(mutable_style,
+-                                    document->SecureContextMode());
++                                    document->GetSecureContextMode());
+   if (!document->GetFrame()->GetEditor().ShouldStyleWithCSS())
+     ExtractTextStyles(document, mutable_style,
+                       computed_style->IsMonospaceFont());
+@@ -1613,7 +1613,7 @@ StyleChange::StyleChange(EditingStyle* style, const Position& position)
+     mutable_style->SetProperty(
+         CSSPropertyDirection,
+         style->Style()->GetPropertyValue(CSSPropertyDirection),
+-        /* important */ false, document->SecureContextMode());
++        /* important */ false, document->GetSecureContextMode());
+   }
+ 
+   // Save the result for later
+@@ -1687,7 +1687,7 @@ void StyleChange::ExtractTextStyles(Document* document,
+     // If trimTextDecorations, delete underline and line-through
+     SetTextDecorationProperty(style, new_text_decoration,
+                               CSSPropertyTextDecorationLine,
+-                              document->SecureContextMode());
++                              document->GetSecureContextMode());
+   }
+ 
+   int vertical_align = GetIdentifierValue(style, CSSPropertyVerticalAlign);
+diff --git a/third_party/WebKit/Source/core/editing/EditingStyleUtilities.cpp b/third_party/WebKit/Source/core/editing/EditingStyleUtilities.cpp
+index 8d29b1f961db..003c48fa9fec 100644
+--- a/third_party/WebKit/Source/core/editing/EditingStyleUtilities.cpp
++++ b/third_party/WebKit/Source/core/editing/EditingStyleUtilities.cpp
+@@ -73,7 +73,7 @@ EditingStyleUtilities::CreateWrappingStyleForAnnotatedSerialization(
+   // Call collapseTextDecorationProperties first or otherwise it'll copy the
+   // value over from in-effect to text-decorations.
+   wrapping_style->CollapseTextDecorationProperties(
+-      context->GetDocument().SecureContextMode());
++      context->GetDocument().GetSecureContextMode());
+ 
+   return wrapping_style;
+ }
+@@ -165,7 +165,8 @@ EditingStyle* EditingStyleUtilities::CreateStyleAtSelectionStart(
+     if (const CSSValue* value =
+             BackgroundColorValueInEffect(range.CommonAncestorContainer())) {
+       style->SetProperty(CSSPropertyBackgroundColor, value->CssText(),
+-                         /* important */ false, document.SecureContextMode());
++                         /* important */ false,
++                         document.GetSecureContextMode());
+     }
+   }
+ 
+diff --git a/third_party/WebKit/Source/core/editing/Editor.cpp b/third_party/WebKit/Source/core/editing/Editor.cpp
+index 1881c81d6386..b4897eaf716f 100644
+--- a/third_party/WebKit/Source/core/editing/Editor.cpp
++++ b/third_party/WebKit/Source/core/editing/Editor.cpp
+@@ -871,7 +871,7 @@ void Editor::ApplyParagraphStyleToSelection(CSSPropertyValueSet* style,
+ bool Editor::SelectionStartHasStyle(CSSPropertyID property_id,
+                                     const String& value) const {
+   const SecureContextMode secure_context_mode =
+-      frame_->GetDocument()->SecureContextMode();
++      frame_->GetDocument()->GetSecureContextMode();
+ 
+   EditingStyle* style_to_check =
+       EditingStyle::Create(property_id, value, secure_context_mode);
+@@ -886,7 +886,7 @@ bool Editor::SelectionStartHasStyle(CSSPropertyID property_id,
+ EditingTriState Editor::SelectionHasStyle(CSSPropertyID property_id,
+                                           const String& value) const {
+   const SecureContextMode secure_context_mode =
+-      frame_->GetDocument()->SecureContextMode();
++      frame_->GetDocument()->GetSecureContextMode();
+ 
+   return EditingStyle::Create(property_id, value, secure_context_mode)
+       ->TriStateOfStyle(
+@@ -1395,7 +1395,7 @@ void Editor::SetBaseWritingDirection(WritingDirection direction) {
+       direction == LeftToRightWritingDirection
+           ? "ltr"
+           : direction == RightToLeftWritingDirection ? "rtl" : "inherit",
+-      /* important */ false, GetFrame().GetDocument()->SecureContextMode());
++      /* important */ false, GetFrame().GetDocument()->GetSecureContextMode());
+   ApplyParagraphStyleToSelection(
+       style, InputEvent::InputType::kFormatSetBlockTextDirection);
+ }
+diff --git a/third_party/WebKit/Source/core/editing/commands/ApplyStyleCommand.cpp b/third_party/WebKit/Source/core/editing/commands/ApplyStyleCommand.cpp
+index 0c3becaa1d33..ddfb1c961dc7 100644
+--- a/third_party/WebKit/Source/core/editing/commands/ApplyStyleCommand.cpp
++++ b/third_party/WebKit/Source/core/editing/commands/ApplyStyleCommand.cpp
+@@ -767,7 +767,7 @@ void ApplyStyleCommand::ApplyInlineStyle(EditingStyle* style,
+     if (embedding_remove_end != remove_start || embedding_remove_end != end) {
+       style_without_embedding = style->Copy();
+       embedding_style = style_without_embedding->ExtractAndRemoveTextDirection(
+-          GetDocument().SecureContextMode());
++          GetDocument().GetSecureContextMode());
+ 
+       if (ComparePositions(embedding_remove_start, embedding_remove_end) <= 0) {
+         RemoveInlineStyle(embedding_style, embedding_remove_start,
+@@ -836,7 +836,7 @@ void ApplyStyleCommand::ApplyInlineStyle(EditingStyle* style,
+         style_without_embedding = style->Copy();
+         embedding_style =
+             style_without_embedding->ExtractAndRemoveTextDirection(
+-                GetDocument().SecureContextMode());
++                GetDocument().GetSecureContextMode());
+       }
+       FixRangeAndApplyInlineStyle(embedding_style, embedding_apply_start,
+                                   embedding_apply_end, editing_state);
+diff --git a/third_party/WebKit/Source/core/editing/commands/EditorCommand.cpp b/third_party/WebKit/Source/core/editing/commands/EditorCommand.cpp
+index 098df048bbbe..bfcf627c3896 100644
+--- a/third_party/WebKit/Source/core/editing/commands/EditorCommand.cpp
++++ b/third_party/WebKit/Source/core/editing/commands/EditorCommand.cpp
+@@ -279,7 +279,7 @@ static bool ExecuteApplyStyle(LocalFrame& frame,
+   MutableCSSPropertyValueSet* style =
+       MutableCSSPropertyValueSet::Create(kHTMLQuirksMode);
+   style->SetProperty(property_id, property_value, /* important */ false,
+-                     frame.GetDocument()->SecureContextMode());
++                     frame.GetDocument()->GetSecureContextMode());
+   return ApplyCommandToFrame(frame, source, input_type, style);
+ }
+ 
+@@ -329,7 +329,7 @@ static bool ExecuteToggleStyleInList(LocalFrame& frame,
+   MutableCSSPropertyValueSet* new_mutable_style =
+       MutableCSSPropertyValueSet::Create(kHTMLQuirksMode);
+   new_mutable_style->SetProperty(property_id, new_style, /* important */ false,
+-                                 frame.GetDocument()->SecureContextMode());
++                                 frame.GetDocument()->GetSecureContextMode());
+   return ApplyCommandToFrame(frame, source, input_type, new_mutable_style);
+ }
+ 
+@@ -353,7 +353,7 @@ static bool ExecuteToggleStyle(LocalFrame& frame,
+ 
+   EditingStyle* style =
+       EditingStyle::Create(property_id, style_is_present ? off_value : on_value,
+-                           frame.GetDocument()->SecureContextMode());
++                           frame.GetDocument()->GetSecureContextMode());
+   return ApplyCommandToFrame(frame, source, input_type, style->Style());
+ }
+ 
+@@ -365,7 +365,7 @@ static bool ExecuteApplyParagraphStyle(LocalFrame& frame,
+   MutableCSSPropertyValueSet* style =
+       MutableCSSPropertyValueSet::Create(kHTMLQuirksMode);
+   style->SetProperty(property_id, property_value, /* important */ false,
+-                     frame.GetDocument()->SecureContextMode());
++                     frame.GetDocument()->GetSecureContextMode());
+   // FIXME: We don't call shouldApplyStyle when the source is DOM; is there a
+   // good reason for that?
+   switch (source) {
+diff --git a/third_party/WebKit/Source/core/editing/commands/RemoveCSSPropertyCommand.cpp b/third_party/WebKit/Source/core/editing/commands/RemoveCSSPropertyCommand.cpp
+index 97c81717f788..4d856e1e9778 100644
+--- a/third_party/WebKit/Source/core/editing/commands/RemoveCSSPropertyCommand.cpp
++++ b/third_party/WebKit/Source/core/editing/commands/RemoveCSSPropertyCommand.cpp
+@@ -57,14 +57,14 @@ void RemoveCSSPropertyCommand::DoApply(EditingState*) {
+   // script. Setting to null string removes the property. We don't have internal
+   // version of removeProperty.
+   element_->style()->SetPropertyInternal(property_, String(), String(), false,
+-                                         GetDocument().SecureContextMode(),
++                                         GetDocument().GetSecureContextMode(),
+                                          IGNORE_EXCEPTION_FOR_TESTING);
+ }
+ 
+ void RemoveCSSPropertyCommand::DoUnapply() {
+   element_->style()->SetPropertyInternal(
+       property_, String(), old_value_, important_,
+-      GetDocument().SecureContextMode(), IGNORE_EXCEPTION_FOR_TESTING);
++      GetDocument().GetSecureContextMode(), IGNORE_EXCEPTION_FOR_TESTING);
+ }
+ 
+ void RemoveCSSPropertyCommand::Trace(blink::Visitor* visitor) {
+diff --git a/third_party/WebKit/Source/core/editing/serializers/StyledMarkupSerializer.cpp b/third_party/WebKit/Source/core/editing/serializers/StyledMarkupSerializer.cpp
+index 1fa64c98b6e5..bf9ef5744c80 100644
+--- a/third_party/WebKit/Source/core/editing/serializers/StyledMarkupSerializer.cpp
++++ b/third_party/WebKit/Source/core/editing/serializers/StyledMarkupSerializer.cpp
+@@ -263,7 +263,7 @@ String StyledMarkupSerializer<Strategy>::CreateMarkup() {
+               "url('" + fully_selected_root->getAttribute(backgroundAttr) +
+                   "')",
+               /* important */ false,
+-              fully_selected_root->GetDocument().SecureContextMode());
++              fully_selected_root->GetDocument().GetSecureContextMode());
+         }
+ 
+         if (fully_selected_root_style->Style()) {
+diff --git a/third_party/WebKit/Source/core/geometry/DOMMatrixReadOnly.cpp b/third_party/WebKit/Source/core/geometry/DOMMatrixReadOnly.cpp
+index 392bb5a84865..58013816b4ac 100644
+--- a/third_party/WebKit/Source/core/geometry/DOMMatrixReadOnly.cpp
++++ b/third_party/WebKit/Source/core/geometry/DOMMatrixReadOnly.cpp
+@@ -470,7 +470,7 @@ void DOMMatrixReadOnly::SetMatrixValueFromString(
+ 
+   const CSSValue* value = CSSParser::ParseSingleValue(
+       CSSPropertyTransform, string,
+-      StrictCSSParserContext(execution_context->SecureContextMode()));
++      StrictCSSParserContext(execution_context->GetSecureContextMode()));
+ 
+   if (!value || value->IsCSSWideKeyword()) {
+     exception_state.ThrowDOMException(
+diff --git a/third_party/WebKit/Source/core/html/HTMLFontElement.cpp b/third_party/WebKit/Source/core/html/HTMLFontElement.cpp
+index ff8d71bf1140..b21c7b6e44e0 100644
+--- a/third_party/WebKit/Source/core/html/HTMLFontElement.cpp
++++ b/third_party/WebKit/Source/core/html/HTMLFontElement.cpp
+@@ -187,7 +187,7 @@ void HTMLFontElement::CollectStyleForPresentationAttribute(
+     AddHTMLColorToStyle(style, CSSPropertyColor, value);
+   } else if (name == faceAttr && !value.IsEmpty()) {
+     if (const CSSValueList* font_face_value = CreateFontFaceValueWithPool(
+-            value, GetDocument().SecureContextMode())) {
++            value, GetDocument().GetSecureContextMode())) {
+       style->SetProperty(
+           CSSPropertyValue(GetCSSPropertyFontFamily(), *font_face_value));
+     }
+diff --git a/third_party/WebKit/Source/core/html/HTMLMarqueeElement.cpp b/third_party/WebKit/Source/core/html/HTMLMarqueeElement.cpp
+index 852dd7094598..aca71c44fd31 100644
+--- a/third_party/WebKit/Source/core/html/HTMLMarqueeElement.cpp
++++ b/third_party/WebKit/Source/core/html/HTMLMarqueeElement.cpp
+@@ -250,7 +250,7 @@ StringKeyframeEffectModel* HTMLMarqueeElement::CreateEffectModel(
+   MutableCSSPropertyValueSet::SetResult set_result;
+ 
+   SecureContextMode secure_context_mode =
+-      mover_->GetDocument().SecureContextMode();
++      mover_->GetDocument().GetSecureContextMode();
+ 
+   scoped_refptr<StringKeyframe> keyframe1 = StringKeyframe::Create();
+   set_result = keyframe1->SetCSSPropertyValue(
+diff --git a/third_party/WebKit/Source/core/html/canvas/CanvasFontCache.cpp b/third_party/WebKit/Source/core/html/canvas/CanvasFontCache.cpp
+index 74e4f1ceb4ec..a5637dcdf401 100644
+--- a/third_party/WebKit/Source/core/html/canvas/CanvasFontCache.cpp
++++ b/third_party/WebKit/Source/core/html/canvas/CanvasFontCache.cpp
+@@ -96,7 +96,7 @@ MutableCSSPropertyValueSet* CanvasFontCache::ParseFont(
+   } else {
+     parsed_style = MutableCSSPropertyValueSet::Create(kHTMLStandardMode);
+     CSSParser::ParseValue(parsed_style, CSSPropertyFont, font_string, true,
+-                          document_->SecureContextMode());
++                          document_->GetSecureContextMode());
+     if (parsed_style->IsEmpty())
+       return nullptr;
+     // According to
+diff --git a/third_party/WebKit/Source/core/inspector/InspectorCSSAgent.cpp b/third_party/WebKit/Source/core/inspector/InspectorCSSAgent.cpp
+index 1dc67efdd351..f302785da108 100644
+--- a/third_party/WebKit/Source/core/inspector/InspectorCSSAgent.cpp
++++ b/third_party/WebKit/Source/core/inspector/InspectorCSSAgent.cpp
+@@ -109,7 +109,7 @@ String CreateShorthandValue(Document* document,
+                             const String& longhand,
+                             const String& new_value) {
+   StyleSheetContents* style_sheet_contents = StyleSheetContents::Create(
+-      StrictCSSParserContext(document->SecureContextMode()));
++      StrictCSSParserContext(document->GetSecureContextMode()));
+   String text = " div { " + shorthand + ": " + old_text + "; }";
+   CSSParser::ParseSheet(CSSParserContext::Create(*document),
+                         style_sheet_contents, text);
+diff --git a/third_party/WebKit/Source/core/svg/SVGAnimateElement.cpp b/third_party/WebKit/Source/core/svg/SVGAnimateElement.cpp
+index 5abbc73171a1..ae7542575269 100644
+--- a/third_party/WebKit/Source/core/svg/SVGAnimateElement.cpp
++++ b/third_party/WebKit/Source/core/svg/SVGAnimateElement.cpp
+@@ -503,7 +503,7 @@ void SVGAnimateElement::ApplyResultsToTarget() {
+     if (property_set
+             ->SetProperty(
+                 css_property_id_, animated_value_->ValueAsString(), false,
+-                targetElement()->GetDocument().SecureContextMode(), nullptr)
++                targetElement()->GetDocument().GetSecureContextMode(), nullptr)
+             .did_change) {
+       targetElement()->SetNeedsStyleRecalc(
+           kLocalStyleChange,
+diff --git a/third_party/WebKit/Source/modules/canvas/canvas2d/BaseRenderingContext2D.cpp b/third_party/WebKit/Source/modules/canvas/canvas2d/BaseRenderingContext2D.cpp
+index ca837ec6a161..92836f97138a 100644
+--- a/third_party/WebKit/Source/modules/canvas/canvas2d/BaseRenderingContext2D.cpp
++++ b/third_party/WebKit/Source/modules/canvas/canvas2d/BaseRenderingContext2D.cpp
+@@ -419,7 +419,7 @@ void BaseRenderingContext2D::setFilter(
+   const CSSValue* filter_value = CSSParser::ParseSingleValue(
+       CSSPropertyFilter, filter_string,
+       CSSParserContext::Create(kHTMLStandardMode,
+-                               execution_context->SecureContextMode()));
++                               execution_context->GetSecureContextMode()));
+ 
+   if (!filter_value || filter_value->IsCSSWideKeyword())
+     return;
+diff --git a/third_party/WebKit/Source/modules/canvas/offscreencanvas2d/OffscreenCanvasRenderingContext2D.cpp b/third_party/WebKit/Source/modules/canvas/offscreencanvas2d/OffscreenCanvasRenderingContext2D.cpp
+index f4207d89e484..a09486fcb208 100644
+--- a/third_party/WebKit/Source/modules/canvas/offscreencanvas2d/OffscreenCanvasRenderingContext2D.cpp
++++ b/third_party/WebKit/Source/modules/canvas/offscreencanvas2d/OffscreenCanvasRenderingContext2D.cpp
+@@ -294,8 +294,9 @@ void OffscreenCanvasRenderingContext2D::setFont(const String& new_font) {
+     return;
+   }
+ 
+-  CSSParser::ParseValue(style, CSSPropertyFont, new_font, true,
+-                        Host()->GetTopExecutionContext()->SecureContextMode());
++  CSSParser::ParseValue(
++      style, CSSPropertyFont, new_font, true,
++      Host()->GetTopExecutionContext()->GetSecureContextMode());
+ 
+   FontDescription desc =
+       FontStyleResolver::ComputeFont(*style, Host()->GetFontSelector());
+-- 
+2.14.1
+

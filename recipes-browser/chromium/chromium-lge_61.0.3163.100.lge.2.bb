@@ -9,3 +9,7 @@ LIC_FILES_CHKSUM += "\
   file://${S}/third_party/libva/COPYING;md5=2e48940f94acb0af582e5ef03537800f \
   file://${S}/third_party/yasm/source/patched-yasm/COPYING;md5=26c9f3d11f88911950f9ff62189d3d4f \
 "
+
+SRC_URI += " \
+  file://v8-qemu-wrapper.patch \
+"

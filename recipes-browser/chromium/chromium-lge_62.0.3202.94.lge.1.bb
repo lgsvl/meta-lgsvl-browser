@@ -8,3 +8,7 @@ LIC_FILES_CHKSUM += "\
   file://${S}/third_party/libsrtp/LICENSE;md5=2909fcf6f09ffff8430463d91c08c4e1\
   file://${S}/third_party/yasm/source/patched-yasm/COPYING;md5=a12d8903508fb6bfd49d8d82c6170dd9 \
 "
+
+SRC_URI += " \
+  file://v8-qemu-wrapper.patch \
+"

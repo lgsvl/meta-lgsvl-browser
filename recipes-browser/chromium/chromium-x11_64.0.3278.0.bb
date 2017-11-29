@@ -1,12 +1,13 @@
 require chromium-x11.inc
 
-SRC_URI[md5sum] = "24202e7fffcb09383079be9390979883"
-SRC_URI[sha256sum] = "14a64bc25b48309566a0e9a9016336b53ae0443da500f2933292773a90b7542a"
+SRC_URI[md5sum] = "22b68e3d5459e9e16a4aba6fcd5161ad"
+SRC_URI[sha256sum] = "cc90b3827e1d73437272a5ac42d7308f0b5bb2abb20c5a7e48a318bdb4900c1d"
 
 LIC_FILES_CHKSUM += "\
+  file://${S}/third_party/boringssl/src/LICENSE;md5=4b1ad67f3a4b5a2346e6616c1268b0fb \
   file://${S}/third_party/breakpad/LICENSE;md5=828152b41153892a725f0e7f56faff73 \
   file://${S}/third_party/expat/files/COPYING;md5=5b8620d98e49772d95fc1d291c26aa79 \
-  file://${S}/third_party/ffmpeg/CREDITS.chromium;md5=cfda07280f2f13fd8390a60b719c442a \
+  file://${S}/third_party/ffmpeg/CREDITS.chromium;md5=d26a0653073e1d98c9bf58a1beddc1df \
   file://${S}/third_party/google_toolbox_for_mac/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
   file://${S}/third_party/icu/LICENSE;md5=675f2d069434d8a1e4e6b0dcf4379226 \
   file://${S}/third_party/libpng/LICENSE;md5=c2adba923425f511c6087a7ca53270e6 \
@@ -16,11 +17,11 @@ LIC_FILES_CHKSUM += "\
 "
 
 SRC_URI += " \
- file://0001-IWYU-Include-math.h-for-round-3.patch;patchdir=third_party/webrtc \
+ file://v8-6.4.336-qemu-wrapper.patch;patchdir=v8 \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
- file://0001-Cannot-compile-gen-blink-bindings-modules-v8-V8Windo.patch \
- file://0001-jumbo-avoid-ToBrowserAccessibilityAuraLinux-redefini.patch \
- file://0001-Fix-ATK-hyperlink-action-castings.patch \
+ file://0001-Build-fix-for-GCC-conflicting-declaration-of-ax_plat.patch \
+ file://0001-Build-fix-for-GCC-conflicting-declarations-of-Secure.patch \
+ file://0001-GCC-build-fix-access-from-global-function-to-private.patch;patchdir=third_party/pdfium \
 "
 
 GN_ARGS += "\

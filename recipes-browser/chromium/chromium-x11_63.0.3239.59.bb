@@ -4,6 +4,7 @@ SRC_URI[md5sum] = "d6ae8eefd8301542c521caa088948d49"
 SRC_URI[sha256sum] = "62aec842b706d7240e86f2a46d852ae1e6d521be69295615d778af595af3467a"
 
 LIC_FILES_CHKSUM += "\
+  file://${S}/third_party/boringssl/src/LICENSE;md5=7707289753aa39daf59ecd93d0164faf \
   file://${S}/third_party/breakpad/LICENSE;md5=828152b41153892a725f0e7f56faff73 \
   file://${S}/third_party/cld/LICENSE;md5=d8b32ba83f8b11e4badd979f4319e706 \
   file://${S}/third_party/cld_2/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
@@ -18,6 +19,7 @@ LIC_FILES_CHKSUM += "\
 "
 
 SRC_URI += " \
+ file://v8-qemu-wrapper.patch \
  file://0001-IWYU-Include-math.h-for-round-3.patch;patchdir=third_party/webrtc \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
 "
