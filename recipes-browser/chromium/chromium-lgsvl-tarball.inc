@@ -1,4 +1,4 @@
-SRC_URI = "https://tmp.igalia.com/chromium-tarballs/chromium-ozone-wayland-${PV}.tar.xz"
+SRC_URI = "https://github.com/lgsvl/chromium-src/releases/download/ozone-wayland-${PV}/chromium-ozone-wayland-${PV}.tar.xz"
 S = "${WORKDIR}/chromium-ozone-wayland-${PV}"
 
 # Chromium itself is licensed under the 3-clause BSD license. However, it
