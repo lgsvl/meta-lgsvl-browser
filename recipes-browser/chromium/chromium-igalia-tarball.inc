@@ -55,7 +55,6 @@ LIC_FILES_CHKSUM = "\
     file://${S}/third_party/apple_apsl/LICENSE;md5=c8c14a9f985552dba8d3edbd76660088 \
     file://${S}/third_party/apple_sample_code/LICENSE;md5=d4c6eafcba87d49fffb4620359f7fe01 \
     file://${S}/third_party/ashmem/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
-    file://${S}/third_party/boringssl/src/LICENSE;md5=7707289753aa39daf59ecd93d0164faf \
     file://${S}/third_party/brotli/LICENSE;md5=941ee9cd1609382f946352712a319b4b \
     file://${S}/third_party/bspatch/LICENSE;md5=3e837ede9697ce4c789c3ca32aabe003 \
     file://${S}/third_party/cacheinvalidation/src/google/cacheinvalidation/COPYING;md5=3b83ef96387f14655fc854ddc3c6bd57 \
