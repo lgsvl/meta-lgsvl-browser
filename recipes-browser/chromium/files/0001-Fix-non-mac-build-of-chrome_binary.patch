@@ -1,0 +1,34 @@
+From 12195d27db8bfd4610b2667552fded8727e07d1b Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jose.dapena@lge.com>
+Date: Mon, 18 Dec 2017 19:39:45 +0100
+Subject: Fix non mac build of chrome_binary.
+
+Fix GN processing error on mei_preload.
+
+Change-Id: I9d40ffd78598e88fd638059376548921903673f4
+
+diff --git a/chrome/browser/resources/media/mei_preload/BUILD.gn b/chrome/browser/resources/media/mei_preload/BUILD.gn
+index 4216d0e121dd..3a7260963da9 100644
+--- a/chrome/browser/resources/media/mei_preload/BUILD.gn
++++ b/chrome/browser/resources/media/mei_preload/BUILD.gn
+@@ -17,10 +17,12 @@ copy("component") {
+   ]
+ }
+ 
+-bundle_data("component_bundle") {
+-  sources = mei_preload_sources
++if (is_mac) {
++  bundle_data("component_bundle") {
++    sources = mei_preload_sources
+ 
+-  outputs = [
+-    "{{bundle_contents_dir}}/Libraries/$mei_preload_out_dir/{{source_file_part}}",
+-  ]
++    outputs = [
++      "{{bundle_contents_dir}}/Libraries/$mei_preload_out_dir/{{source_file_part}}",
++    ]
++  }
+ }
+-- 
+2.14.1
+

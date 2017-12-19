@@ -1,0 +1,26 @@
+From 3e9627331116374c81ca27a6e00a641bdd2e607b Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jose.dapena@lge.com>
+Date: Mon, 18 Dec 2017 19:45:31 +0100
+Subject: GCC build: explicitely call this on lambda expression.
+
+Workaround of GCC lambda expression scope issue, requiring
+this to be used explicitely.
+
+Change-Id: I9ddf212a7687e02cd7d2d2b43cf76e21dd5dada2
+
+diff --git a/device/u2f/u2f_hid_discovery.cc b/device/u2f/u2f_hid_discovery.cc
+index 0695778d2aab..1a42e12990c2 100644
+--- a/device/u2f/u2f_hid_discovery.cc
++++ b/device/u2f/u2f_hid_discovery.cc
+@@ -57,7 +57,7 @@ void U2fHidDiscovery::OnGetDevices(
+     std::vector<device::mojom::HidDeviceInfoPtr> device_infos) {
+   std::for_each(
+       device_infos.begin(), device_infos.end(),
+-      [this](auto& device_info) { DeviceAdded(std::move(device_info)); });
++      [this](auto& device_info) { this->DeviceAdded(std::move(device_info)); });
+   NotifyDiscoveryStarted(true);
+ }
+ 
+-- 
+2.14.1
+

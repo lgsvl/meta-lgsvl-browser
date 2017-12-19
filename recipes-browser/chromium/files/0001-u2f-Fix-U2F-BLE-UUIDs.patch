@@ -1,0 +1,199 @@
+From 52fec7bca1cafb6d7641ece04f14c0328d780def Mon Sep 17 00:00:00 2001
+From: jdoerrie <jdoerrie@chromium.org>
+Date: Fri, 15 Dec 2017 18:45:35 +0000
+Subject: [u2f] Fix U2F BLE UUIDs
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This change modifies the U2F BLE UUIDs to have extern linkage and
+renames them to comply with the style guide naming conventions for
+constants.
+
+Bug: 763303
+Change-Id: Ica2cb8f62c83d3a2fdcb4cdfc265735675e9e6af
+Reviewed-on: https://chromium-review.googlesource.com/829175
+Reviewed-by: Reilly Grant <reillyg@chromium.org>
+Commit-Queue: Jan Wilken Dörrie <jdoerrie@chromium.org>
+Cr-Commit-Position: refs/heads/master@{#524421}
+
+diff --git a/device/u2f/BUILD.gn b/device/u2f/BUILD.gn
+index 122fd73e232b..41860984ff1d 100644
+--- a/device/u2f/BUILD.gn
++++ b/device/u2f/BUILD.gn
+@@ -17,6 +17,7 @@ source_set("u2f") {
+     "u2f_ble_discovery.h",
+     "u2f_ble_frames.cc",
+     "u2f_ble_frames.h",
++    "u2f_ble_uuids.cc",
+     "u2f_ble_uuids.h",
+     "u2f_command_type.h",
+     "u2f_device.cc",
+diff --git a/device/u2f/u2f_ble_connection.cc b/device/u2f/u2f_ble_connection.cc
+index d56506b81402..d6b4f33b78e0 100644
+--- a/device/u2f/u2f_ble_connection.cc
++++ b/device/u2f/u2f_ble_connection.cc
+@@ -311,7 +311,7 @@ void U2fBleConnection::ConnectToU2fService() {
+       device->GetGattServices();
+   auto found =
+       std::find_if(services.begin(), services.end(), [](const auto* service) {
+-        return service->GetUUID().canonical_value() == U2F_SERVICE_UUID;
++        return service->GetUUID().canonical_value() == kU2fServiceUUID;
+       });
+ 
+   if (found == services.end()) {
+@@ -328,19 +328,19 @@ void U2fBleConnection::ConnectToU2fService() {
+     // NOTE: Since GetUUID() returns a temporary |uuid| can't be a reference,
+     // even though canonical_value() returns a const reference.
+     const std::string uuid = characteristic->GetUUID().canonical_value();
+-    if (uuid == U2F_CONTROL_POINT_LENGTH_UUID) {
++    if (uuid == kU2fControlPointLengthUUID) {
+       control_point_length_id_ = characteristic->GetIdentifier();
+       DVLOG(2) << "Got U2F Control Point Length: " << *control_point_length_id_;
+-    } else if (uuid == U2F_CONTROL_POINT_UUID) {
++    } else if (uuid == kU2fControlPointUUID) {
+       control_point_id_ = characteristic->GetIdentifier();
+       DVLOG(2) << "Got U2F Control Point: " << *control_point_id_;
+-    } else if (uuid == U2F_STATUS_UUID) {
++    } else if (uuid == kU2fStatusUUID) {
+       status_id_ = characteristic->GetIdentifier();
+       DVLOG(2) << "Got U2F Status: " << *status_id_;
+-    } else if (uuid == U2F_SERVICE_REVISION_UUID) {
++    } else if (uuid == kU2fServiceRevisionUUID) {
+       service_revision_id_ = characteristic->GetIdentifier();
+       DVLOG(2) << "Got U2F Service Revision: " << *service_revision_id_;
+-    } else if (uuid == U2F_SERVICE_REVISION_BITFIELD_UUID) {
++    } else if (uuid == kU2fServiceRevisionBitfieldUUID) {
+       service_revision_bitfield_id_ = characteristic->GetIdentifier();
+       DVLOG(2) << "Got U2F Service Revision Bitfield: "
+                << *service_revision_bitfield_id_;
+diff --git a/device/u2f/u2f_ble_connection_unittest.cc b/device/u2f/u2f_ble_connection_unittest.cc
+index d8aee58bd101..25defc8a57ca 100644
+--- a/device/u2f/u2f_ble_connection_unittest.cc
++++ b/device/u2f/u2f_ble_connection_unittest.cc
+@@ -332,7 +332,7 @@ class U2fBleConnectionTest : public ::testing::Test {
+ 
+   void AddU2fService() {
+     auto u2f_service = std::make_unique<NiceMockBluetoothGattService>(
+-        u2f_device_, "u2f_service", BluetoothUUID(U2F_SERVICE_UUID),
++        u2f_device_, "u2f_service", BluetoothUUID(kU2fServiceUUID),
+         /* is_primary */ true, /* is_local */ false);
+     u2f_service_ = u2f_service.get();
+     u2f_device_->AddMockService(std::move(u2f_service));
+@@ -353,7 +353,7 @@ class U2fBleConnectionTest : public ::testing::Test {
+       auto u2f_control_point =
+           std::make_unique<NiceMockBluetoothGattCharacteristic>(
+               u2f_service_, "u2f_control_point",
+-              BluetoothUUID(U2F_CONTROL_POINT_UUID), is_local,
++              BluetoothUUID(kU2fControlPointUUID), is_local,
+               BluetoothGattCharacteristic::PROPERTY_WRITE,
+               BluetoothGattCharacteristic::PERMISSION_NONE);
+       u2f_control_point_ = u2f_control_point.get();
+@@ -362,7 +362,7 @@ class U2fBleConnectionTest : public ::testing::Test {
+ 
+     {
+       auto u2f_status = std::make_unique<NiceMockBluetoothGattCharacteristic>(
+-          u2f_service_, "u2f_status", BluetoothUUID(U2F_STATUS_UUID), is_local,
++          u2f_service_, "u2f_status", BluetoothUUID(kU2fStatusUUID), is_local,
+           BluetoothGattCharacteristic::PROPERTY_NOTIFY,
+           BluetoothGattCharacteristic::PERMISSION_NONE);
+       u2f_status_ = u2f_status.get();
+@@ -373,7 +373,7 @@ class U2fBleConnectionTest : public ::testing::Test {
+       auto u2f_control_point_length =
+           std::make_unique<NiceMockBluetoothGattCharacteristic>(
+               u2f_service_, "u2f_control_point_length",
+-              BluetoothUUID(U2F_CONTROL_POINT_LENGTH_UUID), is_local,
++              BluetoothUUID(kU2fControlPointLengthUUID), is_local,
+               BluetoothGattCharacteristic::PROPERTY_READ,
+               BluetoothGattCharacteristic::PERMISSION_NONE);
+       u2f_control_point_length_ = u2f_control_point_length.get();
+@@ -384,7 +384,7 @@ class U2fBleConnectionTest : public ::testing::Test {
+       auto u2f_service_revision =
+           std::make_unique<NiceMockBluetoothGattCharacteristic>(
+               u2f_service_, "u2f_service_revision",
+-              BluetoothUUID(U2F_SERVICE_REVISION_UUID), is_local,
++              BluetoothUUID(kU2fServiceRevisionUUID), is_local,
+               BluetoothGattCharacteristic::PROPERTY_READ,
+               BluetoothGattCharacteristic::PERMISSION_NONE);
+       u2f_service_revision_ = u2f_service_revision.get();
+@@ -395,7 +395,7 @@ class U2fBleConnectionTest : public ::testing::Test {
+       auto u2f_service_revision_bitfield =
+           std::make_unique<NiceMockBluetoothGattCharacteristic>(
+               u2f_service_, "u2f_service_revision_bitfield",
+-              BluetoothUUID(U2F_SERVICE_REVISION_BITFIELD_UUID), is_local,
++              BluetoothUUID(kU2fServiceRevisionBitfieldUUID), is_local,
+               BluetoothGattCharacteristic::PROPERTY_READ |
+                   BluetoothGattCharacteristic::PROPERTY_WRITE,
+               BluetoothGattCharacteristic::PERMISSION_NONE);
+diff --git a/device/u2f/u2f_ble_discovery.cc b/device/u2f/u2f_ble_discovery.cc
+index 8973c1b42ae5..117dcd3c842c 100644
+--- a/device/u2f/u2f_ble_discovery.cc
++++ b/device/u2f/u2f_ble_discovery.cc
+@@ -81,7 +81,7 @@ void U2fBleDiscovery::Stop() {
+ 
+ // static
+ const BluetoothUUID& U2fBleDiscovery::U2fServiceUUID() {
+-  static const BluetoothUUID service_uuid(U2F_SERVICE_UUID);
++  static const BluetoothUUID service_uuid(kU2fServiceUUID);
+   return service_uuid;
+ }
+ 
+diff --git a/device/u2f/u2f_ble_uuids.cc b/device/u2f/u2f_ble_uuids.cc
+new file mode 100644
+index 000000000000..3ee79cc31ce3
+--- /dev/null
++++ b/device/u2f/u2f_ble_uuids.cc
+@@ -0,0 +1,18 @@
++// Copyright 2017 The Chromium Authors. All rights reserved.
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#include "device/u2f/u2f_ble_uuids.h"
++
++namespace device {
++
++const char kU2fServiceUUID[] = "0000fffd-0000-1000-8000-00805f9b34fb";
++const char kU2fControlPointUUID[] = "f1d0fff1-deaa-ecee-b42f-c9ba7ed623bb";
++const char kU2fStatusUUID[] = "f1d0fff2-deaa-ecee-b42f-c9ba7ed623bb";
++const char kU2fControlPointLengthUUID[] =
++    "f1d0fff3-deaa-ecee-b42f-c9ba7ed623bb";
++const char kU2fServiceRevisionUUID[] = "00002a28-0000-1000-8000-00805f9b34fb";
++const char kU2fServiceRevisionBitfieldUUID[] =
++    "f1d0fff4-deaa-ecee-b42f-c9ba7ed623bb";
++
++}  // namespace device
+diff --git a/device/u2f/u2f_ble_uuids.h b/device/u2f/u2f_ble_uuids.h
+index e3cfc482d281..37ac66e729b8 100644
+--- a/device/u2f/u2f_ble_uuids.h
++++ b/device/u2f/u2f_ble_uuids.h
+@@ -11,20 +11,14 @@ namespace device {
+ // https://fidoalliance.org/specs/fido-u2f-v1.2-ps-20170411/fido-u2f-bt-protocol-v1.2-ps-20170411.html#h3_u2f-service
+ //
+ // For details on how the short UUIDs for U2F Service (0xFFFD) and U2F Service
+-// Revision (0x2A28) were converted to the long ones below, see
++// Revision (0x2A28) were converted to the long canonical ones, see
+ // https://www.bluetooth.com/specifications/assigned-numbers/service-discovery
+-static constexpr const char U2F_SERVICE_UUID[] =
+-    "0000fffd-0000-1000-8000-00805f9b34fb";
+-static constexpr const char U2F_CONTROL_POINT_UUID[] =
+-    "f1d0fff1-deaa-ecee-b42f-c9ba7ed623bb";
+-static constexpr const char U2F_STATUS_UUID[] =
+-    "f1d0fff2-deaa-ecee-b42f-c9ba7ed623bb";
+-static constexpr const char U2F_CONTROL_POINT_LENGTH_UUID[] =
+-    "f1d0fff3-deaa-ecee-b42f-c9ba7ed623bb";
+-static constexpr const char U2F_SERVICE_REVISION_UUID[] =
+-    "00002a28-0000-1000-8000-00805f9b34fb";
+-static constexpr const char U2F_SERVICE_REVISION_BITFIELD_UUID[] =
+-    "f1d0fff4-deaa-ecee-b42f-c9ba7ed623bb";
++extern const char kU2fServiceUUID[];
++extern const char kU2fControlPointUUID[];
++extern const char kU2fStatusUUID[];
++extern const char kU2fControlPointLengthUUID[];
++extern const char kU2fServiceRevisionUUID[];
++extern const char kU2fServiceRevisionBitfieldUUID[];
+ 
+ }  // namespace device
+ 
+-- 
+2.14.1
+
