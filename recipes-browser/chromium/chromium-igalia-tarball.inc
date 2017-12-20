@@ -73,7 +73,6 @@ LIC_FILES_CHKSUM = "\
     file://${S}/third_party/flatbuffers/LICENSE;md5=a873c5645c184d51e0f9b34e1d7cf559 \
     file://${S}/third_party/flot/LICENSE.txt;md5=fe1ea2158d814e4fc7227c8c6ccd7ab3 \
     file://${S}/third_party/fontconfig/src/COPYING;md5=7a0449e9bc5370402a94c00204beca3d \
-    file://${S}/third_party/freetype/src/docs/FTL.TXT;md5=13b25413274c9b3b09b63e4028216ff4 \
     file://${S}/third_party/gestures/LICENSE;md5=8a978a7211275297a3d816117be58ebf \
     file://${S}/third_party/gif_player/LICENSE;md5=86d3f3a95c324c9479bd8986968f4327 \
     file://${S}/third_party/glslang/LICENSE;md5=ce523927d7bcd789d6c3af579d03ad73 \
