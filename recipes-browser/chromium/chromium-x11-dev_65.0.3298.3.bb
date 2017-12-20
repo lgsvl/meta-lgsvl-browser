@@ -1,7 +1,7 @@
 require chromium-x11.inc
 
-SRC_URI[md5sum] = "7563e256919c8717759b92f520e0f961"
-SRC_URI[sha256sum] = "559ff8577fbd81e91ca2db32db2568bc96af24d0696f04fbb86118816af24c5b"
+SRC_URI[md5sum] = "899ca8c04526b1ab7f90efd2caf6d38c"
+SRC_URI[sha256sum] = "fda622b7d7e2ab517e1c6993ed43c3d0a5550be1e97f7b0800732372ec30a997"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/third_party/boringssl/src/LICENSE;md5=4b1ad67f3a4b5a2346e6616c1268b0fb \
@@ -20,7 +20,6 @@ LIC_FILES_CHKSUM += "\
 SRC_URI += " \
  file://v8-6.4.336-qemu-wrapper.patch;patchdir=v8 \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
- file://0001-u2f-Fix-U2F-BLE-UUIDs.patch \
  file://0001-Fix-non-mac-build-of-chrome_binary.patch \
  file://0001-GCC-build-explicitely-call-this-on-lambda-expression.patch \
 "
