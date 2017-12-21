@@ -1,7 +1,7 @@
 require chromium-x11.inc
 
-SRC_URI[md5sum] = "54cf970b21811b0cc4a6fc8bcdd6cc64"
-SRC_URI[sha256sum] = "f15d5879b57cb1b70f08b15cf7f4019afc8015fb64209ca67775eea60d0e60d7"
+SRC_URI[md5sum] = "edb687cbee4267c8219c80f02bcfc40c"
+SRC_URI[sha256sum] = "e41e331801ba0487ee880628d387e42409a5fe5ab20c2785b8603a43396170b8"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/third_party/boringssl/src/LICENSE;md5=4b1ad67f3a4b5a2346e6616c1268b0fb \
@@ -21,6 +21,7 @@ SRC_URI += " \
  file://v8-6.4.336-qemu-wrapper.patch;patchdir=v8 \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
  file://0001-Fix-use_cups-false-build.patch \
+ file://0001-Mark-StaticType-related-functions-as-constexpr.patch;patchdir=third_party/angle \
 "
 
 GN_ARGS += "\
