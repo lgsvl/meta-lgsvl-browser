@@ -1,7 +1,7 @@
 require chromium-x11.inc
 
-SRC_URI[md5sum] = "edb687cbee4267c8219c80f02bcfc40c"
-SRC_URI[sha256sum] = "e41e331801ba0487ee880628d387e42409a5fe5ab20c2785b8603a43396170b8"
+SRC_URI[md5sum] = "82a95a51ded9a8230f7e0ec37df31508"
+SRC_URI[sha256sum] = "4b93fe0047134203477c00dd360684db08a37f50b04f9cc01976d82631647ad6"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/third_party/boringssl/src/LICENSE;md5=4b1ad67f3a4b5a2346e6616c1268b0fb \

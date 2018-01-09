@@ -1,7 +1,7 @@
 require chromium-x11.inc
 
-SRC_URI[md5sum] = "899ca8c04526b1ab7f90efd2caf6d38c"
-SRC_URI[sha256sum] = "fda622b7d7e2ab517e1c6993ed43c3d0a5550be1e97f7b0800732372ec30a997"
+SRC_URI[md5sum] = "6b684a0f3804bf03f3c51d079d843caa"
+SRC_URI[sha256sum] = "14dfc4e1797e49f21056869385e4acd769613499bf58ad19cbb09d98f40aeeac"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/third_party/boringssl/src/LICENSE;md5=4b1ad67f3a4b5a2346e6616c1268b0fb \
@@ -20,8 +20,10 @@ LIC_FILES_CHKSUM += "\
 SRC_URI += " \
  file://v8-6.4.336-qemu-wrapper.patch;patchdir=v8 \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
- file://0001-Fix-non-mac-build-of-chrome_binary.patch \
- file://0001-GCC-build-explicitely-call-this-on-lambda-expression.patch \
+ file://0001-Vulkan-Use-correct-Linux-link-flags-for-layers.patch;patchdir=third_party/angle \
+ file://0001-Vulkan-Allow-for-no-.git-directory-in-build.patch;patchdir=third_party/angle \
+ file://0001-jumbo-move-duplicated-GetMapWitness-function-to-Node.patch;patchdir=v8 \
+ file://0001-GCC-fixes-avoid-symbol-collision-between-Element-Com.patch \
 "
 
 GN_ARGS += "\
