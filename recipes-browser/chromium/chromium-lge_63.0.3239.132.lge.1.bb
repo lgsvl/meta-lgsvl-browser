@@ -1,7 +1,7 @@
 require chromium-lge.inc
 
-SRC_URI[md5sum] = "f3246741bacd1424abe607a9c4cba115"
-SRC_URI[sha256sum] = "76e591ad25a40c55225751d20811f0d212580ecffcf175c5fc85e0b93969d361"
+SRC_URI[md5sum] = "023328c1efbea8d6fc2bbadd2850eae7"
+SRC_URI[sha256sum] = "b574cadf311995673ccda4e4bc44d93d2130488443e550c0415ce9758c08f45e"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/third_party/breakpad/LICENSE;md5=828152b41153892a725f0e7f56faff73 \
