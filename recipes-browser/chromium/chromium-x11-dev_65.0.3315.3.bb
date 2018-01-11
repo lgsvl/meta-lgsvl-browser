@@ -1,7 +1,7 @@
 require chromium-x11.inc
 
-SRC_URI[md5sum] = "6b684a0f3804bf03f3c51d079d843caa"
-SRC_URI[sha256sum] = "14dfc4e1797e49f21056869385e4acd769613499bf58ad19cbb09d98f40aeeac"
+SRC_URI[md5sum] = "be6d66e09e0424c22c41ba9e1c60a9ff"
+SRC_URI[sha256sum] = "850b0c8ca1646f7ba94816ce2a47d21f454ce9aff00bf994d9143d475249314c"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/third_party/boringssl/src/LICENSE;md5=4b1ad67f3a4b5a2346e6616c1268b0fb \
@@ -20,9 +20,7 @@ LIC_FILES_CHKSUM += "\
 SRC_URI += " \
  file://v8-6.4.336-qemu-wrapper.patch;patchdir=v8 \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
- file://0001-Vulkan-Use-correct-Linux-link-flags-for-layers.patch;patchdir=third_party/angle \
  file://0001-Vulkan-Allow-for-no-.git-directory-in-build.patch;patchdir=third_party/angle \
- file://0001-jumbo-move-duplicated-GetMapWitness-function-to-Node.patch;patchdir=v8 \
  file://0001-GCC-fixes-avoid-symbol-collision-between-Element-Com.patch \
 "
 
