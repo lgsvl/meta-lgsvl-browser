@@ -9,6 +9,7 @@ B = "${WORKDIR}/build/${OUTPUT_DIR}"
 
 SRC_URI += " \
         ${@bb.utils.contains('PACKAGECONFIG', 'root-profile', 'file://root-user-profile.patch', '', d)} \
+        file://wrapper-extra-flags.patch \
         "
 
 # At the moment, this recipe has only been tested on i586, x86-64, ARMv6,
@@ -295,6 +296,10 @@ do_install() {
 		${WRAPPER_FILE} > chromium-wrapper
 	install -m 0755 chromium-wrapper ${D}${libdir}/chromium/chromium-wrapper
 	ln -s ${libdir}/chromium/chromium-wrapper ${D}${bindir}/chromium
+
+	# Add extra command line arguments to the chromium-wrapper script by
+	# modifying the dummy "CHROME_EXTRA_ARGS" line
+	sed -i "s/^CHROME_EXTRA_ARGS=\"\"/CHROME_EXTRA_ARGS=\"${CHROMIUM_EXTRA_ARGS}\"/" ${D}${libdir}/chromium/chromium-wrapper
 
 	install -m 4755 chrome_sandbox ${D}${libdir}/chromium/chrome-sandbox
 	install -m 0755 chrome ${D}${libdir}/chromium/chromium-bin
