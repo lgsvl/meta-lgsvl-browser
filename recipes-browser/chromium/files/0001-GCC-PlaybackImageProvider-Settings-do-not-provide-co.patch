@@ -1,0 +1,39 @@
+From b529ce3a50b764056d157290edbd878032817f6f Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jose.dapena@lge.com>
+Date: Wed, 28 Feb 2018 19:07:33 +0100
+Subject: GCC: PlaybackImageProvider::Settings: do not provide copy
+ constructor.
+
+Change-Id: Ie2d69bdbe60742e9253251c965cbf0a936037871
+---
+ cc/raster/playback_image_provider.cc | 1 -
+ cc/raster/playback_image_provider.h  | 1 -
+ 2 files changed, 2 deletions(-)
+
+diff --git a/cc/raster/playback_image_provider.cc b/cc/raster/playback_image_provider.cc
+index 557b421bbaef..4282ebaf4725 100644
+--- a/cc/raster/playback_image_provider.cc
++++ b/cc/raster/playback_image_provider.cc
+@@ -70,7 +70,6 @@ PlaybackImageProvider::GetDecodedDrawImage(const DrawImage& draw_image) {
+ }
+ 
+ PlaybackImageProvider::Settings::Settings() = default;
+-PlaybackImageProvider::Settings::Settings(const Settings& other) = default;
+ PlaybackImageProvider::Settings::~Settings() = default;
+ 
+ }  // namespace cc
+diff --git a/cc/raster/playback_image_provider.h b/cc/raster/playback_image_provider.h
+index 67974f3f341d..9f9bfb7a64d4 100644
+--- a/cc/raster/playback_image_provider.h
++++ b/cc/raster/playback_image_provider.h
+@@ -20,7 +20,6 @@ class CC_EXPORT PlaybackImageProvider : public ImageProvider {
+  public:
+   struct CC_EXPORT Settings {
+     Settings();
+-    Settings(const Settings& other);
+     ~Settings();
+ 
+     // The set of image ids to skip during raster.
+-- 
+2.14.1
+

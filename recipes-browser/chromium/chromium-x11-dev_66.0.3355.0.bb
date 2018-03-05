@@ -1,13 +1,13 @@
 require chromium-x11.inc
 
-SRC_URI[md5sum] = "be6d66e09e0424c22c41ba9e1c60a9ff"
-SRC_URI[sha256sum] = "850b0c8ca1646f7ba94816ce2a47d21f454ce9aff00bf994d9143d475249314c"
+SRC_URI[md5sum] = "7b50b684677d6c7dafdbf45216bb0cb4"
+SRC_URI[sha256sum] = "efeaa64d1057238f3a8021624128de68c9b92cc4fb95bd8be8679de43122d3a4"
 
 LIC_FILES_CHKSUM += "\
-  file://${S}/third_party/boringssl/src/LICENSE;md5=4b1ad67f3a4b5a2346e6616c1268b0fb \
+  file://${S}/third_party/boringssl/src/LICENSE;md5=63fc48094a8843e39d999e30954b7773 \
   file://${S}/third_party/breakpad/LICENSE;md5=828152b41153892a725f0e7f56faff73 \
   file://${S}/third_party/expat/files/COPYING;md5=5b8620d98e49772d95fc1d291c26aa79 \
-  file://${S}/third_party/ffmpeg/CREDITS.chromium;md5=d26a0653073e1d98c9bf58a1beddc1df \
+  file://${S}/third_party/ffmpeg/CREDITS.chromium;md5=c196fd5595d5ee48c87e2793f8a76cd6 \
   file://${S}/third_party/freetype/src/docs/FTL.TXT;md5=9f37b4e6afa3fef9dba8932b16bd3f97 \
   file://${S}/third_party/google_toolbox_for_mac/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
   file://${S}/third_party/icu/LICENSE;md5=675f2d069434d8a1e4e6b0dcf4379226 \
@@ -20,10 +20,16 @@ LIC_FILES_CHKSUM += "\
 SRC_URI += " \
  file://v8-6.4.336-qemu-wrapper.patch;patchdir=v8 \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
- file://0001-Vulkan-Allow-for-no-.git-directory-in-build.patch;patchdir=third_party/angle \
- file://0001-GCC-fixes-avoid-symbol-collision-between-Element-Com.patch \
+ file://0001-GCC-build-fix-base-Optional-T-requires-the-full-decl.patch \
+ file://0001-GCC-return-to-optionals-with-std-move.patch \
+ file://0001-GCC-PlaybackImageProvider-Settings-do-not-provide-co.patch \
+ file://0001-jumbo-Fix-extensions-common-jumbo-build.patch \
+ file://0001-GCC-build-fix-mark-is_trivially_copy_constructible-f.patch \
+ file://0001-GCC-do-not-use-initializer-list-for-NoDestructor-of-.patch \
+ file://0001-GCC-IDB-methods-String-renamed-to-GetString.patch \
 "
 
 GN_ARGS += "\
  use_jumbo_build = true \
+ use_custom_libcxx = false \
 "

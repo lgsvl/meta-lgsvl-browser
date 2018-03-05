@@ -1,0 +1,54 @@
+From 68a78476a7c6e1b2a8b425ad025585d7dedca457 Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jose.dapena@lge.com>
+Date: Thu, 1 Mar 2018 17:53:41 +0100
+Subject: GCC build fix: base::Optional<T> requires the full declaration of T
+
+There are several cases where base::Optional<T> is used, and fails to
+compile in GCC, as it cannot properly resolve the is_trivially_*
+declarations. In these cases it is needed to include the full
+declaration of the type, and not only the forward declaration.
+
+Change-Id: I63e5c6307394c6c2eda6af108c80395152bfc04f
+---
+ services/preferences/tracked/pref_hash_filter.h                       | 2 +-
+ third_party/WebKit/Source/modules/webdatabase/SQLTransactionBackend.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/services/preferences/tracked/pref_hash_filter.h b/services/preferences/tracked/pref_hash_filter.h
+index c425aee850dd..2bad7bb5ce8b 100644
+--- a/services/preferences/tracked/pref_hash_filter.h
++++ b/services/preferences/tracked/pref_hash_filter.h
+@@ -21,9 +21,9 @@
+ #include "services/preferences/public/mojom/preferences.mojom.h"
+ #include "services/preferences/tracked/hash_store_contents.h"
+ #include "services/preferences/tracked/interceptable_pref_filter.h"
++#include "services/preferences/tracked/pref_hash_store.h"
+ #include "services/preferences/tracked/tracked_preference.h"
+ 
+-class PrefHashStore;
+ class PrefService;
+ 
+ namespace base {
+diff --git a/third_party/WebKit/Source/modules/webdatabase/SQLTransactionBackend.h b/third_party/WebKit/Source/modules/webdatabase/SQLTransactionBackend.h
+index 00191221631b..d1ac9f54e956 100644
+--- a/third_party/WebKit/Source/modules/webdatabase/SQLTransactionBackend.h
++++ b/third_party/WebKit/Source/modules/webdatabase/SQLTransactionBackend.h
+@@ -30,6 +30,7 @@
+ 
+ #include <memory>
+ #include "modules/webdatabase/DatabaseBasicTypes.h"
++#include "modules/webdatabase/SQLError.h"
+ #include "modules/webdatabase/SQLStatement.h"
+ #include "modules/webdatabase/SQLStatementBackend.h"
+ #include "modules/webdatabase/SQLTransactionStateMachine.h"
+@@ -41,7 +42,6 @@
+ namespace blink {
+ 
+ class Database;
+-class SQLErrorData;
+ class SQLiteTransaction;
+ class SQLTransaction;
+ class SQLTransactionBackend;
+-- 
+2.14.1
+
