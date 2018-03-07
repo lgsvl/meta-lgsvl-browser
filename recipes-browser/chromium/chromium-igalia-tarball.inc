@@ -119,7 +119,6 @@ LIC_FILES_CHKSUM = "\
     file://${S}/third_party/modp_b64/LICENSE;md5=eb7e2e0af1d4971360553aedadee8d86 \
     file://${S}/third_party/molokocacao/LICENSE;md5=2be992b97984f595666a17061e112658 \
     file://${S}/third_party/mozilla/LICENSE;md5=822502c0e010ccdbb6a3e681dd47888e \
-    file://${S}/third_party/mt19937ar/LICENSE;md5=0ba2340297d7bf84647affdcbe3f90b9 \
     file://${S}/third_party/openh264/src/LICENSE;md5=bb6d3771da6a07d33fd50d4d9aa73bcf \
     file://${S}/third_party/openmax_dl/LICENSE;md5=3c999c621badfd6937bcfef14f4528ce \
     file://${S}/third_party/opus/src/COPYING;md5=e304cdf74c2a1b0a33a5084c128a23a3 \
