@@ -28,8 +28,3 @@ SRC_URI += " \
  file://0001-GCC-do-not-use-initializer-list-for-NoDestructor-of-.patch \
  file://0001-GCC-IDB-methods-String-renamed-to-GetString.patch \
 "
-
-GN_ARGS += "\
- use_jumbo_build = true \
- use_custom_libcxx = false \
-"

@@ -15,3 +15,8 @@ DEPENDS += "\
     libxscrnsaver \
     libxtst \
 "
+
+GN_ARGS += "\
+ use_custom_libcxx = false \
+ use_jumbo_build = true \
+"
