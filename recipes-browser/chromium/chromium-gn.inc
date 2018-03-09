@@ -148,12 +148,6 @@ GN_ARGS += "use_sysroot=false"
 # decides to include in -Wall.
 GN_ARGS += "treat_warnings_as_errors=false"
 
-# Starting with M57 and https://codereview.chromium.org/2621193003,
-# link-time optimization (LTO) is enabled by default on Linux x86_64
-# builds, but the options are clang-specific and the builds are only
-# tested with clang upstream.
-GN_ARGS += "allow_posix_link_time_opt=false"
-
 # Disable activation of field trial tests that can cause problems in
 # production.
 # See https://groups.google.com/a/chromium.org/d/msg/chromium-packagers/ECWC57W7E0k/9Kc5UAmyDAAJ
