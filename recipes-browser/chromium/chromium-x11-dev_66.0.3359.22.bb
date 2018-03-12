@@ -1,7 +1,7 @@
 require chromium-x11.inc
 
-SRC_URI[md5sum] = "7b50b684677d6c7dafdbf45216bb0cb4"
-SRC_URI[sha256sum] = "efeaa64d1057238f3a8021624128de68c9b92cc4fb95bd8be8679de43122d3a4"
+SRC_URI[md5sum] = "81e00036c3af2f481e45b9183a11cc6c"
+SRC_URI[sha256sum] = "f8625e7d431697966478f85fb70f54d38f4fdedc740417a14a941ff76e4336a4"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/third_party/boringssl/src/LICENSE;md5=63fc48094a8843e39d999e30954b7773 \
@@ -20,6 +20,7 @@ LIC_FILES_CHKSUM += "\
 SRC_URI += " \
  file://v8-6.4.336-qemu-wrapper.patch;patchdir=v8 \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
+ file://0001-GCC-do-not-initialize-NEON-int32x4_t-with-braces-ini.patch \
  file://0001-GCC-build-fix-base-Optional-T-requires-the-full-decl.patch \
  file://0001-GCC-return-to-optionals-with-std-move.patch \
  file://0001-GCC-PlaybackImageProvider-Settings-do-not-provide-co.patch \
