@@ -1,0 +1,56 @@
+From 7ecc4fee24c89da3acf49311838b9d762bfecdde Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jose.dapena@lge.com>
+Date: Tue, 13 Mar 2018 12:58:58 +0100
+Subject: GCC fix: wrap CHECK asm in lambda to support constexpr calls
+
+CHECK() implementation for arm, arm64, x86 and x64 includes
+asm() statements. Recently added bounds checks using it
+on constexpr methods are breaking GCC build, as GCC follows
+more strictly C++14/11 standard, that explicitely forbids
+calling asm from constexpr.
+
+But GCC does not complain if the asm statement is not
+directly called from constexpr, but through a function
+call. So wrap the GCC asm calls for IMMEDIATE_CRASH in
+a lambda function.
+
+Bug: 821357
+Change-Id: I9b806fa09eda872fb2b8e81cc79d8a4ea20e3e0b
+
+diff --git a/base/logging.h b/base/logging.h
+index ed9547344b9b..6be907833755 100644
+--- a/base/logging.h
++++ b/base/logging.h
+@@ -529,9 +529,11 @@ class CheckOpResult {
+ 
+ #if defined(ARCH_CPU_X86_FAMILY) && !defined(OS_NACL)
+ // int 3 will generate a SIGTRAP.
+-#define TRAP_SEQUENCE() \
+-  asm volatile(         \
+-      "int3; ud2; push %0;" ::"i"(static_cast<unsigned char>(__COUNTER__)))
++#define TRAP_SEQUENCE()                                                        \
++  [] {                                                                         \
++    asm volatile(                                                              \
++        "int3; ud2; push %0;" ::"i"(static_cast<unsigned char>(__COUNTER__))); \
++  }()
+ 
+ #elif defined(ARCH_CPU_ARMEL) && !defined(OS_NACL)
+ // bkpt will generate a SIGBUS when running on armv7 and a SIGTRAP when running
+@@ -539,12 +541,12 @@ class CheckOpResult {
+ // cause a SIGTRAP from userspace without using a syscall (which would be a
+ // problem for sandboxing).
+ #define TRAP_SEQUENCE() \
+-  asm volatile("bkpt #0; udf %0;" ::"i"(__COUNTER__ % 256))
++  [] { asm volatile("bkpt #0; udf %0;" ::"i"(__COUNTER__ % 256)); }()
+ 
+ #elif defined(ARCH_CPU_ARM64) && !defined(OS_NACL)
+ // This will always generate a SIGTRAP on arm64.
+ #define TRAP_SEQUENCE() \
+-  asm volatile("brk #0; hlt %0;" ::"i"(__COUNTER__ % 65536))
++  [] { asm volatile("brk #0; hlt %0;" ::"i"(__COUNTER__ % 65536)); }()
+ 
+ #else
+ // Crash report accuracy will not be guaranteed on other architectures, but at
+-- 
+2.14.1
+

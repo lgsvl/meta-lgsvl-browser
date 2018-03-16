@@ -3,8 +3,8 @@ S = "${WORKDIR}/chromium-ozone-wayland-dev-${PV}"
 
 require chromium-ozone-igalia.inc
 
-SRC_URI[md5sum] = "9791bbf888160e854df33b39dc8bdd62"
-SRC_URI[sha256sum] = "b69bed21317094e922348efa0caf9aca85b9bb3f6348daeb07ba5af3233a82da"
+SRC_URI[md5sum] = "f33636248f9590bc644dcc3f6134ed7a"
+SRC_URI[sha256sum] = "31ed634708917e88d0e52be3708dac22b5ed55289cb542ac7cbbecb50895b950"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/buildtools/third_party/libunwind/trunk/LICENSE.TXT;md5=f1a6f38bb5a8dabe8e3ec33557112dc9 \
@@ -30,12 +30,5 @@ LIC_FILES_CHKSUM += "\
 SRC_URI += " \
  file://v8-6.4.336-qemu-wrapper.patch;patchdir=v8 \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
- file://0001-GCC-do-not-initialize-NEON-int32x4_t-with-braces-ini.patch \
- file://0001-GCC-build-fix-base-Optional-T-requires-the-full-decl.patch \
- file://0001-GCC-return-to-optionals-with-std-move.patch \
- file://0001-GCC-PlaybackImageProvider-Settings-do-not-provide-co.patch \
- file://0001-jumbo-Fix-extensions-common-jumbo-build.patch \
- file://0001-GCC-build-fix-mark-is_trivially_copy_constructible-f.patch \
- file://0001-GCC-do-not-use-initializer-list-for-NoDestructor-of-.patch \
- file://0001-GCC-IDB-methods-String-renamed-to-GetString.patch \
+ file://0001-GCC-fix-wrap-CHECK-asm-in-lambda-to-support-constexp.patch \
 "
