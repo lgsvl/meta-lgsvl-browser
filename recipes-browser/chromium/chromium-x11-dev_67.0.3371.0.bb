@@ -1,7 +1,7 @@
 require chromium-x11.inc
 
-SRC_URI[md5sum] = "81e00036c3af2f481e45b9183a11cc6c"
-SRC_URI[sha256sum] = "f8625e7d431697966478f85fb70f54d38f4fdedc740417a14a941ff76e4336a4"
+SRC_URI[md5sum] = "a75a276994ca7416ac104edd31462562"
+SRC_URI[sha256sum] = "83210a6053642c9ea40b9269ea1df00b74d217c211ffb96443b6f90cac00d9f7"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/third_party/boringssl/src/LICENSE;md5=63fc48094a8843e39d999e30954b7773 \
@@ -20,12 +20,5 @@ LIC_FILES_CHKSUM += "\
 SRC_URI += " \
  file://v8-6.4.336-qemu-wrapper.patch;patchdir=v8 \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
- file://0001-GCC-do-not-initialize-NEON-int32x4_t-with-braces-ini.patch \
- file://0001-GCC-build-fix-base-Optional-T-requires-the-full-decl.patch \
- file://0001-GCC-return-to-optionals-with-std-move.patch \
- file://0001-GCC-PlaybackImageProvider-Settings-do-not-provide-co.patch \
- file://0001-jumbo-Fix-extensions-common-jumbo-build.patch \
- file://0001-GCC-build-fix-mark-is_trivially_copy_constructible-f.patch \
- file://0001-GCC-do-not-use-initializer-list-for-NoDestructor-of-.patch \
- file://0001-GCC-IDB-methods-String-renamed-to-GetString.patch \
+ file://0001-GCC-fix-wrap-CHECK-asm-in-lambda-to-support-constexp.patch \
 "
