@@ -1,0 +1,74 @@
+From e04e32e889751d75450468533ef933e4c0af2cd5 Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jose.dapena@lge.com>
+Date: Wed, 28 Feb 2018 19:04:48 +0100
+Subject: GCC: return to optionals with std::move
+
+GCC complains in this pattern of code:
+base::Optional<Foo>
+Method() {
+  ...
+  Foo response;
+  ...
+  return response;
+}
+
+Though, it works if response is returned with std::move.
+
+Change-Id: Ic0390e1c31340dc34a71bb4175bd63a4631248d6
+---
+ content/browser/appcache/appcache_request_handler.cc                  | 2 +-
+ .../service_worker/service_worker_controllee_request_handler.cc       | 2 +-
+ device/fido/device_response_converter.cc                              | 4 ++--
+ 3 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/content/browser/appcache/appcache_request_handler.cc b/content/browser/appcache/appcache_request_handler.cc
+index 63cc984b4276..ceeed53a4ac1 100644
+--- a/content/browser/appcache/appcache_request_handler.cc
++++ b/content/browser/appcache/appcache_request_handler.cc
+@@ -639,7 +639,7 @@ AppCacheRequestHandler::MaybeCreateSubresourceLoaderParams() {
+ 
+   SubresourceLoaderParams params;
+   params.loader_factory_info = factory_ptr.PassInterface();
+-  return params;
++  return std::move(params);
+ }
+ 
+ void AppCacheRequestHandler::MaybeCreateSubresourceLoader(
+diff --git a/content/browser/service_worker/service_worker_controllee_request_handler.cc b/content/browser/service_worker/service_worker_controllee_request_handler.cc
+index 95db6dad5360..be52ba830b7b 100644
+--- a/content/browser/service_worker/service_worker_controllee_request_handler.cc
++++ b/content/browser/service_worker/service_worker_controllee_request_handler.cc
+@@ -271,7 +271,7 @@ ServiceWorkerControlleeRequestHandler::MaybeCreateSubresourceLoaderParams() {
+   controller_info->object_info = provider_host_->GetOrCreateServiceWorkerHandle(
+       provider_host_->controller());
+   params.controller_service_worker_info = std::move(controller_info);
+-  return params;
++  return std::move(params);
+ }
+ 
+ void ServiceWorkerControlleeRequestHandler::PrepareForMainResource(
+diff --git a/device/fido/device_response_converter.cc b/device/fido/device_response_converter.cc
+index 050ff2fc5d10..6fdf85c840ee 100644
+--- a/device/fido/device_response_converter.cc
++++ b/device/fido/device_response_converter.cc
+@@ -121,7 +121,7 @@ base::Optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
+     response.SetNumCredentials(it->second.GetUnsigned());
+   }
+ 
+-  return response;
++  return std::move(response);
+ }
+ 
+ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
+@@ -241,7 +241,7 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
+     response.SetPinProtocols(std::move(supported_pin_protocols));
+   }
+ 
+-  return response;
++  return std::move(response);
+ }
+ 
+ }  // namespace device
+-- 
+2.14.1
+
