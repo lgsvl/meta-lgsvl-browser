@@ -82,7 +82,6 @@ LIC_FILES_CHKSUM = "\
     file://${S}/third_party/google_input_tools/LICENSE;md5=ff0b0f0202337c9d4ae2d869797049d3 \
     file://${S}/third_party/gvr-android-sdk/LICENSE;md5=50b9d1f02b2ee0d8a568ccf4d35216e2 \
     file://${S}/third_party/haha/LICENSE;md5=7a4d962049fded4f1b47d1e4027ace42 \
-    file://${S}/third_party/harfbuzz-ng/COPYING;md5=e021dd6dda6ff1e6b1044002fc662b9b \
     file://${S}/third_party/hunspell/COPYING.MPL;md5=bfe1f75d606912a4111c90743d6c7325 \
     file://${S}/third_party/iaccessible2/LICENSE;md5=43bbd0bfb581347ec10def720000a645 \
     file://${S}/third_party/iccjpeg/LICENSE;md5=26834d132689a03abf860f4572705494 \
