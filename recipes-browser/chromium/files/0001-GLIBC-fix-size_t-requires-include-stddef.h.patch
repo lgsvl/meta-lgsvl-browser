@@ -1,0 +1,38 @@
+From 8c7e30afcfe5015e19d3b4a5768f29bb369ea7d4 Mon Sep 17 00:00:00 2001
+From: Jani Hautakangas <jani.hautakangas@lge.com>
+Date: Thu, 5 Apr 2018 00:25:32 +0300
+Subject: GLIBC fix: size_t requires include <stddef.h>
+
+Compiling fails with glibc built with compatibility
+support for older kernels like 3.2
+'size_t' does not name a type in proc_table.h
+
+Change-Id: Id79e033dc72d836788551e076ced6dbd706ce902
+
+diff --git a/AUTHORS b/AUTHORS
+index 5dacdf8fb..6aed35a04 100644
+--- a/AUTHORS
++++ b/AUTHORS
+@@ -27,6 +27,7 @@ NVIDIA Corporation
+ Opera Software ASA
+ The Qt Company Ltd.
+ Advanced Micro Devices, Inc.
++LG Electronics, Inc.
+ 
+ Jacek Caban
+ Mark Callow
+diff --git a/src/libGLESv2/proc_table.h b/src/libGLESv2/proc_table.h
+index f718291be..38506e7c4 100644
+--- a/src/libGLESv2/proc_table.h
++++ b/src/libGLESv2/proc_table.h
+@@ -11,6 +11,7 @@
+ #define LIBGLESV2_PROC_TABLE_H_
+ 
+ #include <EGL/egl.h>
++#include <stddef.h>
+ #include <utility>
+ 
+ namespace egl
+-- 
+2.14.1
+

@@ -3,8 +3,8 @@ S = "${WORKDIR}/chromium-ozone-wayland-dev-${PV}"
 
 require chromium-ozone-igalia.inc
 
-SRC_URI[md5sum] = "dd631eb5160a9a9e76672b78f4c5e4d2"
-SRC_URI[sha256sum] = "b0c84bda47b990d6fdf33af7b39dfc885000326cef3131c897047329cbf7b327"
+SRC_URI[md5sum] = "3db6588e0212ba213e30d49f292b0332"
+SRC_URI[sha256sum] = "2dd460abbee26e29b2e412e05a7d60090b5d9204a5f9237b71726f9cfc2470ff"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/buildtools/third_party/libunwind/trunk/LICENSE.TXT;md5=f1a6f38bb5a8dabe8e3ec33557112dc9 \
@@ -12,12 +12,14 @@ LIC_FILES_CHKSUM += "\
   file://${S}/ios/third_party/motion_animator_objc/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
   file://${S}/ios/third_party/motion_interchange_objc/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
   file://${S}/ios/third_party/motion_transitioning_objc/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
-  file://${S}/third_party/boringssl/src/LICENSE;md5=63fc48094a8843e39d999e30954b7773 \
+  file://${S}/third_party/angle/LICENSE;md5=7abdb66a6948f39c2f469140db5184e2 \
+  file://${S}/third_party/boringssl/src/LICENSE;md5=9b082148f9953258347788edb83e401b \
   file://${S}/third_party/breakpad/LICENSE;md5=828152b41153892a725f0e7f56faff73 \
   file://${S}/third_party/expat/files/COPYING;md5=5b8620d98e49772d95fc1d291c26aa79 \
   file://${S}/third_party/ffmpeg/CREDITS.chromium;md5=fc70a2842a197fbb05a1fd3a90b47148 \
   file://${S}/third_party/freetype/src/docs/FTL.TXT;md5=9f37b4e6afa3fef9dba8932b16bd3f97 \
   file://${S}/third_party/google_toolbox_for_mac/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
+  file://${S}/third_party/harfbuzz-ng/src/COPYING;md5=e021dd6dda6ff1e6b1044002fc662b9b \
   file://${S}/third_party/icu/LICENSE;md5=675f2d069434d8a1e4e6b0dcf4379226 \
   file://${S}/third_party/libpng/LICENSE;md5=c2adba923425f511c6087a7ca53270e6 \
   file://${S}/third_party/libsrtp/LICENSE;md5=2909fcf6f09ffff8430463d91c08c4e1\
@@ -30,4 +32,7 @@ LIC_FILES_CHKSUM += "\
 SRC_URI += " \
  file://v8-6.4.336-qemu-wrapper.patch;patchdir=v8 \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
+ file://0001-Fix-crashpad-build-on-non-Android-ARMEL-with-a-recen.patch;patchdir=third_party/crashpad/crashpad \
+ file://0001-GLIBC-fix-HOST_NAME_MAX-requires-include-limits.h.patch \
+ file://0001-GLIBC-fix-size_t-requires-include-stddef.h.patch;patchdir=third_party/angle \
 "
