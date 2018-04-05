@@ -1,0 +1,74 @@
+From 176dfd7b90a1d35531631deb428c7035832604a9 Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jose.dapena@lge.com>
+Date: Wed, 4 Apr 2018 18:13:02 +0200
+Subject: Fix crashpad build on non Android ARMEL with a recent GLIBC.
+
+user_vfp is not declared anymore in sys/user.h, but in specific
+internal kernel asm user.h in GLIBC. So building crashpad on ARMEL
+with such a GLIBC will fail to build.
+
+Also, sys/ptrace.h will not include the declarations for
+PTRACE_GET_THREAD_AREA and PTRACE_GETVFPREG in arm (they are in
+asm/ptrace.h and not included from sys/ptrace.h). So provide
+compatibility declarations accordingly for arm architecture.
+
+Change-Id: I58ab5274a66d84c0cbc9e9e9b23e0abc37bf67e5
+
+diff --git a/AUTHORS b/AUTHORS
+index eb3534a6..3ad137fd 100644
+--- a/AUTHORS
++++ b/AUTHORS
+@@ -9,3 +9,4 @@
+ Google Inc.
+ Opera Software ASA
+ Vewd Software AS
++LG Electronics, Inc.
+diff --git a/compat/linux/sys/ptrace.h b/compat/linux/sys/ptrace.h
+index e68125b5..07806b08 100644
+--- a/compat/linux/sys/ptrace.h
++++ b/compat/linux/sys/ptrace.h
+@@ -20,11 +20,24 @@
+ #include <sys/cdefs.h>
+ 
+ // https://sourceware.org/bugzilla/show_bug.cgi?id=22433
+-#if !defined(PTRACE_GET_THREAD_AREA) && \
+-    defined(__GLIBC__) && (defined(__i386__) || defined(__x86_64__))
++#if !defined(PTRACE_GET_THREAD_AREA) && defined(__GLIBC__)
++#if defined(__i386__) || defined(__x86_64__)
+ static constexpr __ptrace_request PTRACE_GET_THREAD_AREA =
+     static_cast<__ptrace_request>(25);
+ #define PTRACE_GET_THREAD_AREA PTRACE_GET_THREAD_AREA
+-#endif  // !PTRACE_GET_THREAD_AREA && __GLIBC__ && (__i386__ || __x86_64__)
++#elif defined(__arm__) || defined(__arm64__)
++static constexpr __ptrace_request PTRACE_GET_THREAD_AREA =
++    static_cast<__ptrace_request>(22);
++#define PTRACE_GET_THREAD_AREA PTRACE_GET_THREAD_AREA
++#endif
++#endif  // !PTRACE_GET_THREAD_AREA && defined(__GLIBC__)
++
++// https://sourceware.org/bugzilla/show_bug.cgi?id=22433
++#if !defined(PTRACE_GETVFPREGS) && \
++    defined(__GLIBC__) && (defined(__arm__) || defined(__arm64__))
++static constexpr __ptrace_request PTRACE_GETVFPREGS =
++    static_cast<__ptrace_request>(27);
++#define PTRACE_GETVFPREGS PTRACE_GETVFPREGS
++#endif
+ 
+ #endif  // CRASHPAD_COMPAT_LINUX_SYS_PTRACE_H_
+diff --git a/util/linux/thread_info.h b/util/linux/thread_info.h
+index 94424dd4..91d0082f 100644
+--- a/util/linux/thread_info.h
++++ b/util/linux/thread_info.h
+@@ -232,7 +232,9 @@ union FloatContext {
+                 "Size mismatch");
+ #elif defined(ARCH_CPU_ARMEL)
+   static_assert(sizeof(f32_t::fpregs) == sizeof(user_fpregs), "Size mismatch");
++#if !defined(__GLIBC__)
+   static_assert(sizeof(f32_t::vfp) == sizeof(user_vfp), "Size mismatch");
++#endif
+ #elif defined(ARCH_CPU_ARM64)
+   static_assert(sizeof(f64) == sizeof(user_fpsimd_struct), "Size mismatch");
+ #else
+-- 
+2.14.1
+

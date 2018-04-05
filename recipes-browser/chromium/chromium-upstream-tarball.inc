@@ -54,7 +54,6 @@ LIC_FILES_CHKSUM = "\
     file://${S}/third_party/android_media/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
     file://${S}/third_party/android_opengl/LICENSE;md5=d10e92761a860d4113a7a525c78daf13 \
     file://${S}/third_party/android_swipe_refresh/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
-    file://${S}/third_party/angle/LICENSE;md5=10305d79487367a5e938772c27246ac1 \
     file://${S}/third_party/apple_apsl/LICENSE;md5=c8c14a9f985552dba8d3edbd76660088 \
     file://${S}/third_party/apple_sample_code/LICENSE;md5=d4c6eafcba87d49fffb4620359f7fe01 \
     file://${S}/third_party/ashmem/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \

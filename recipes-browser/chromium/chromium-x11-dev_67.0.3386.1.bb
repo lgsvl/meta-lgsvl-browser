@@ -1,10 +1,11 @@
 require chromium-x11.inc
 
-SRC_URI[md5sum] = "764cbd0e99938f4f38f6f393323a317a"
-SRC_URI[sha256sum] = "4253494a97d4322647c3550b528db6269dde66a273c8ce15d015a17007baa727"
+SRC_URI[md5sum] = "0311cbd025b0ef15df37f441e81cbeec"
+SRC_URI[sha256sum] = "784b64e3ce89510d56f1141ac4d5cc8dc5aea582eb699947996dc70444cee6d6"
 
 LIC_FILES_CHKSUM += "\
-  file://${S}/third_party/boringssl/src/LICENSE;md5=63fc48094a8843e39d999e30954b7773 \
+  file://${S}/third_party/angle/LICENSE;md5=7abdb66a6948f39c2f469140db5184e2 \
+  file://${S}/third_party/boringssl/src/LICENSE;md5=9b082148f9953258347788edb83e401b \
   file://${S}/third_party/breakpad/LICENSE;md5=828152b41153892a725f0e7f56faff73 \
   file://${S}/third_party/expat/files/COPYING;md5=5b8620d98e49772d95fc1d291c26aa79 \
   file://${S}/third_party/ffmpeg/CREDITS.chromium;md5=fc70a2842a197fbb05a1fd3a90b47148 \
@@ -21,4 +22,6 @@ LIC_FILES_CHKSUM += "\
 SRC_URI += " \
  file://v8-6.4.336-qemu-wrapper.patch;patchdir=v8 \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
+ file://0001-Fix-crashpad-build-on-non-Android-ARMEL-with-a-recen.patch;patchdir=third_party/crashpad/crashpad \
+ file://0001-GLIBC-fix-HOST_NAME_MAX-requires-include-limits.h.patch \
 "

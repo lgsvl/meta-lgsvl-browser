@@ -4,6 +4,7 @@ SRC_URI[md5sum] = "717988367527423b897712ec0e25a5dd"
 SRC_URI[sha256sum] = "93666448c6b96ec83e6a35a64cff40db4eb92a154fe1db4e7dab4761d0e38687"
 
 LIC_FILES_CHKSUM += "\
+  file://${S}/third_party/angle/LICENSE;md5=10305d79487367a5e938772c27246ac1 \
   file://${S}/third_party/boringssl/src/LICENSE;md5=4b1ad67f3a4b5a2346e6616c1268b0fb \
   file://${S}/third_party/breakpad/LICENSE;md5=828152b41153892a725f0e7f56faff73 \
   file://${S}/third_party/expat/files/COPYING;md5=5b8620d98e49772d95fc1d291c26aa79 \
