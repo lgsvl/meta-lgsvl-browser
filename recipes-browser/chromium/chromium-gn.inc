@@ -2,27 +2,6 @@ require chromium.inc
 require chromium-unbundle.inc
 require gn-utils.inc
 
-inherit gtk-icon-cache qemu
-
-OUTPUT_DIR = "out/Release"
-B = "${WORKDIR}/build/${OUTPUT_DIR}"
-
-SRC_URI += " \
-        ${@bb.utils.contains('PACKAGECONFIG', 'root-profile', 'file://root-user-profile.patch', '', d)} \
-        file://wrapper-extra-flags.patch \
-        "
-
-# At the moment, this recipe has only been tested on i586, x86-64, ARMv6,
-# ARMv7a and aarch64.
-COMPATIBLE_MACHINE = "(-)"
-COMPATIBLE_MACHINE_aarch64 = "(.*)"
-COMPATIBLE_MACHINE_armv6 = "(.*)"
-COMPATIBLE_MACHINE_armv7a = "(.*)"
-COMPATIBLE_MACHINE_x86 = "(.*)"
-COMPATIBLE_MACHINE_x86-64 = "(.*)"
-COMPATIBLE_MACHINE_raspberrypi3 = "(.*)"
-COMPATIBLE_MACHINE_raspberrypi2 = "(.*)"
-
 DEPENDS = "\
     alsa-lib \
     atk \
@@ -54,6 +33,27 @@ DEPENDS = "\
     "
 DEPENDS_append_x86 = "yasm-native"
 DEPENDS_append_x86-64 = "yasm-native"
+
+inherit gtk-icon-cache qemu
+
+OUTPUT_DIR = "out/Release"
+B = "${WORKDIR}/build/${OUTPUT_DIR}"
+
+SRC_URI += " \
+        ${@bb.utils.contains('PACKAGECONFIG', 'root-profile', 'file://root-user-profile.patch', '', d)} \
+        file://wrapper-extra-flags.patch \
+        "
+
+# At the moment, this recipe has only been tested on i586, x86-64, ARMv6,
+# ARMv7a and aarch64.
+COMPATIBLE_MACHINE = "(-)"
+COMPATIBLE_MACHINE_aarch64 = "(.*)"
+COMPATIBLE_MACHINE_armv6 = "(.*)"
+COMPATIBLE_MACHINE_armv7a = "(.*)"
+COMPATIBLE_MACHINE_x86 = "(.*)"
+COMPATIBLE_MACHINE_x86-64 = "(.*)"
+COMPATIBLE_MACHINE_raspberrypi3 = "(.*)"
+COMPATIBLE_MACHINE_raspberrypi2 = "(.*)"
 
 # The wrapper script we use from upstream requires bash.
 RDEPENDS_${PN} = "bash"
