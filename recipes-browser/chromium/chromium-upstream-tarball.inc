@@ -157,7 +157,6 @@ LIC_FILES_CHKSUM = "\
     file://${S}/third_party/yara/src/COPYING;md5=541962f9dacf27c928f57e3a7ba9e1f2 \
     file://${S}/third_party/zlib/LICENSE;md5=f09575dbfb09420642318b413159496f \
     file://${S}/url/third_party/mozilla/LICENSE.txt;md5=437ced1e9b232651b0912a9594da43b2 \
-    file://${S}/v8/LICENSE;md5=71f2c485344c921f659ea9f7d895ea22 \
     file://${S}/v8/LICENSE.fdlibm;md5=b17367d6c97e638599071d99a3049dfe \
     file://${S}/v8/LICENSE.strongtalk;md5=956a43818dd13f2e93088fc2c93589d2 \
     "

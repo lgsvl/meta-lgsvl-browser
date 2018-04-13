@@ -17,6 +17,7 @@ LIC_FILES_CHKSUM += "\
   file://${S}/third_party/libsrtp/LICENSE;md5=2909fcf6f09ffff8430463d91c08c4e1\
   file://${S}/third_party/ots/LICENSE;md5=e06eff2aa65b917034a81599bea73dc4 \
   file://${S}/third_party/yasm/source/patched-yasm/COPYING;md5=a12d8903508fb6bfd49d8d82c6170dd9 \
+  file://${S}/v8/LICENSE;md5=71f2c485344c921f659ea9f7d895ea22 \
 "
 
 SRC_URI += " \
