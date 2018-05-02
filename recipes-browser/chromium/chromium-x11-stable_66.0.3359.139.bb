@@ -1,21 +1,20 @@
 require chromium-x11.inc
 
-SRC_URI[md5sum] = "717988367527423b897712ec0e25a5dd"
-SRC_URI[sha256sum] = "93666448c6b96ec83e6a35a64cff40db4eb92a154fe1db4e7dab4761d0e38687"
+SRC_URI[md5sum] = "b6318ddd70f1b31f71511cbd49603c7c"
+SRC_URI[sha256sum] = "be75a5b5f8c5789d359238f374a43bf52ded49425f13ed68b8021c24e2e264b2"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/third_party/angle/LICENSE;md5=10305d79487367a5e938772c27246ac1 \
-  file://${S}/third_party/boringssl/src/LICENSE;md5=4b1ad67f3a4b5a2346e6616c1268b0fb \
+  file://${S}/third_party/boringssl/src/LICENSE;md5=63fc48094a8843e39d999e30954b7773 \
   file://${S}/third_party/breakpad/LICENSE;md5=828152b41153892a725f0e7f56faff73 \
   file://${S}/third_party/expat/files/COPYING;md5=5b8620d98e49772d95fc1d291c26aa79 \
-  file://${S}/third_party/ffmpeg/CREDITS.chromium;md5=fc70a2842a197fbb05a1fd3a90b47148 \
+  file://${S}/third_party/ffmpeg/CREDITS.chromium;md5=c196fd5595d5ee48c87e2793f8a76cd6 \
   file://${S}/third_party/freetype/src/docs/FTL.TXT;md5=9f37b4e6afa3fef9dba8932b16bd3f97 \
   file://${S}/third_party/google_toolbox_for_mac/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
   file://${S}/third_party/harfbuzz-ng/COPYING;md5=e021dd6dda6ff1e6b1044002fc662b9b \
   file://${S}/third_party/icu/LICENSE;md5=675f2d069434d8a1e4e6b0dcf4379226 \
   file://${S}/third_party/libpng/LICENSE;md5=c2adba923425f511c6087a7ca53270e6 \
   file://${S}/third_party/libsrtp/LICENSE;md5=2909fcf6f09ffff8430463d91c08c4e1\
-  file://${S}/third_party/mt19937ar/LICENSE;md5=0ba2340297d7bf84647affdcbe3f90b9 \
   file://${S}/third_party/ots/LICENSE;md5=e06eff2aa65b917034a81599bea73dc4 \
   file://${S}/third_party/yasm/source/patched-yasm/COPYING;md5=a12d8903508fb6bfd49d8d82c6170dd9 \
   file://${S}/v8/LICENSE;md5=71f2c485344c921f659ea9f7d895ea22 \
@@ -24,19 +23,12 @@ LIC_FILES_CHKSUM += "\
 SRC_URI += " \
  file://v8-6.4.336-qemu-wrapper.patch;patchdir=v8 \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
- file://0001-Workaround-for-g-7-is_trivially_copy_constructible-f.patch \
  file://0001-GCC-build-fix-base-Optional-T-requires-the-full-decl.patch \
- file://0001-wtf-oilpan-Remove-GC-checks-from-WTF-Optional-T.patch \
- file://0001-GCC-build-fix-mark-is_trivially_copy_constructible-f.patch \
- file://0001-Fix-non-copyable-class-s-optional-move.patch \
- file://0001-Use-affirmative-expression-in-base-Optional.patch \
- file://0001-Implement-conditional-copy-move-ctors-assign-operato.patch \
- file://0001-Implement-converting-constructors-from-Optional-U.patch \
- file://0001-Implement-value-forward-constructor.patch \
- file://0001-Update-non-copy-non-move-assign-operators.patch \
  file://0001-GCC-PlaybackImageProvider-Settings-do-not-provide-co.patch \
- file://0001-GCC-explicitely-std-move-to-base-Optional-instead-of.patch \
+ file://0001-GCC-build-fix-mark-is_trivially_copy_constructible-f.patch \
  file://0001-GCC-IDB-methods-String-renamed-to-GetString.patch \
- file://0001-GCC-fully-declare-ConfigurationPolicyProvider.patch \
- file://0001-Fix-build-with-glibc-2.27.patch \
+ file://0001-GCC-do-not-initialize-NEON-int32x4_t-with-braces-ini.patch \
+ file://0001-jumbo-Fix-extensions-common-jumbo-build.patch \
+ file://0001-GCC-return-to-optionals-with-std-move.patch \
+ file://0001-GCC-do-not-use-initializer-list-for-NoDestructor-of-.patch \
 "

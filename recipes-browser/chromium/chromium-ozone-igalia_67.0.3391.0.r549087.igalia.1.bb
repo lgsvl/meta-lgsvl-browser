@@ -32,7 +32,4 @@ LIC_FILES_CHKSUM += "\
 SRC_URI += " \
  file://v8-6.4.336-qemu-wrapper.patch;patchdir=v8 \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
- file://0001-Fix-crashpad-build-on-non-Android-ARMEL-with-a-recen.patch;patchdir=third_party/crashpad/crashpad \
- file://0001-GLIBC-fix-HOST_NAME_MAX-requires-include-limits.h.patch \
- file://0001-GLIBC-fix-size_t-requires-include-stddef.h.patch;patchdir=third_party/angle \
 "
