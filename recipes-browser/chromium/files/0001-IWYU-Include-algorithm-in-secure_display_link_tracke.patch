@@ -1,0 +1,49 @@
+From d47586ce757ac9d701409acb560274cef84c78ad Mon Sep 17 00:00:00 2001
+From: Raphael Kubo da Costa <raphael.kubo.da.costa@intel.com>
+Date: Fri, 4 May 2018 21:12:18 +0000
+Subject: IWYU: Include <algorithm> in secure_display_link_tracker.h.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Recent changes that removed some includes such as a92b7636e ("[MessageLoop]
+Fix random IWYU preventing message_loop.h cleanup") and
+629ba73c96 ("[MessageLoop] Fix message_loop.h includes") have broken the
+build with libstdc++, as secure_display_link_tracker.h uses std::find() but
+relied on it being included implicitly by other headers:
+
+    In file included from ../../base/memory/weak_ptr.h:77:0,
+                     from ../../content/renderer/media/stream/media_stream_video_source.h:13,
+                     from ../../content/renderer/media/stream/media_stream_video_source.cc:5:
+    ../../content/renderer/media/stream/secure_display_link_tracker.h: In instantiation of ‘void SecureDisplayLinkTracker<T>::Add(T*, bool) [with T = content::MediaStreamVideoTrack]’:
+    ../../content/renderer/media/stream/media_stream_video_source.cc:55:34:   required from here
+    ../../content/renderer/media/stream/secure_display_link_tracker.h:32:19: error: no matching function for call to ‘find(std::vector<content::MediaStreamVideoTrack*>::iterator, std::vector<content::MediaStreamVideoTrack*>::iterator, content::MediaStreamVideoTrack*&)’
+       DCHECK(std::find(insecure_links_.begin(), insecure_links_.end(), link) ==
+              ~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ../../base/logging.h:888:54: note: in definition of macro ‘DCHECK’
+     #define DCHECK(condition) EAT_STREAM_PARAMETERS << !(condition)
+                                                          ^~~~~~~~~
+
+Bug: 819294
+Change-Id: I1e747d7e15a7be74460012fbe5f207368744114b
+Reviewed-on: https://chromium-review.googlesource.com/1043749
+Reviewed-by: Dale Curtis <dalecurtis@chromium.org>
+Reviewed-by: Chrome Cunningham <chcunningham@chromium.org>
+Commit-Queue: Raphael Kubo da Costa <raphael.kubo.da.costa@intel.com>
+Cr-Commit-Position: refs/heads/master@{#556190}
+
+diff --git a/content/renderer/media/stream/secure_display_link_tracker.h b/content/renderer/media/stream/secure_display_link_tracker.h
+index 9a3ab5a0ede5..6f178c250db2 100644
+--- a/content/renderer/media/stream/secure_display_link_tracker.h
++++ b/content/renderer/media/stream/secure_display_link_tracker.h
+@@ -5,6 +5,7 @@
+ #ifndef CONTENT_RENDERER_MEDIA_STREAM_SECURE_DISPLAY_LINK_TRACKER_H_
+ #define CONTENT_RENDERER_MEDIA_STREAM_SECURE_DISPLAY_LINK_TRACKER_H_
+ 
++#include <algorithm>
+ #include <vector>
+ 
+ // Tracks all connected links (video sinks / tracks), and reports if they are
+-- 
+2.14.1
+

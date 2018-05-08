@@ -1,7 +1,7 @@
 require chromium-x11.inc
 
-SRC_URI[md5sum] = "4026e73674c685c281ed8a08d3eb298d"
-SRC_URI[sha256sum] = "72609c7cd8f2e2400eaa80236877d845b7adf25be7c2eaa26d27e6e71a283814"
+SRC_URI[md5sum] = "7b49792021b7e9bb6a0f0acc35ebe78d"
+SRC_URI[sha256sum] = "e1addc3378500d61584c37dee9bac99ae3c30ff5ebb24c6ca5a571b465a29d34"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/third_party/angle/LICENSE;md5=7abdb66a6948f39c2f469140db5184e2 \
@@ -21,6 +21,9 @@ LIC_FILES_CHKSUM += "\
 "
 
 SRC_URI += " \
- file://v8-6.4.336-qemu-wrapper.patch;patchdir=v8 \
+ file://v8-6.8.14-qemu-wrapper.patch;patchdir=v8 \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
+ file://0001-IWYU-Include-algorithm-in-secure_display_link_tracke.patch \
+ file://0001-media-router-Fix-GCC-build-after-72d48c21c.patch \
+ file://0001-GCC-fix-initialization-of-a-flat_map-in-PDFComposito.patch \
 "

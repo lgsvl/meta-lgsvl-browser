@@ -1,0 +1,29 @@
+From 3c0e9ce0c54e426617c1998c97c77bc3da006a04 Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jose.dapena@lge.com>
+Date: Tue, 8 May 2018 09:55:28 +0200
+Subject: GCC: fix initialization of a flat_map in
+ PDFCompositorImpl::FrameContentInfo
+
+Another case where GCC fails to resolve the copy constructor of a flat_map.
+But assign copy does work.
+
+Change-Id: Ia3054c4971c9addbece456d0e12abec909ab0b95
+
+diff --git a/components/printing/service/pdf_compositor_impl.cc b/components/printing/service/pdf_compositor_impl.cc
+index c70ff3304566..3e4c08d88ea6 100644
+--- a/components/printing/service/pdf_compositor_impl.cc
++++ b/components/printing/service/pdf_compositor_impl.cc
+@@ -304,7 +304,9 @@ void PdfCompositorImpl::FulfillRequest(
+ PdfCompositorImpl::FrameContentInfo::FrameContentInfo(
+     std::unique_ptr<base::SharedMemory> content,
+     const ContentToFrameMap& map)
+-    : serialized_content(std::move(content)), subframe_content_map(map) {}
++    : serialized_content(std::move(content)) {
++  subframe_content_map = map;
++}
+ 
+ PdfCompositorImpl::FrameContentInfo::FrameContentInfo() {}
+ 
+-- 
+2.14.1
+
