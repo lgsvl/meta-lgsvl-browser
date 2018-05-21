@@ -1,0 +1,33 @@
+From 76f5c65a5de0a58fb19b40b246e5a7f86cbc2e45 Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jose.dapena@lge.com>
+Date: Fri, 11 May 2018 19:16:47 +0200
+Subject: [GCC] Do not mark as noexcept default declarations that are not
+ noexcept.
+
+Several noexcept have been added to construct and assign operators in
+component/ that are not really valid, as the implicit default implementation
+is not noexcept. Those need to be removed.
+
+Change-Id: I02f969e01e8f43abd00061b13a637701b3889bca
+
+diff --git a/components/viz/service/frame_sinks/video_capture/interprocess_frame_pool.cc b/components/viz/service/frame_sinks/video_capture/interprocess_frame_pool.cc
+index 383a616c7c17..cb888449836f 100644
+--- a/components/viz/service/frame_sinks/video_capture/interprocess_frame_pool.cc
++++ b/components/viz/service/frame_sinks/video_capture/interprocess_frame_pool.cc
+@@ -207,10 +207,10 @@ bool InterprocessFramePool::CanLogSharedMemoryFailure() {
+ }
+ 
+ InterprocessFramePool::PooledBuffer::PooledBuffer() = default;
+-InterprocessFramePool::PooledBuffer::PooledBuffer(
+-    PooledBuffer&& other) noexcept = default;
++InterprocessFramePool::PooledBuffer::PooledBuffer(PooledBuffer&& other) =
++    default;
+ InterprocessFramePool::PooledBuffer& InterprocessFramePool::PooledBuffer::
+-operator=(PooledBuffer&& other) noexcept = default;
++operator=(PooledBuffer&& other) = default;
+ InterprocessFramePool::PooledBuffer::~PooledBuffer() = default;
+ 
+ }  // namespace viz
+-- 
+2.14.1
+

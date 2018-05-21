@@ -1,0 +1,63 @@
+From 122692ccee62223f266a988c575ae687e3f4c056 Mon Sep 17 00:00:00 2001
+From: Wang Qing <wangqing-hf@loongson.cn>
+Date: Fri, 18 May 2018 11:20:09 +0000
+Subject: Remove noexcept from file
+ "components/search_provider_logos/logo_common.cc".
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This fixes the build error with the following message:
+
+        ../../components/search_provider_logos/logo_common.cc:17:15: error: function ‘search_provider_logos::LogoMetadata& search_provider_logos::LogoMetadata::operator=(search_provider_logos::LogoMetadata&&)’ defaulted on its redeclaration with an exception-specification that differs from the implicit exception-specification ‘’
+        LogoMetadata& LogoMetadata::operator=(LogoMetadata&&) noexcept = default;
+                   ^
+        ../../components/search_provider_logos/logo_common.cc:31:1: error: function ‘search_provider_logos::LogoCallbacks::LogoCallbacks(search_provider_logos::LogoCallbacks&&)’ defaulted on its redeclaration with an exception-specification that differs from the implicit exception-specification ‘’
+        LogoCallbacks::LogoCallbacks(LogoCallbacks&&) noexcept = default;
+        ^
+        ../../components/search_provider_logos/logo_common.cc:32:16: error: function ‘search_provider_logos::LogoCallbacks& search_provider_logos::LogoCallbacks::operator=(search_provider_logos::LogoCallbacks&&)’ defaulted on its redeclaration with an exception-specification that differs from the implicit exception-specification ‘’
+        LogoCallbacks& LogoCallbacks::operator=(LogoCallbacks&&) noexcept = default;
+
+BUG= 844355
+R= bauerb@chromium.org
+
+Change-Id: I084d0d22f8a2cc976f5f8b24a8c623cd38f86876
+Reviewed-on: https://chromium-review.googlesource.com/1065521
+Reviewed-by: Bernhard Bauer <bauerb@chromium.org>
+Commit-Queue: 汪 清 <wangqing-hf@loongson.cn>
+Cr-Commit-Position: refs/heads/master@{#559859}
+
+diff --git a/components/search_provider_logos/logo_common.cc b/components/search_provider_logos/logo_common.cc
+index 05aae77a8a8d..f0d2c674c505 100644
+--- a/components/search_provider_logos/logo_common.cc
++++ b/components/search_provider_logos/logo_common.cc
+@@ -14,22 +14,22 @@ LogoMetadata::LogoMetadata() = default;
+ LogoMetadata::LogoMetadata(const LogoMetadata&) = default;
+ LogoMetadata::LogoMetadata(LogoMetadata&&) noexcept = default;
+ LogoMetadata& LogoMetadata::operator=(const LogoMetadata&) = default;
+-LogoMetadata& LogoMetadata::operator=(LogoMetadata&&) noexcept = default;
++LogoMetadata& LogoMetadata::operator=(LogoMetadata&&) = default;
+ LogoMetadata::~LogoMetadata() = default;
+ 
+ EncodedLogo::EncodedLogo() = default;
+ EncodedLogo::EncodedLogo(const EncodedLogo&) = default;
+ EncodedLogo::EncodedLogo(EncodedLogo&&) noexcept = default;
+ EncodedLogo& EncodedLogo::operator=(const EncodedLogo&) = default;
+-EncodedLogo& EncodedLogo::operator=(EncodedLogo&&) noexcept = default;
++EncodedLogo& EncodedLogo::operator=(EncodedLogo&&) = default;
+ EncodedLogo::~EncodedLogo() = default;
+ 
+ Logo::Logo() = default;
+ Logo::~Logo() = default;
+ 
+ LogoCallbacks::LogoCallbacks() = default;
+-LogoCallbacks::LogoCallbacks(LogoCallbacks&&) noexcept = default;
+-LogoCallbacks& LogoCallbacks::operator=(LogoCallbacks&&) noexcept = default;
++LogoCallbacks::LogoCallbacks(LogoCallbacks&&) = default;
++LogoCallbacks& LogoCallbacks::operator=(LogoCallbacks&&) = default;
+ LogoCallbacks::~LogoCallbacks() = default;
+ 
+ }  // namespace search_provider_logos
+-- 
+2.14.1
+
