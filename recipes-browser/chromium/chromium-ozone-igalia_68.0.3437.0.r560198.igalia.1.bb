@@ -3,8 +3,8 @@ S = "${WORKDIR}/chromium-ozone-wayland-dev-${PV}"
 
 require chromium-ozone-igalia.inc
 
-SRC_URI[md5sum] = "e4b47bee79ce90bf57852c556ca7f53e"
-SRC_URI[sha256sum] = "db97792bbe112175112ef14bf1fb7193b63aa487a52dadffc782f6ecc79bc8ca"
+SRC_URI[md5sum] = "4f6cbeabcd329286b32d954090f049e5"
+SRC_URI[sha256sum] = "e7882613fdc4fb8b61768d32f605ad870de40c4a29fcc27c13ccca1f00a1f02d"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/buildtools/third_party/libunwind/trunk/LICENSE.TXT;md5=f1a6f38bb5a8dabe8e3ec33557112dc9 \
@@ -20,7 +20,7 @@ LIC_FILES_CHKSUM += "\
   file://${S}/third_party/freetype/src/docs/FTL.TXT;md5=9f37b4e6afa3fef9dba8932b16bd3f97 \
   file://${S}/third_party/google_toolbox_for_mac/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
   file://${S}/third_party/harfbuzz-ng/src/COPYING;md5=e021dd6dda6ff1e6b1044002fc662b9b \
-  file://${S}/third_party/icu/LICENSE;md5=675f2d069434d8a1e4e6b0dcf4379226 \
+  file://${S}/third_party/icu/LICENSE;md5=63752c57bd0b365c9af9f427ef79c819 \
   file://${S}/third_party/libpng/LICENSE;md5=c2adba923425f511c6087a7ca53270e6 \
   file://${S}/third_party/libsrtp/LICENSE;md5=2909fcf6f09ffff8430463d91c08c4e1\
   file://${S}/third_party/ots/LICENSE;md5=e06eff2aa65b917034a81599bea73dc4 \
