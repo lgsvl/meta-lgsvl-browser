@@ -23,6 +23,4 @@ LIC_FILES_CHKSUM += "\
 SRC_URI += " \
  file://v8-6.8.14-qemu-wrapper.patch;patchdir=v8 \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
- file://0001-Remove-noexcept-from-file-components-search_provider.patch \
- file://0001-GCC-Do-not-mark-as-noexcept-default-declarations-tha.patch \
 "
