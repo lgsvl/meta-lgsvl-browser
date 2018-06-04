@@ -3,8 +3,8 @@ S = "${WORKDIR}/chromium-ozone-wayland-dev-${PV}"
 
 require chromium-ozone-igalia.inc
 
-SRC_URI[md5sum] = "4f6cbeabcd329286b32d954090f049e5"
-SRC_URI[sha256sum] = "e7882613fdc4fb8b61768d32f605ad870de40c4a29fcc27c13ccca1f00a1f02d"
+SRC_URI[md5sum] = "bf85ec83761b6075bbc9a81b422ddaf7"
+SRC_URI[sha256sum] = "9c3c295b2c627a01291f0999253416b8e9c0d14e6fd8f10c8f24b796ce8cecaf"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/buildtools/third_party/libunwind/trunk/LICENSE.TXT;md5=f1a6f38bb5a8dabe8e3ec33557112dc9 \
@@ -33,4 +33,5 @@ LIC_FILES_CHKSUM += "\
 SRC_URI += " \
  file://v8-6.8.14-qemu-wrapper.patch;patchdir=v8 \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
+ file://0001-GCC-do-not-initialize-on-.h-template-url-ScopedObser.patch \
 "
