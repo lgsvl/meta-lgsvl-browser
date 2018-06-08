@@ -1,7 +1,7 @@
 require chromium-x11.inc
 
-SRC_URI[md5sum] = "49e52a9f283a1f3702325901de2dde21"
-SRC_URI[sha256sum] = "d8f8b0c69c86dfa5d65b54e9c3f4c1316143b45724369640d3da7aca30969538"
+SRC_URI[md5sum] = "826647640ebbe7646aa06080a2e83780"
+SRC_URI[sha256sum] = "5f758a55d4907ee4edf52019c52102e55f69d429b63ea53a2d7873aa4fbc8f29"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/third_party/angle/LICENSE;md5=7abdb66a6948f39c2f469140db5184e2 \
@@ -23,6 +23,4 @@ LIC_FILES_CHKSUM += "\
 SRC_URI += " \
  file://v8-6.8.14-qemu-wrapper.patch;patchdir=v8 \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
- file://0001-CORS-legacy-add-missing-string-include.patch \
- file://0001-GCC-do-not-std-move-unique-ptr-of-forward-declared-U.patch \
 "
