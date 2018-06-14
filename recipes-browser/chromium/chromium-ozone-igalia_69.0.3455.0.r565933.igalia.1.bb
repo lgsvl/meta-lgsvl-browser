@@ -3,8 +3,8 @@ S = "${WORKDIR}/chromium-ozone-wayland-dev-${PV}"
 
 require chromium-ozone-igalia.inc
 
-SRC_URI[md5sum] = "bf85ec83761b6075bbc9a81b422ddaf7"
-SRC_URI[sha256sum] = "9c3c295b2c627a01291f0999253416b8e9c0d14e6fd8f10c8f24b796ce8cecaf"
+SRC_URI[md5sum] = "2e174153820d66cf7e6a9bc36307539e"
+SRC_URI[sha256sum] = "d82ecd1f5961ba632f672636c4deb86f23ee0aae89cb3075aa0e5669990fda98"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/buildtools/third_party/libunwind/trunk/LICENSE.TXT;md5=f1a6f38bb5a8dabe8e3ec33557112dc9 \
@@ -25,6 +25,7 @@ LIC_FILES_CHKSUM += "\
   file://${S}/third_party/libsrtp/LICENSE;md5=2909fcf6f09ffff8430463d91c08c4e1\
   file://${S}/third_party/ots/LICENSE;md5=e06eff2aa65b917034a81599bea73dc4 \
   file://${S}/third_party/yasm/source/patched-yasm/COPYING;md5=a12d8903508fb6bfd49d8d82c6170dd9 \
+  file://${S}/third_party/vulkan/README.chromium;md5=f9e47cf7ee46165615c8631513ef13b8 \
   file://${S}/v8/third_party/inspector_protocol/LICENSE;md5=db90dcb101891a7285d25f2fbceca752 \
   file://${S}/v8/LICENSE;md5=bda6d3b7be87052ff181da3ed9fd5501 \
   file://${S}/v8/LICENSE.valgrind;md5=df3b3d49700e781f7508895abd114277 \
@@ -33,5 +34,4 @@ LIC_FILES_CHKSUM += "\
 SRC_URI += " \
  file://v8-6.8.14-qemu-wrapper.patch;patchdir=v8 \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
- file://0001-GCC-do-not-initialize-on-.h-template-url-ScopedObser.patch \
 "

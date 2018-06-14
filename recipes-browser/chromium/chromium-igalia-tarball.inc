@@ -142,7 +142,6 @@ LIC_FILES_CHKSUM = "\
     file://${S}/third_party/usb_ids/LICENSE;md5=8f694e3758e3e57a5223bfa2bf29d452 \
     file://${S}/third_party/usrsctp/LICENSE;md5=d8ad24c2ddd0e7bc1b0a6e4c7c80443e \
     file://${S}/third_party/v4l-utils/COPYING.libv4l;md5=d749e86a105281d7a44c2328acebc4b0 \
-    file://${S}/third_party/vulkan/LICENSE;md5=16f18dd21657bdb148361746fdcc49a0 \
     file://${S}/third_party/wayland-protocols/src/COPYING;md5=c7b12b6702da38ca028ace54aae3d484 \
     file://${S}/third_party/wayland/src/COPYING;md5=b31d8f53b6aaf2b4985d7dd7810a70d1 \
     file://${S}/third_party/wds/src/COPYING;md5=cb8aedd3bced19bd8026d96a8b6876d7 \
