@@ -1,7 +1,7 @@
 require chromium-x11.inc
 
-SRC_URI[md5sum] = "826647640ebbe7646aa06080a2e83780"
-SRC_URI[sha256sum] = "5f758a55d4907ee4edf52019c52102e55f69d429b63ea53a2d7873aa4fbc8f29"
+SRC_URI[md5sum] = "faa756e07b4a1a8bc27e9d99e445aa69"
+SRC_URI[sha256sum] = "1400efcdf5e704f013d53af881ab179cc71018a2bb981be409d5b4fa0828d905"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/third_party/angle/LICENSE;md5=7abdb66a6948f39c2f469140db5184e2 \
@@ -16,6 +16,7 @@ LIC_FILES_CHKSUM += "\
   file://${S}/third_party/libpng/LICENSE;md5=c2adba923425f511c6087a7ca53270e6 \
   file://${S}/third_party/libsrtp/LICENSE;md5=2909fcf6f09ffff8430463d91c08c4e1\
   file://${S}/third_party/ots/LICENSE;md5=e06eff2aa65b917034a81599bea73dc4 \
+  file://${S}/third_party/vulkan/README.chromium;md5=f9e47cf7ee46165615c8631513ef13b8 \
   file://${S}/third_party/yasm/source/patched-yasm/COPYING;md5=a12d8903508fb6bfd49d8d82c6170dd9 \
   file://${S}/v8/LICENSE;md5=bda6d3b7be87052ff181da3ed9fd5501 \
 "

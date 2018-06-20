@@ -16,6 +16,8 @@ LIC_FILES_CHKSUM += "\
   file://${S}/third_party/libpng/LICENSE;md5=c2adba923425f511c6087a7ca53270e6 \
   file://${S}/third_party/libsrtp/LICENSE;md5=2909fcf6f09ffff8430463d91c08c4e1\
   file://${S}/third_party/ots/LICENSE;md5=e06eff2aa65b917034a81599bea73dc4 \
+  file://${S}/third_party/shaderc/LICENSE;md5=86d3f3a95c324c9479bd8986968f4327 \
+  file://${S}/third_party/vulkan/LICENSE;md5=16f18dd21657bdb148361746fdcc49a0 \
   file://${S}/third_party/yasm/source/patched-yasm/COPYING;md5=a12d8903508fb6bfd49d8d82c6170dd9 \
   file://${S}/v8/LICENSE;md5=bda6d3b7be87052ff181da3ed9fd5501 \
 "
