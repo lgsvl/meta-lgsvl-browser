@@ -1,7 +1,7 @@
 require chromium-x11.inc
 
-SRC_URI[md5sum] = "64543121c3b736889102ccd0077dc734"
-SRC_URI[sha256sum] = "bfdf0e2924c278c72553ec441df0e6cbc949f7a94ac8fed1cad94872756cd0c9"
+SRC_URI[md5sum] = "32065d3b874bd8709b6c1c415a96fae6"
+SRC_URI[sha256sum] = "d3f963d8790e2c86a1fec1c9725a854b2b35720cb3635bb679703023a2f26d59"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/third_party/angle/LICENSE;md5=7abdb66a6948f39c2f469140db5184e2 \
