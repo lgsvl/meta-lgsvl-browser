@@ -3,8 +3,8 @@ S = "${WORKDIR}/chromium-ozone-wayland-dev-${PV}"
 
 require chromium-ozone-igalia.inc
 
-SRC_URI[md5sum] = "2e174153820d66cf7e6a9bc36307539e"
-SRC_URI[sha256sum] = "d82ecd1f5961ba632f672636c4deb86f23ee0aae89cb3075aa0e5669990fda98"
+SRC_URI[md5sum] = "ddf583957f57b0f57c7d7835ec593d67"
+SRC_URI[sha256sum] = "999a6e56ecc5bcc9414ceafe5c066bf7055f1fc7d56392b81fcbb66b96eee316"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/buildtools/third_party/libunwind/trunk/LICENSE.TXT;md5=f1a6f38bb5a8dabe8e3ec33557112dc9 \
@@ -16,7 +16,7 @@ LIC_FILES_CHKSUM += "\
   file://${S}/third_party/boringssl/src/LICENSE;md5=9b082148f9953258347788edb83e401b \
   file://${S}/third_party/breakpad/LICENSE;md5=828152b41153892a725f0e7f56faff73 \
   file://${S}/third_party/expat/files/COPYING;md5=5b8620d98e49772d95fc1d291c26aa79 \
-  file://${S}/third_party/ffmpeg/CREDITS.chromium;md5=fc70a2842a197fbb05a1fd3a90b47148 \
+  file://${S}/third_party/ffmpeg/CREDITS.chromium;md5=ccd691316e9b2fd436cd55b6347bb6c8 \
   file://${S}/third_party/freetype/src/docs/FTL.TXT;md5=9f37b4e6afa3fef9dba8932b16bd3f97 \
   file://${S}/third_party/google_toolbox_for_mac/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
   file://${S}/third_party/harfbuzz-ng/src/COPYING;md5=e021dd6dda6ff1e6b1044002fc662b9b \
@@ -34,4 +34,5 @@ LIC_FILES_CHKSUM += "\
 SRC_URI += " \
  file://v8-6.8.14-qemu-wrapper.patch;patchdir=v8 \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
+ file://0001-linux-fix-ARM-snapshot-context-traits-build.patch;patchdir=third_party/crashpad/crashpad \
 "

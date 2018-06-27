@@ -128,7 +128,6 @@ LIC_FILES_CHKSUM = "\
     file://${S}/third_party/qcms/src/COPYING;md5=65636fa951328d3be95f6047ec3936ce \
     file://${S}/third_party/re2/LICENSE;md5=3b5c31eb512bdf3cb11ffd5713963760 \
     file://${S}/third_party/sfntly/COPYING.txt;md5=2326ae5ca22e299a528433bebb02131f \
-    file://${S}/third_party/shaderc/LICENSE;md5=86d3f3a95c324c9479bd8986968f4327 \
     file://${S}/third_party/simplejson/LICENSE.txt;md5=8a9f8dcfcd28c34daa443e5b1d29813b \
     file://${S}/third_party/skia/LICENSE;md5=d25bb58a1be2e1af9b58d31565a206dc \
     file://${S}/third_party/smhasher/LICENSE;md5=0d948322ab524e2b74f55eb8ef57c74a \
