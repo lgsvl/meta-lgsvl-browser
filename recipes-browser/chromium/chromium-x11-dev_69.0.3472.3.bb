@@ -1,14 +1,14 @@
 require chromium-x11.inc
 
-SRC_URI[md5sum] = "faa756e07b4a1a8bc27e9d99e445aa69"
-SRC_URI[sha256sum] = "1400efcdf5e704f013d53af881ab179cc71018a2bb981be409d5b4fa0828d905"
+SRC_URI[md5sum] = "36ba9a03e15e8d79f59df07b4db70c39"
+SRC_URI[sha256sum] = "781a9a682aa8f3475b354b7339cd6e45946dddc3948c0220588bd5d5c177ba76"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/third_party/angle/LICENSE;md5=7abdb66a6948f39c2f469140db5184e2 \
   file://${S}/third_party/boringssl/src/LICENSE;md5=9b082148f9953258347788edb83e401b \
   file://${S}/third_party/breakpad/LICENSE;md5=828152b41153892a725f0e7f56faff73 \
   file://${S}/third_party/expat/files/COPYING;md5=5b8620d98e49772d95fc1d291c26aa79 \
-  file://${S}/third_party/ffmpeg/CREDITS.chromium;md5=fc70a2842a197fbb05a1fd3a90b47148 \
+  file://${S}/third_party/ffmpeg/CREDITS.chromium;md5=ccd691316e9b2fd436cd55b6347bb6c8 \
   file://${S}/third_party/freetype/src/docs/FTL.TXT;md5=9f37b4e6afa3fef9dba8932b16bd3f97 \
   file://${S}/third_party/google_toolbox_for_mac/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
   file://${S}/third_party/harfbuzz-ng/src/COPYING;md5=e021dd6dda6ff1e6b1044002fc662b9b \
@@ -24,4 +24,5 @@ LIC_FILES_CHKSUM += "\
 SRC_URI += " \
  file://v8-6.8.14-qemu-wrapper.patch;patchdir=v8 \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
+ file://0001-linux-fix-ARM-snapshot-context-traits-build.patch;patchdir=third_party/crashpad/crashpad \
 "
