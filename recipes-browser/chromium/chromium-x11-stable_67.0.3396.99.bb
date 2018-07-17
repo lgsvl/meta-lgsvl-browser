@@ -1,7 +1,7 @@
 require chromium-x11.inc
 
-SRC_URI[md5sum] = "a19ddf977e200de3a94021ab6fc90e14"
-SRC_URI[sha256sum] = "20878f16f9e7394f4f38cda11ffc35d3098ffc3e230f34a135aaf8b6502d839c"
+SRC_URI[md5sum] = "d6e6be3225bbf559797f37579dc56ea4"
+SRC_URI[sha256sum] = "452d6b9d8df6c88600aaeff3fad4c065574fd6dbee804e628b70e73a39c0a02a"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/third_party/angle/LICENSE;md5=7abdb66a6948f39c2f469140db5184e2 \
@@ -12,7 +12,7 @@ LIC_FILES_CHKSUM += "\
   file://${S}/third_party/freetype/src/docs/FTL.TXT;md5=9f37b4e6afa3fef9dba8932b16bd3f97 \
   file://${S}/third_party/google_toolbox_for_mac/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
   file://${S}/third_party/harfbuzz-ng/src/COPYING;md5=e021dd6dda6ff1e6b1044002fc662b9b \
-  file://${S}/third_party/icu/LICENSE;md5=63752c57bd0b365c9af9f427ef79c819 \
+  file://${S}/third_party/icu/LICENSE;md5=675f2d069434d8a1e4e6b0dcf4379226 \
   file://${S}/third_party/libpng/LICENSE;md5=c2adba923425f511c6087a7ca53270e6 \
   file://${S}/third_party/libsrtp/LICENSE;md5=2909fcf6f09ffff8430463d91c08c4e1\
   file://${S}/third_party/ots/LICENSE;md5=e06eff2aa65b917034a81599bea73dc4 \
@@ -23,8 +23,6 @@ LIC_FILES_CHKSUM += "\
 "
 
 SRC_URI += " \
- file://v8-6.8.14-qemu-wrapper.patch;patchdir=v8 \
+ file://v8-6.4.336-qemu-wrapper.patch;patchdir=v8 \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
- file://0001-CORS-legacy-add-missing-string-include.patch \
- file://0001-GCC-do-not-std-move-unique-ptr-of-forward-declared-U.patch \
 "
