@@ -30,7 +30,6 @@ LIC_FILES_CHKSUM = "\
     file://${S}/buildtools/third_party/libc++abi/trunk/LICENSE.TXT;md5=8ae94dd6195890583eee15a988b6ea79 \
     file://${S}/chrome/installer/mac/third_party/bsdiff/LICENSE;md5=0dbe7a50f028269750631fcbded3846a \
     file://${S}/chrome/installer/mac/third_party/xz/LICENSE;md5=8bbde65ae0523dc878ed1ac1252d2d14 \
-    file://${S}/chrome/third_party/chromevox/LICENSE;md5=45739090b454125d851ac7bb1bbd23a2 \
     file://${S}/chrome/third_party/mozilla_security_manager/LICENSE;md5=0c259b853bbf067b361100ce560adce7 \
     file://${S}/chromeos/third_party/android_bionic_libc/NOTICE;md5=323acddf0a0970d8ad7a7af3ba745f67 \
     file://${S}/courgette/third_party/bsdiff/LICENCE;md5=7c2ad392281bc3d9b04a31102ee7abdd \

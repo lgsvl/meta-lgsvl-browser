@@ -1,12 +1,13 @@
 require chromium-x11.inc
 
-SRC_URI[md5sum] = "36ba9a03e15e8d79f59df07b4db70c39"
-SRC_URI[sha256sum] = "781a9a682aa8f3475b354b7339cd6e45946dddc3948c0220588bd5d5c177ba76"
+SRC_URI[md5sum] = "ecaca3de0dc07c332e6b30a1a42adf10"
+SRC_URI[sha256sum] = "6faa7f91e1c5850cbe19d02e73130125341ae32f544b9210947a44358270f2be"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/third_party/angle/LICENSE;md5=7abdb66a6948f39c2f469140db5184e2 \
   file://${S}/third_party/boringssl/src/LICENSE;md5=9b082148f9953258347788edb83e401b \
   file://${S}/third_party/breakpad/LICENSE;md5=828152b41153892a725f0e7f56faff73 \
+  file://${S}/third_party/chromevox/LICENSE;md5=45739090b454125d851ac7bb1bbd23a2 \
   file://${S}/third_party/expat/files/COPYING;md5=5b8620d98e49772d95fc1d291c26aa79 \
   file://${S}/third_party/ffmpeg/CREDITS.chromium;md5=ccd691316e9b2fd436cd55b6347bb6c8 \
   file://${S}/third_party/freetype/src/docs/FTL.TXT;md5=9f37b4e6afa3fef9dba8932b16bd3f97 \
@@ -25,4 +26,5 @@ SRC_URI += " \
  file://v8-6.8.14-qemu-wrapper.patch;patchdir=v8 \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
  file://0001-linux-fix-ARM-snapshot-context-traits-build.patch;patchdir=third_party/crashpad/crashpad \
+ file://0001-IWYU-Add-cmath-for-fabsf-and-powf-switch-to-C-versio.patch;patchdir=third_party/webrtc \
 "

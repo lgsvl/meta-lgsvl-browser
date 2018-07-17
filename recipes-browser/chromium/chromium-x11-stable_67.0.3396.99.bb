@@ -4,6 +4,7 @@ SRC_URI[md5sum] = "d6e6be3225bbf559797f37579dc56ea4"
 SRC_URI[sha256sum] = "452d6b9d8df6c88600aaeff3fad4c065574fd6dbee804e628b70e73a39c0a02a"
 
 LIC_FILES_CHKSUM += "\
+  file://${S}/chrome/third_party/chromevox/LICENSE;md5=45739090b454125d851ac7bb1bbd23a2 \
   file://${S}/third_party/angle/LICENSE;md5=7abdb66a6948f39c2f469140db5184e2 \
   file://${S}/third_party/boringssl/src/LICENSE;md5=9b082148f9953258347788edb83e401b \
   file://${S}/third_party/breakpad/LICENSE;md5=828152b41153892a725f0e7f56faff73 \
