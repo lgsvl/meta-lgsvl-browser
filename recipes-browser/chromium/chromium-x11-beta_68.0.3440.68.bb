@@ -1,7 +1,7 @@
 require chromium-x11.inc
 
-SRC_URI[md5sum] = "a70c74bebd291de312b12f0b018d12fe"
-SRC_URI[sha256sum] = "64397bb318a6e61828b7f0100abf3fb20c80ad98555dd0662fb8f92ac0530255"
+SRC_URI[md5sum] = "d14a0f73fd5ec2d619d3c806c68f11e2"
+SRC_URI[sha256sum] = "a7b42e60f512581c2ed95bc3ef0f33d956386fdea17735ffebf1f92c4dfa7aa4"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/chrome/third_party/chromevox/LICENSE;md5=45739090b454125d851ac7bb1bbd23a2 \
