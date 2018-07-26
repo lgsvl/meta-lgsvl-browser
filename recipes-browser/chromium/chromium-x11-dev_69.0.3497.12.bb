@@ -1,7 +1,7 @@
 require chromium-x11.inc
 
-SRC_URI[md5sum] = "ecaca3de0dc07c332e6b30a1a42adf10"
-SRC_URI[sha256sum] = "6faa7f91e1c5850cbe19d02e73130125341ae32f544b9210947a44358270f2be"
+SRC_URI[md5sum] = "f0273050c0dc1136da406457b1e9352a"
+SRC_URI[sha256sum] = "9bcdec32fc570e83ba9b12ecc74e67d13b024a58113e6d28668ba52aa8c55480"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/third_party/angle/LICENSE;md5=7abdb66a6948f39c2f469140db5184e2 \
@@ -25,6 +25,4 @@ LIC_FILES_CHKSUM += "\
 SRC_URI += " \
  file://v8-6.8.14-qemu-wrapper.patch;patchdir=v8 \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
- file://0001-linux-fix-ARM-snapshot-context-traits-build.patch;patchdir=third_party/crashpad/crashpad \
- file://0001-IWYU-Add-cmath-for-fabsf-and-powf-switch-to-C-versio.patch;patchdir=third_party/webrtc \
 "
