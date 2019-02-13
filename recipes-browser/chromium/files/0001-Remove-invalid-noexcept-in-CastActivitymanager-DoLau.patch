@@ -1,0 +1,24 @@
+From 0d983c9a019a72f4464c6a92cd8f44ce6fca620a Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jose.dapena@lge.com>
+Date: Tue, 12 Feb 2019 21:52:01 +0100
+Subject: Remove invalid noexcept in
+ CastActivitymanager::DoLaunchSessionParams.
+
+Fixes GCC build.
+
+diff --git a/chrome/browser/media/router/providers/cast/cast_activity_manager.cc b/chrome/browser/media/router/providers/cast/cast_activity_manager.cc
+index 5c72abe4f08d..5e30c24d2279 100644
+--- a/chrome/browser/media/router/providers/cast/cast_activity_manager.cc
++++ b/chrome/browser/media/router/providers/cast/cast_activity_manager.cc
+@@ -803,7 +803,7 @@ CastActivityManager::DoLaunchSessionParams::DoLaunchSessionParams(
+       callback(std::move(callback)) {}
+ 
+ CastActivityManager::DoLaunchSessionParams::DoLaunchSessionParams(
+-    DoLaunchSessionParams&& other) noexcept = default;
++    DoLaunchSessionParams&& other) = default;
+ 
+ CastActivityManager::DoLaunchSessionParams::~DoLaunchSessionParams() = default;
+ 
+-- 
+2.17.1
+

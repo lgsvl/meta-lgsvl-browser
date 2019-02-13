@@ -1,0 +1,37 @@
+From 152aa8d1f9039b2ac61339bcd8d8f6030ffbcea7 Mon Sep 17 00:00:00 2001
+From: Maksim Sisov <msisov@igalia.com>
+Date: Tue, 5 Feb 2019 08:33:45 +0200
+Subject: Add missing limits header to crashpad.
+
+This patch fixes the following error:
+
+../../third_party/crashpad/crashpad/snapshot/linux/cpu_context_linux.cc:246:12: error: 'numeric_limits' is not a member of 'std'
+       std::numeric_limits<decltype(context->spsr)>::max()) {
+            ^~~~~~~~~~~~~~
+../../third_party/crashpad/crashpad/snapshot/linux/cpu_context_linux.cc:246:27: error: expected primary-expression before 'decltype'
+       std::numeric_limits<decltype(context->spsr)>::max()) {
+                           ^~~~~~~~
+../../third_party/crashpad/crashpad/snapshot/linux/cpu_context_linux.cc:246:27: error: expected ')' before 'decltype'
+
+Bug: chromium:819294
+Change-Id: I4f31a33fcdae9567c71a4d371d2e6afe68d2ef6a
+Reviewed-on: https://chromium-review.googlesource.com/c/1454376
+Commit-Queue: Maksim Sisov <msisov@igalia.com>
+Reviewed-by: Joshua Peraza <jperaza@chromium.org>
+
+diff --git a/snapshot/linux/cpu_context_linux.cc b/snapshot/linux/cpu_context_linux.cc
+index 6ba52a8d..8464a5a2 100644
+--- a/snapshot/linux/cpu_context_linux.cc
++++ b/snapshot/linux/cpu_context_linux.cc
+@@ -17,6 +17,8 @@
+ #include <stddef.h>
+ #include <string.h>
+ 
++#include <limits>
++
+ #include "base/logging.h"
+ 
+ namespace crashpad {
+-- 
+2.17.1
+
