@@ -4,18 +4,25 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=0fca02217a5d49a14dfe2d11837bb34d"
 
 DEPENDS = "python-native ninja-native"
 
-SRC_URI = "http://gsdview.appspot.com/chromium-browser-official/chromium-${PV}.tar.xz"
+SRC_URI = "git://gn.googlesource.com/gn;procotol=https"
 
-S ?= "${WORKDIR}/chromium-${PV}"
+S = "${WORKDIR}/git"
+B = "${WORKDIR}/build"
+
+do_configure () {
+  cd ${S}
+  echo ${S}
+  python build/gen.py --out-path=${B}
+}
 
 do_compile () {
-  cd ${S}/tools/gn
-  ./bootstrap/bootstrap.py -s
+  echo
+  ninja -C ${B}
 }
 
 do_install () {
   install -d ${D}${bindir}
-  install -m 0755 out/Release/gn ${D}${bindir}/gn
+  install -m 0755 ${B}/gn ${D}${bindir}/gn
 }
 
 BBCLASSEXTEND = "native nativesdk"
