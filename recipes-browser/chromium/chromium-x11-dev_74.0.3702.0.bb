@@ -37,4 +37,5 @@ SRC_URI += " \
  file://0001-IWYU-ExtensionRegistry-in-BookmarkAppTabHelper.patch \
  file://0001-GCC-fix-canvas2d-rendering-context-type-conversion.patch \
  file://0001-FileSystemURL.-do-not-declare-noexcept-in-move-const.patch \
+ file://0001-NEON-do-not-use-certain-calls-that-would-break-GCC-b.patch;patchdir=third_party/skia \
 "
