@@ -1,7 +1,7 @@
 require chromium-x11.inc
 
-SRC_URI[md5sum] = "b179cce32bd0e6ab1472ac1cb1046839"
-SRC_URI[sha256sum] = "67ad09b7b523a95416837783c169abc0b1c45b8dc0fd239bf603a0fd0b87dffb"
+SRC_URI[md5sum] = "5b807cf475da3eb3223db1ce8e38b9d2"
+SRC_URI[sha256sum] = "051be2a879f09ee56693ee01788280dea639e668b8b1224af29a4f7892be264a"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/buildtools/third_party/libc++abi/trunk/LICENSE.TXT;md5=3600117b7c18121ab04c53e4615dc36e \
@@ -32,10 +32,5 @@ SRC_URI += " \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
  file://0001-zlib-GCC-Disable-CRC32-optimizations-on-ARM.patch \
  file://0001-Add-missing-limits-header-to-crashpad.patch;patchdir=third_party/crashpad/crashpad \
- file://0001-IceTransportWithTransportChannel-Initialize-thread_c.patch;patchdir=third_party/webrtc \
- file://0001-Remove-invalid-noexcept-in-CastActivitymanager-DoLau.patch \
- file://0001-IWYU-ExtensionRegistry-in-BookmarkAppTabHelper.patch \
- file://0001-GCC-fix-canvas2d-rendering-context-type-conversion.patch \
- file://0001-FileSystemURL.-do-not-declare-noexcept-in-move-const.patch \
  file://0001-NEON-do-not-use-certain-calls-that-would-break-GCC-b.patch;patchdir=third_party/skia \
 "
