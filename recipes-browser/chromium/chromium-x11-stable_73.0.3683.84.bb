@@ -4,6 +4,7 @@ SRC_URI[md5sum] = "74e42765acded5bba232b65b2be1e704"
 SRC_URI[sha256sum] = "1594c8d45529132bac0c46e482fbb5eb185b3afd421a71f463eefd17999458c1"
 
 LIC_FILES_CHKSUM += "\
+  file://${S}/buildtools/third_party/libc++/trunk/LICENSE.TXT;md5=7b3a0e1b99822669d630011defe9bfd9 \
   file://${S}/buildtools/third_party/libc++abi/trunk/LICENSE.TXT;md5=3600117b7c18121ab04c53e4615dc36e \
   file://${S}/third_party/SPIRV-Tools/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
   file://${S}/third_party/angle/LICENSE;md5=7abdb66a6948f39c2f469140db5184e2 \
@@ -23,6 +24,7 @@ LIC_FILES_CHKSUM += "\
   file://${S}/third_party/ots/LICENSE;md5=e06eff2aa65b917034a81599bea73dc4 \
   file://${S}/third_party/protobuf/LICENSE;md5=37b5762e07f0af8c74ce80a8bda4266b \
   file://${S}/third_party/shaderc/src/LICENSE;md5=86d3f3a95c324c9479bd8986968f4327 \
+  file://${S}/third_party/yara/src/COPYING;md5=541962f9dacf27c928f57e3a7ba9e1f2 \
   file://${S}/third_party/yasm/source/patched-yasm/COPYING;md5=a12d8903508fb6bfd49d8d82c6170dd9 \
   file://${S}/v8/LICENSE;md5=bda6d3b7be87052ff181da3ed9fd5501 \
 "

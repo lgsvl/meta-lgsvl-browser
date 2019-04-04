@@ -1,0 +1,32 @@
+From 154fe203deb4c77d9ee21960591f655218614b5b Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jose.dapena@lge.com>
+Date: Thu, 4 Apr 2019 14:04:30 +0200
+Subject: crc32c: reenable crc and crypto extensions to arm64 crc32c build
+
+The commit "Fix a problem where crc32c not built on ARM64 on Chrome OS"
+introduces a regression on GCC build, as it will not enable the aarch64
+feature modifiers crc and crypto anymore.
+
+This change keeps clang implementation using the target feature
+extensions, but keeps the old implementation for GCC.
+
+BUG=chromium:819294
+
+Change-Id: I343ba9587e0356ecdab2ed95513d6d58feb5e75e
+
+diff --git a/third_party/crc32c/BUILD.gn b/third_party/crc32c/BUILD.gn
+index 963a3c08cbf3..db9f98dfcad5 100644
+--- a/third_party/crc32c/BUILD.gn
++++ b/third_party/crc32c/BUILD.gn
+@@ -129,6 +129,8 @@ source_set("crc32c_arm64") {
+         "-Xclang",
+         "+crypto",
+       ]
++    } else {
++      cflags = [ "-march=armv8-a+crc+crypto" ]
+     }
+   }
+ 
+-- 
+2.19.1
+

@@ -1,10 +1,11 @@
 require chromium-x11.inc
 
-SRC_URI[md5sum] = "95a0412c46b753236756ba70f3df9757"
-SRC_URI[sha256sum] = "91875316aa6d359386b2da454563e0ce60ede3dfea19249242fab19e9411a43d"
+SRC_URI[md5sum] = "151993e6124d09546f4c1ec35b5ece4d"
+SRC_URI[sha256sum] = "44b10a92638db9958ee9c75741784b72584529f59132711c32f3395d1ea5e8f7"
 
 LIC_FILES_CHKSUM += "\
-  file://${S}/buildtools/third_party/libc++abi/trunk/LICENSE.TXT;md5=3600117b7c18121ab04c53e4615dc36e \
+  file://${S}/buildtools/third_party/libc++/trunk/LICENSE.TXT;md5=55d89dd7eec8d3b4204b680e27da3953 \
+  file://${S}/buildtools/third_party/libc++abi/trunk/LICENSE.TXT;md5=7b9334635b542c56868400a46b272b1e \
   file://${S}/third_party/SPIRV-Tools/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
   file://${S}/third_party/angle/LICENSE;md5=7abdb66a6948f39c2f469140db5184e2 \
   file://${S}/third_party/blink/LICENSE_FOR_ABOUT_CREDITS;md5=11e90d553b211de885f245900c4ccf89 \
@@ -13,7 +14,7 @@ LIC_FILES_CHKSUM += "\
   file://${S}/third_party/chromevox/LICENSE;md5=45739090b454125d851ac7bb1bbd23a2 \
   file://${S}/third_party/d3/src/LICENSE;md5=0679931d76eb2f1dd1915249da84a722 \
   file://${S}/third_party/expat/files/COPYING;md5=5b8620d98e49772d95fc1d291c26aa79 \
-  file://${S}/third_party/ffmpeg/CREDITS.chromium;md5=005e77d67b51bc0b90c80d469d5e7a0e \
+  file://${S}/third_party/ffmpeg/CREDITS.chromium;md5=a8aee8de6dd702fa798fa8c7b6812a58 \
   file://${S}/third_party/freetype/src/docs/FTL.TXT;md5=9f37b4e6afa3fef9dba8932b16bd3f97 \
   file://${S}/third_party/google_toolbox_for_mac/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
   file://${S}/third_party/harfbuzz-ng/src/COPYING;md5=e021dd6dda6ff1e6b1044002fc662b9b \
@@ -30,12 +31,10 @@ LIC_FILES_CHKSUM += "\
 SRC_URI += " \
  file://0001-Wrap-mksnapshot-and-torque-calls-on-Yocto-building-w.patch;patchdir=v8 \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
- file://0001-allocator-shim-Swap-ALIGN_LINKAGE-and-SHIM_ALWAYS_EX.patch \
- file://0001-media-learning-Make-LabelledExample-s-move-assignmen.patch \
- file://0001-Add-missing-limits-header-to-crashpad.patch;patchdir=third_party/crashpad/crashpad \
- file://0001-color_utils-Use-std-sqrt-instead-of-std-sqrtf.patch \
- file://0001-quic_flags_impl-Fix-GCC-build-after-618558.patch \
- file://0001-Remove-invalid-noexcept-in-CastActivitymanager-DoLau.patch \
- file://0001-GCC-fix-canvas2d-rendering-context-type-conversion.patch \
  file://0001-zlib-GCC-Disable-CRC32-optimizations-on-ARM.patch \
+ file://0001-Add-missing-limits-header-to-crashpad.patch;patchdir=third_party/crashpad/crashpad \
+ file://0001-NEON-do-not-use-certain-calls-that-would-break-GCC-b.patch;patchdir=third_party/skia \
+ file://0001-Revert-base-Reduce-base-Value-size.patch \
+ file://0001-GCC-do-not-delete-move-constructor-of-QuicStreamSend.patch;patchdir=net/third_party \
+ file://0001-crc32c-reenable-crc-and-crypto-extensions-to-arm64-c.patch \
 "

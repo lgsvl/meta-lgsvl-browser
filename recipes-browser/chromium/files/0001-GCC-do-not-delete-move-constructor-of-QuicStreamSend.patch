@@ -1,0 +1,27 @@
+From afbccf8a2e57b2be32657afc52f3ec2bf4e4544e Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jose.dapena@lge.com>
+Date: Wed, 3 Apr 2019 17:49:32 +0200
+Subject: GCC: do not delete move constructor of QuicStreamSendBuffer
+
+QuicStreamSendBuffer constructor is implicitely required in the
+initialization of the vector of substreams in QuicCryptoStream.
+Though clang apparently ignores that, GCC fails to build.
+
+BUG=chromium:819294
+
+diff --git a/quic/core/quic_stream_send_buffer.h b/quic/core/quic_stream_send_buffer.h
+index e34514b..74e9d0d 100644
+--- a/quic/core/quic_stream_send_buffer.h
++++ b/quic/core/quic_stream_send_buffer.h
+@@ -62,7 +62,7 @@ class QUIC_EXPORT_PRIVATE QuicStreamSendBuffer {
+  public:
+   explicit QuicStreamSendBuffer(QuicBufferAllocator* allocator);
+   QuicStreamSendBuffer(const QuicStreamSendBuffer& other) = delete;
+-  QuicStreamSendBuffer(QuicStreamSendBuffer&& other) = delete;
++  QuicStreamSendBuffer(QuicStreamSendBuffer&& other) = default;
+   ~QuicStreamSendBuffer();
+ 
+   // Save |data_length| of data starts at |iov_offset| in |iov| to send buffer.
+-- 
+2.19.1
+
