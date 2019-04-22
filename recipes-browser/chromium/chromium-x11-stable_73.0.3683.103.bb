@@ -1,7 +1,7 @@
 require chromium-x11.inc
 
-SRC_URI[md5sum] = "74e42765acded5bba232b65b2be1e704"
-SRC_URI[sha256sum] = "1594c8d45529132bac0c46e482fbb5eb185b3afd421a71f463eefd17999458c1"
+SRC_URI[md5sum] = "6614c55c213b9348ce7f4d072fe0a848"
+SRC_URI[sha256sum] = "eb02c419de98bb8849fd0a37a3e7bbb813938c37e3d6b2c2526df3e84f9653af"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/buildtools/third_party/libc++/trunk/LICENSE.TXT;md5=7b3a0e1b99822669d630011defe9bfd9 \
