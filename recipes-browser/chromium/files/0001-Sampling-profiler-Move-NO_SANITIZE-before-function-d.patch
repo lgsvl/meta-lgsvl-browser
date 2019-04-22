@@ -1,0 +1,42 @@
+From 41d02ea63b9b773b1386d883803da6662f38f1dc Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jose.dapena@lge.com>
+Date: Wed, 3 Apr 2019 17:32:44 +0000
+Subject: [Sampling profiler] Move NO_SANITIZE before function declaration
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The compiler attribute declarations should not be added after declaration
+in a function declared with implementation. So move NO_SANITIZE to the
+prefix of the declaration.
+
+This fixes a GCC build breakage.
+
+BUG=chromium:819294
+
+Change-Id: I84ca746e3c4f36b4c44fa2a09e3b0578d2ee6e1f
+Reviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/1550364
+Commit-Queue: José Dapena Paz <jose.dapena@lge.com>
+Reviewed-by: Mike Wittman <wittman@chromium.org>
+Cr-Commit-Position: refs/heads/master@{#647353}
+
+diff --git a/base/profiler/stack_sampler_impl.cc b/base/profiler/stack_sampler_impl.cc
+index f89be3c00682..aa7ef257eb85 100644
+--- a/base/profiler/stack_sampler_impl.cc
++++ b/base/profiler/stack_sampler_impl.cc
+@@ -57,10 +57,10 @@ uintptr_t RewritePointerIfInOriginalStack(
+ // NO HEAP ALLOCATIONS.
+ //
+ // static
++NO_SANITIZE("address")
+ void CopyStackContentsAndRewritePointers(const uintptr_t* original_stack_bottom,
+                                          const uintptr_t* original_stack_top,
+-                                         uintptr_t* stack_copy_bottom)
+-    NO_SANITIZE("address") {
++                                         uintptr_t* stack_copy_bottom) {
+   const uintptr_t* src = original_stack_bottom;
+   uintptr_t* dst = stack_copy_bottom;
+   for (; src < original_stack_top; ++src, ++dst) {
+-- 
+2.19.1
+

@@ -1,0 +1,28 @@
+From c13fc37ff350136e69f6b7c6bc64e80f20ce3641 Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jose.dapena@lge.com>
+Date: Thu, 4 Apr 2019 20:33:47 +0200
+Subject: GCC: replace sequence_checker.h __has_feature with HAS_FEATURE
+
+__has_feature is not available in GCC (and that is the reason why
+we have HAS_FEATURE macro). So use HAS_FEATURE instead.
+
+BUG=chromium:819294
+
+Change-Id: I41923ff93a69107b160a5f1a5eb4c3056d53300d
+
+diff --git a/base/sequence_checker.h b/base/sequence_checker.h
+index 81e74a631f5f..e2ce10f0c535 100644
+--- a/base/sequence_checker.h
++++ b/base/sequence_checker.h
+@@ -55,7 +55,7 @@
+   DCHECK((name).CalledOnValidSequence())
+ #define DETACH_FROM_SEQUENCE(name) (name).DetachFromSequence()
+ #else  // DCHECK_IS_ON()
+-#if __OBJC__ && defined(OS_IOS) && !__has_feature(objc_cxx_static_assert)
++#if __OBJC__ && defined(OS_IOS) && !HAS_FEATURE(objc_cxx_static_assert)
+ // TODO(thakis): Remove this branch once Xcode's clang has clang r356148.
+ #define SEQUENCE_CHECKER(name)
+ #else
+-- 
+2.19.1
+

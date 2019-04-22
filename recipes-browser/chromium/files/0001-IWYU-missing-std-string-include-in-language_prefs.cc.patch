@@ -1,0 +1,22 @@
+From 55e233a61d49a5a4572f4b1938f38b97409c1a0c Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jose.dapena@lge.com>
+Date: Thu, 4 Apr 2019 22:26:57 +0200
+Subject: IWYU: missing std::string include in language_prefs.cc
+
+Change-Id: Ieaf04ba7fc2cbeabbc91d366c518cab6e8f8f9fc
+
+diff --git a/components/language/core/browser/language_prefs.cc b/components/language/core/browser/language_prefs.cc
+index df258ca62acf..41ef9d0d679f 100644
+--- a/components/language/core/browser/language_prefs.cc
++++ b/components/language/core/browser/language_prefs.cc
+@@ -6,6 +6,7 @@
+ 
+ #include <algorithm>
+ #include <set>
++#include <string>
+ #include <utility>
+ #include <vector>
+ 
+-- 
+2.19.1
+

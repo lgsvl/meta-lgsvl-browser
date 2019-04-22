@@ -15,6 +15,7 @@ LIC_FILES_CHKSUM += "\
   file://${S}/third_party/d3/src/LICENSE;md5=0679931d76eb2f1dd1915249da84a722 \
   file://${S}/third_party/expat/files/COPYING;md5=5b8620d98e49772d95fc1d291c26aa79 \
   file://${S}/third_party/ffmpeg/CREDITS.chromium;md5=a8aee8de6dd702fa798fa8c7b6812a58 \
+  file://${S}/third_party/fips181/COPYING;md5=da26b18c1a03a3cae0abccae554029c6 \
   file://${S}/third_party/freetype/src/docs/FTL.TXT;md5=9f37b4e6afa3fef9dba8932b16bd3f97 \
   file://${S}/third_party/google_toolbox_for_mac/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
   file://${S}/third_party/harfbuzz-ng/src/COPYING;md5=e021dd6dda6ff1e6b1044002fc662b9b \

@@ -61,7 +61,6 @@ LIC_FILES_CHKSUM = "\
     file://${S}/third_party/decklink/LICENSE;md5=85b197f7b7b1ef270b01a1b6377be50e \
     file://${S}/third_party/dom_distiller_js/LICENSE;md5=1399a5b89c7ed8167d261770432511e8 \
     file://${S}/third_party/errorprone/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
-    file://${S}/third_party/fips181/COPYING;md5=da26b18c1a03a3cae0abccae554029c6 \
     file://${S}/third_party/flac/COPYING.Xiph;md5=a2c4b71c0198682376d483eb5bcc9197 \
     file://${S}/third_party/flatbuffers/LICENSE;md5=a873c5645c184d51e0f9b34e1d7cf559 \
     file://${S}/third_party/flot/LICENSE.txt;md5=fe1ea2158d814e4fc7227c8c6ccd7ab3 \

@@ -1,0 +1,34 @@
+From fe7638bca9d03d4a538bb6ee6ef9301f73c2efa3 Mon Sep 17 00:00:00 2001
+From: Raphael Kubo da Costa <raphael.kubo.da.costa@intel.com>
+Date: Thu, 4 Apr 2019 15:12:02 +0000
+Subject: FluentLanguageModel: IWYU for std::unique_ptr
+
+Explicitly include <memory>, which also fixes the libstdc++ build:
+
+    In file included from ../../components/language/core/browser/fluent_language_model.cc:5:
+    ../../components/language/core/browser/fluent_language_model.h:32:8: error: no template named 'unique_ptr' in namespace 'std'
+      std::unique_ptr<LanguagePrefs> language_prefs_;
+
+Bug: 819294
+Change-Id: Ie4ba3c59d46b6b14467a73e41a040997dd2c21ad
+Reviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/1552864
+Auto-Submit: Raphael Kubo da Costa <raphael.kubo.da.costa@intel.com>
+Commit-Queue: anthonyvd <anthonyvd@chromium.org>
+Reviewed-by: anthonyvd <anthonyvd@chromium.org>
+Cr-Commit-Position: refs/heads/master@{#647739}
+
+diff --git a/components/language/core/browser/fluent_language_model.h b/components/language/core/browser/fluent_language_model.h
+index 1c13b963e44f..463f9fc58205 100644
+--- a/components/language/core/browser/fluent_language_model.h
++++ b/components/language/core/browser/fluent_language_model.h
+@@ -5,6 +5,7 @@
+ #ifndef COMPONENTS_LANGUAGE_CORE_BROWSER_FLUENT_LANGUAGE_MODEL_H_
+ #define COMPONENTS_LANGUAGE_CORE_BROWSER_FLUENT_LANGUAGE_MODEL_H_
+ 
++#include <memory>
+ #include <string>
+ #include <vector>
+ 
+-- 
+2.19.1
+

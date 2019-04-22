@@ -1,0 +1,43 @@
+From 80fbdf217615e4b3c3bd68867d7d36be8848a73d Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jose.dapena@lge.com>
+Date: Wed, 3 Apr 2019 19:06:37 +0000
+Subject: IWYU: std::unique_ptr of NativeTheme needs full declaration.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Declaring a unique_ptr using GCC requires access to the declaration
+of the constructor and destructor. So just forward declaring
+NativeTheme is not enough and we need to include the native_theme.h.
+
+BUG=chromium:819294
+
+Change-Id: Iff9c3d9e41066f530cc72046c59f30a36692a715
+Reviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/1550370
+Commit-Queue: José Dapena Paz <jose.dapena@lge.com>
+Reviewed-by: Michael Wasserman <msw@chromium.org>
+Cr-Commit-Position: refs/heads/master@{#647400}
+
+diff --git a/ui/views/widget/widget.h b/ui/views/widget/widget.h
+index 06119b24448e..d962e21208fa 100644
+--- a/ui/views/widget/widget.h
++++ b/ui/views/widget/widget.h
+@@ -20,6 +20,7 @@
+ #include "ui/events/event_source.h"
+ #include "ui/gfx/geometry/rect.h"
+ #include "ui/gfx/native_widget_types.h"
++#include "ui/native_theme/native_theme.h"
+ #include "ui/native_theme/native_theme_observer.h"
+ #include "ui/views/focus/focus_manager.h"
+ #include "ui/views/widget/native_widget_delegate.h"
+@@ -42,7 +43,6 @@ class DefaultThemeProvider;
+ class GestureRecognizer;
+ class InputMethod;
+ class Layer;
+-class NativeTheme;
+ class OSExchangeData;
+ class ThemeProvider;
+ }  // namespace ui
+-- 
+2.19.1
+
