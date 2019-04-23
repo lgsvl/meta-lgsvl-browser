@@ -1,7 +1,7 @@
 require chromium-x11.inc
 
-SRC_URI[md5sum] = "42ae49df02cdfec28a4f78c6784ee9a6"
-SRC_URI[sha256sum] = "58d7db786e8504de52ba5113461f9015d743d906ff6dad743b90f4f5443e2994"
+SRC_URI[md5sum] = "66b96fbb352307f4cf0dc92d5f48b682"
+SRC_URI[sha256sum] = "844408078a6c26908e193308eb7bfd5d7ebb7d32f627bc494471108045262ff3"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/buildtools/third_party/libc++/trunk/LICENSE.TXT;md5=55d89dd7eec8d3b4204b680e27da3953 \
@@ -14,11 +14,11 @@ LIC_FILES_CHKSUM += "\
   file://${S}/third_party/chromevox/LICENSE;md5=45739090b454125d851ac7bb1bbd23a2 \
   file://${S}/third_party/d3/src/LICENSE;md5=0679931d76eb2f1dd1915249da84a722 \
   file://${S}/third_party/expat/files/COPYING;md5=5b8620d98e49772d95fc1d291c26aa79 \
-  file://${S}/third_party/ffmpeg/CREDITS.chromium;md5=a8aee8de6dd702fa798fa8c7b6812a58 \
+  file://${S}/third_party/ffmpeg/CREDITS.chromium;md5=005e77d67b51bc0b90c80d469d5e7a0e \
   file://${S}/third_party/freetype/src/docs/FTL.TXT;md5=9f37b4e6afa3fef9dba8932b16bd3f97 \
   file://${S}/third_party/google_toolbox_for_mac/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
   file://${S}/third_party/harfbuzz-ng/src/COPYING;md5=e021dd6dda6ff1e6b1044002fc662b9b \
-  file://${S}/third_party/icu/LICENSE;md5=63752c57bd0b365c9af9f427ef79c819 \
+  file://${S}/third_party/icu/LICENSE;md5=8bc5d32052a96f214cbdd1e53dfc935d \
   file://${S}/third_party/libpng/LICENSE;md5=c2adba923425f511c6087a7ca53270e6 \
   file://${S}/third_party/libsrtp/LICENSE;md5=2909fcf6f09ffff8430463d91c08c4e1\
   file://${S}/third_party/ots/LICENSE;md5=e06eff2aa65b917034a81599bea73dc4 \
@@ -34,16 +34,6 @@ SRC_URI += " \
  file://0001-zlib-GCC-Disable-CRC32-optimizations-on-ARM.patch \
  file://0001-Add-missing-limits-header-to-crashpad.patch;patchdir=third_party/crashpad/crashpad \
  file://0001-NEON-do-not-use-certain-calls-that-would-break-GCC-b.patch;patchdir=third_party/skia \
- file://0001-GCC-do-not-delete-move-constructor-of-QuicStreamSend.patch;patchdir=net/third_party/quiche/src \
- file://0001-crc32c-reenable-crc-and-crypto-extensions-to-arm64-c.patch \
- file://0001-base-Fix-Value-layout-for-GCC.patch \
- file://0001-Sampling-profiler-Move-NO_SANITIZE-before-function-d.patch \
- file://0001-GCC-replace-sequence_checker.h-__has_feature-with-HA.patch \
  file://0001-GCC-do-not-use-COMPILER_GCC.patch;patchdir=third_party/angle \
- file://0001-GCC-do-not-use-WARN_UNUSED-in-suffix-of-declaration-.patch \
- file://0001-Cast-MRP-Fix-GCC-build-because-of-invalid-default-co.patch \
- file://0001-FluentLanguageModel-IWYU-for-std-unique_ptr.patch \
- file://0001-IWYU-std-unique_ptr-of-NativeTheme-needs-full-declar.patch \
- file://0001-IWYU-missing-std-string-include-in-language_prefs.cc.patch \
- file://0001-LanguagePrefs-std-set-of-const-is-forbidden-in-libst.patch \
+ file://0001-omnibox-AutocompleteMatch-constructor-cannot-be-noex.patch \
 "
