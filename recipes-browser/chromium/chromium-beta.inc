@@ -1,4 +1,4 @@
-require chromium-x11.inc
+PV = "74.0.3729.108"
 
 SRC_URI[md5sum] = "44fc43489d59a98497e9324ccfdf172b"
 SRC_URI[sha256sum] = "9793b810ad7349d4d065f4c30d6f427b6baa6caca87d047fe5eeb2deede90123"
