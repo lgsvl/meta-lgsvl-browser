@@ -1,3 +1,5 @@
+require chromium-upstream-tarball.inc
+
 PV = "74.0.3729.108"
 
 SRC_URI[md5sum] = "44fc43489d59a98497e9324ccfdf172b"
