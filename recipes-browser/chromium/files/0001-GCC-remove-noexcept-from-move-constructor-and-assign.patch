@@ -1,0 +1,80 @@
+From 6521bd07b7abc8ce05f1dcbb6c52dc4ef8656849 Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jose.dapena@lge.com>
+Date: Tue, 4 Jun 2019 18:38:12 +0200
+Subject: GCC: remove noexcept from move constructor and assign operators of
+ AccountInfo
+
+AccountInfo declares them as noexcept and uses default implementation,
+so all its members (including AccountId) should be noexcept. But AccountId
+is not noexcept.
+
+Bug: 819294
+Change-Id: Ice38654ab7cf3b9eaa6f54aa36e1fec329264f98
+
+diff --git a/components/signin/core/browser/account_info.cc b/components/signin/core/browser/account_info.cc
+index 3c164ea34ab7..2b1d69c55839 100644
+--- a/components/signin/core/browser/account_info.cc
++++ b/components/signin/core/browser/account_info.cc
+@@ -47,13 +47,12 @@ CoreAccountInfo::~CoreAccountInfo() = default;
+ 
+ CoreAccountInfo::CoreAccountInfo(const CoreAccountInfo& other) = default;
+ 
+-CoreAccountInfo::CoreAccountInfo(CoreAccountInfo&& other) noexcept = default;
++CoreAccountInfo::CoreAccountInfo(CoreAccountInfo&& other) = default;
+ 
+ CoreAccountInfo& CoreAccountInfo::operator=(const CoreAccountInfo& other) =
+     default;
+ 
+-CoreAccountInfo& CoreAccountInfo::operator=(CoreAccountInfo&& other) noexcept =
+-    default;
++CoreAccountInfo& CoreAccountInfo::operator=(CoreAccountInfo&& other) = default;
+ 
+ bool CoreAccountInfo::IsEmpty() const {
+   return account_id.empty() && email.empty() && gaia.empty();
+@@ -65,11 +64,11 @@ AccountInfo::~AccountInfo() = default;
+ 
+ AccountInfo::AccountInfo(const AccountInfo& other) = default;
+ 
+-AccountInfo::AccountInfo(AccountInfo&& other) noexcept = default;
++AccountInfo::AccountInfo(AccountInfo&& other) = default;
+ 
+ AccountInfo& AccountInfo::operator=(const AccountInfo& other) = default;
+ 
+-AccountInfo& AccountInfo::operator=(AccountInfo&& other) noexcept = default;
++AccountInfo& AccountInfo::operator=(AccountInfo&& other) = default;
+ 
+ bool AccountInfo::IsEmpty() const {
+   return CoreAccountInfo::IsEmpty() && hosted_domain.empty() &&
+diff --git a/components/signin/core/browser/account_info.h b/components/signin/core/browser/account_info.h
+index ca47ac7fd828..66b7dd4d67ee 100644
+--- a/components/signin/core/browser/account_info.h
++++ b/components/signin/core/browser/account_info.h
+@@ -25,10 +25,10 @@ struct CoreAccountInfo {
+   ~CoreAccountInfo();
+ 
+   CoreAccountInfo(const CoreAccountInfo& other);
+-  CoreAccountInfo(CoreAccountInfo&& other) noexcept;
++  CoreAccountInfo(CoreAccountInfo&& other);
+ 
+   CoreAccountInfo& operator=(const CoreAccountInfo& other);
+-  CoreAccountInfo& operator=(CoreAccountInfo&& other) noexcept;
++  CoreAccountInfo& operator=(CoreAccountInfo&& other);
+ 
+   CoreAccountId account_id;
+   std::string gaia;
+@@ -47,10 +47,10 @@ struct AccountInfo : public CoreAccountInfo {
+   ~AccountInfo();
+ 
+   AccountInfo(const AccountInfo& other);
+-  AccountInfo(AccountInfo&& other) noexcept;
++  AccountInfo(AccountInfo&& other);
+ 
+   AccountInfo& operator=(const AccountInfo& other);
+-  AccountInfo& operator=(AccountInfo&& other) noexcept;
++  AccountInfo& operator=(AccountInfo&& other);
+ 
+   std::string full_name;
+   std::string given_name;
+-- 
+2.20.1
+

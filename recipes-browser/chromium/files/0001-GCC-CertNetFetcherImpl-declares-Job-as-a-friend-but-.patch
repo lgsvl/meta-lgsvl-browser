@@ -1,0 +1,408 @@
+From 4809a23a78a31c3a2308c68462a6e6767ba798d8 Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jose.dapena@lge.com>
+Date: Tue, 4 Jun 2019 17:40:11 +0200
+Subject: GCC: CertNetFetcherImpl declares Job as a friend but it is in the
+ anonymous namespace
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+GCC does not allow friendship declaration to anonymous namespace as done with Job
+object in the CertNetFetcherImpl. So better rename it (and types using it so
+it can be safely added to net namespace.
+
+Error was:
+./../net/cert_net/cert_net_fetcher_impl.cc: In member function ‘void net::{anonymous}::Job::DetachRequest(net::CertNetFetcherImpl::RequestCore*)’:
+../../net/cert_net/cert_net_fetcher_impl.cc:458:42: error: ‘std::unique_ptr<net::{anonymous}::Job> net::CertNetFetcherImpl::AsyncCertNetFetcherImpl::RemoveJob(net::{anonymous}::Job*)’ is private within this context
+     delete_this = parent_->RemoveJob(this);
+                                          ^
+../../net/cert_net/cert_net_fetcher_impl.cc:151:24: note: declared private here
+   std::unique_ptr<Job> RemoveJob(Job* job);
+                        ^~~~~~~~~
+../../net/cert_net/cert_net_fetcher_impl.cc: In member function ‘void net::{anonymous}::Job::OnJobCompleted(net::Error)’:
+../../net/cert_net/cert_net_fetcher_impl.cc:610:61: error: ‘std::unique_ptr<net::{anonymous}::Job> net::CertNetFetcherImpl::AsyncCertNetFetcherImpl::RemoveJob(net::{anonymous}::Job*)’ is private within this context
+   std::unique_ptr<Job> delete_this = parent_->RemoveJob(this);
+                                                             ^
+../../net/cert_net/cert_net_fetcher_impl.cc:151:24: note: declared private here
+   std::unique_ptr<Job> RemoveJob(Job* job);
+                        ^~~~~~~~~
+
+Bug: 819294
+Change-Id: I3609f4558e570741395366de6a4cd40577d91450
+
+diff --git a/net/cert_net/cert_net_fetcher_impl.cc b/net/cert_net/cert_net_fetcher_impl.cc
+index 11a1166a23a5..a08a9ee67b94 100644
+--- a/net/cert_net/cert_net_fetcher_impl.cc
++++ b/net/cert_net/cert_net_fetcher_impl.cc
+@@ -54,7 +54,7 @@
+ //     timeouts, and actual integration with network stack. This is where the
+ //     majority of the logic lives.
+ //   * Signals completion of requests through RequestCore's WaitableEvent.
+-//   * Attaches requests to Jobs for the purpose of de-duplication
++//   * Attaches requests to CertNetFetcherJobs for the purpose of de-duplication
+ 
+ #include "net/cert_net/cert_net_fetcher_impl.h"
+ 
+@@ -99,19 +99,22 @@ const int kMaxResponseSizeInBytesForAia = 64 * 1024;
+ // The default timeout in seconds for fetch requests.
+ const int kTimeoutSeconds = 15;
+ 
+-class Job;
++}  // namespace
++
++class CertNetFetcherJob;
+ 
+-struct JobToRequestParamsComparator;
++struct CertNetFetcherJobToRequestParamsComparator;
+ 
+-struct JobComparator {
+-  bool operator()(const Job* job1, const Job* job2) const;
++struct CertNetFetcherJobComparator {
++  bool operator()(const CertNetFetcherJob* job1,
++                  const CertNetFetcherJob* job2) const;
+ };
+ 
+ // Would be a set<unique_ptr> but extraction of owned objects from a set of
+ // owned types doesn't come until C++17.
+-using JobSet = std::map<Job*, std::unique_ptr<Job>, JobComparator>;
+-
+-}  // namespace
++using CertNetFetcherJobSet = std::map<CertNetFetcherJob*,
++                                      std::unique_ptr<CertNetFetcherJob>,
++                                      CertNetFetcherJobComparator>;
+ 
+ // AsyncCertNetFetcherImpl manages URLRequests in an async fashion on the
+ // URLRequestContexts's task runner thread.
+@@ -140,19 +143,19 @@ class CertNetFetcherImpl::AsyncCertNetFetcherImpl {
+   void Shutdown();
+ 
+  private:
+-  friend class Job;
++  friend class CertNetFetcherJob;
+ 
+   // Finds a job with a matching RequestPararms or returns nullptr if there was
+   // no match.
+-  Job* FindJob(const RequestParams& params);
++  CertNetFetcherJob* FindJob(const RequestParams& params);
+ 
+   // Removes |job| from the in progress jobs and transfers ownership to the
+   // caller.
+-  std::unique_ptr<Job> RemoveJob(Job* job);
++  std::unique_ptr<CertNetFetcherJob> RemoveJob(CertNetFetcherJob* job);
+ 
+   // The in-progress jobs. This set does not contain the job which is actively
+   // invoking callbacks (OnJobCompleted).
+-  JobSet jobs_;
++  CertNetFetcherJobSet jobs_;
+ 
+   // Not owned. |context_| must outlive the AsyncCertNetFetcherImpl.
+   URLRequestContext* context_ = nullptr;
+@@ -210,7 +213,7 @@ class CertNetFetcherImpl::RequestCore
+                           base::WaitableEvent::InitialState::NOT_SIGNALED),
+         task_runner_(std::move(task_runner)) {}
+ 
+-  void AttachedToJob(Job* job) {
++  void AttachedToJob(CertNetFetcherJob* job) {
+     DCHECK(task_runner_->RunsTasksInCurrentSequence());
+     DCHECK(!job_);
+     // Requests should not be attached to jobs after they have been signalled
+@@ -220,7 +223,7 @@ class CertNetFetcherImpl::RequestCore
+     job_ = job;
+   }
+ 
+-  void OnJobCompleted(Job* job,
++  void OnJobCompleted(CertNetFetcherJob* job,
+                       Error error,
+                       const std::vector<uint8_t>& response_body) {
+     DCHECK(task_runner_->RunsTasksInCurrentSequence());
+@@ -261,7 +264,7 @@ class CertNetFetcherImpl::RequestCore
+   }
+ 
+   // A non-owned pointer to the job that is executing the request.
+-  Job* job_ = nullptr;
++  CertNetFetcherJob* job_ = nullptr;
+ 
+   // May be written to from network thread, or from the caller thread only when
+   // there is no work that will be done on the network thread (e.g. when the
+@@ -306,15 +309,14 @@ bool CertNetFetcherImpl::RequestParams::operator<(
+                   other.timeout);
+ }
+ 
+-namespace {
+-
+-// Job tracks an outstanding URLRequest as well as all of the pending requests
+-// for it.
+-class Job : public URLRequest::Delegate {
++// CertNetFetcherJob tracks an outstanding URLRequest as well as all of the
++// pending requests for it.
++class CertNetFetcherJob : public URLRequest::Delegate {
+  public:
+-  Job(std::unique_ptr<CertNetFetcherImpl::RequestParams> request_params,
++  CertNetFetcherJob(
++      std::unique_ptr<CertNetFetcherImpl::RequestParams> request_params,
+       CertNetFetcherImpl::AsyncCertNetFetcherImpl* parent);
+-  ~Job() override;
++  ~CertNetFetcherJob() override;
+ 
+   const CertNetFetcherImpl::RequestParams& request_params() const {
+     return *request_params_;
+@@ -359,9 +361,10 @@ class Job : public URLRequest::Delegate {
+   // Called when the URLRequest has completed (either success or failure).
+   void OnUrlRequestCompleted(int net_error);
+ 
+-  // Called when the Job has completed. The job may finish in response to a
+-  // timeout, an invalid URL, or the URLRequest completing. By the time this
+-  // method is called, the |response_body_| variable have been assigned.
++  // Called when the CertNetFetcherJob has completed. The job may finish in
++  // response to a timeout, an invalid URL, or the URLRequest completing. By the
++  // time this method is called, the |response_body_| variable have been
++  // assigned.
+   void OnJobCompleted(Error error);
+ 
+   // Calls r->OnJobCompleted() for each RequestCore |r| currently attached
+@@ -391,11 +394,9 @@ class Job : public URLRequest::Delegate {
+   // Non-owned pointer to the AsyncCertNetFetcherImpl that created this job.
+   CertNetFetcherImpl::AsyncCertNetFetcherImpl* parent_;
+ 
+-  DISALLOW_COPY_AND_ASSIGN(Job);
++  DISALLOW_COPY_AND_ASSIGN(CertNetFetcherJob);
+ };
+ 
+-}  // namespace
+-
+ void CertNetFetcherImpl::RequestCore::CancelJob() {
+   if (!task_runner_->RunsTasksInCurrentSequence()) {
+     task_runner_->PostTask(FROM_HERE,
+@@ -428,25 +429,25 @@ void CertNetFetcherImpl::RequestCore::SignalImmediateError() {
+   completion_event_.Signal();
+ }
+ 
+-namespace {
+-
+-Job::Job(std::unique_ptr<CertNetFetcherImpl::RequestParams> request_params,
+-         CertNetFetcherImpl::AsyncCertNetFetcherImpl* parent)
++CertNetFetcherJob::CertNetFetcherJob(
++    std::unique_ptr<CertNetFetcherImpl::RequestParams> request_params,
++    CertNetFetcherImpl::AsyncCertNetFetcherImpl* parent)
+     : request_params_(std::move(request_params)), parent_(parent) {}
+ 
+-Job::~Job() {
++CertNetFetcherJob::~CertNetFetcherJob() {
+   DCHECK(requests_.empty());
+   Stop();
+ }
+ 
+-void Job::AttachRequest(
++void CertNetFetcherJob::AttachRequest(
+     scoped_refptr<CertNetFetcherImpl::RequestCore> request) {
+   request->AttachedToJob(this);
+   requests_.push_back(std::move(request));
+ }
+ 
+-void Job::DetachRequest(CertNetFetcherImpl::RequestCore* request) {
+-  std::unique_ptr<Job> delete_this;
++void CertNetFetcherJob::DetachRequest(
++    CertNetFetcherImpl::RequestCore* request) {
++  std::unique_ptr<CertNetFetcherJob> delete_this;
+ 
+   auto it = std::find(requests_.begin(), requests_.end(), request);
+   DCHECK(it != requests_.end());
+@@ -458,7 +459,7 @@ void Job::DetachRequest(CertNetFetcherImpl::RequestCore* request) {
+     delete_this = parent_->RemoveJob(this);
+ }
+ 
+-void Job::StartURLRequest(URLRequestContext* context) {
++void CertNetFetcherJob::StartURLRequest(URLRequestContext* context) {
+   Error error = CanFetchUrl(request_params_->url);
+   if (error != OK) {
+     OnJobCompleted(error);
+@@ -504,21 +505,21 @@ void Job::StartURLRequest(URLRequestContext* context) {
+ 
+   // Start a timer to limit how long the job runs for.
+   if (request_params_->timeout > base::TimeDelta())
+-    timer_.Start(
+-        FROM_HERE, request_params_->timeout,
+-        base::Bind(&Job::FailRequest, base::Unretained(this), ERR_TIMED_OUT));
++    timer_.Start(FROM_HERE, request_params_->timeout,
++                 base::Bind(&CertNetFetcherJob::FailRequest,
++                            base::Unretained(this), ERR_TIMED_OUT));
+ }
+ 
+-void Job::Cancel() {
++void CertNetFetcherJob::Cancel() {
+   // Stop the timer and clear the URLRequest.
+   Stop();
+   // Signal attached requests that they've been completed.
+   CompleteAndClearRequests(static_cast<Error>(ERR_ABORTED));
+ }
+ 
+-void Job::OnReceivedRedirect(URLRequest* request,
+-                             const RedirectInfo& redirect_info,
+-                             bool* defer_redirect) {
++void CertNetFetcherJob::OnReceivedRedirect(URLRequest* request,
++                                           const RedirectInfo& redirect_info,
++                                           bool* defer_redirect) {
+   DCHECK_EQ(url_request_.get(), request);
+ 
+   // Ensure that the new URL matches the policy.
+@@ -529,7 +530,7 @@ void Job::OnReceivedRedirect(URLRequest* request,
+   }
+ }
+ 
+-void Job::OnResponseStarted(URLRequest* request, int net_error) {
++void CertNetFetcherJob::OnResponseStarted(URLRequest* request, int net_error) {
+   DCHECK_EQ(url_request_.get(), request);
+   DCHECK_NE(ERR_IO_PENDING, net_error);
+ 
+@@ -547,7 +548,7 @@ void Job::OnResponseStarted(URLRequest* request, int net_error) {
+   ReadBody(request);
+ }
+ 
+-void Job::OnReadCompleted(URLRequest* request, int bytes_read) {
++void CertNetFetcherJob::OnReadCompleted(URLRequest* request, int bytes_read) {
+   DCHECK_EQ(url_request_.get(), request);
+   DCHECK_NE(ERR_IO_PENDING, bytes_read);
+ 
+@@ -556,12 +557,12 @@ void Job::OnReadCompleted(URLRequest* request, int bytes_read) {
+     ReadBody(request);
+ }
+ 
+-void Job::Stop() {
++void CertNetFetcherJob::Stop() {
+   timer_.Stop();
+   url_request_.reset();
+ }
+ 
+-void Job::ReadBody(URLRequest* request) {
++void CertNetFetcherJob::ReadBody(URLRequest* request) {
+   // Read as many bytes as are available synchronously.
+   int num_bytes = 0;
+   while (num_bytes >= 0) {
+@@ -575,7 +576,7 @@ void Job::ReadBody(URLRequest* request) {
+   OnUrlRequestCompleted(num_bytes);
+ }
+ 
+-bool Job::ConsumeBytesRead(URLRequest* request, int num_bytes) {
++bool CertNetFetcherJob::ConsumeBytesRead(URLRequest* request, int num_bytes) {
+   DCHECK_NE(ERR_IO_PENDING, num_bytes);
+   if (num_bytes <= 0) {
+     // Error while reading, or EOF.
+@@ -596,22 +597,22 @@ bool Job::ConsumeBytesRead(URLRequest* request, int num_bytes) {
+   return true;
+ }
+ 
+-void Job::OnUrlRequestCompleted(int net_error) {
++void CertNetFetcherJob::OnUrlRequestCompleted(int net_error) {
+   DCHECK_NE(ERR_IO_PENDING, net_error);
+   Error result = static_cast<Error>(net_error);
+   OnJobCompleted(result);
+ }
+ 
+-void Job::OnJobCompleted(Error error) {
++void CertNetFetcherJob::OnJobCompleted(Error error) {
+   DCHECK_NE(ERR_IO_PENDING, error);
+   // Stop the timer and clear the URLRequest.
+   Stop();
+ 
+-  std::unique_ptr<Job> delete_this = parent_->RemoveJob(this);
++  std::unique_ptr<CertNetFetcherJob> delete_this = parent_->RemoveJob(this);
+   CompleteAndClearRequests(error);
+ }
+ 
+-void Job::CompleteAndClearRequests(Error error) {
++void CertNetFetcherJob::CompleteAndClearRequests(Error error) {
+   for (const auto& request : requests_) {
+     request->OnJobCompleted(this, error, response_body_);
+   }
+@@ -619,14 +620,12 @@ void Job::CompleteAndClearRequests(Error error) {
+   requests_.clear();
+ }
+ 
+-void Job::FailRequest(Error error) {
++void CertNetFetcherJob::FailRequest(Error error) {
+   DCHECK_NE(ERR_IO_PENDING, error);
+   int result = url_request_->CancelWithError(error);
+   OnUrlRequestCompleted(result);
+ }
+ 
+-}  // namespace
+-
+ CertNetFetcherImpl::AsyncCertNetFetcherImpl::AsyncCertNetFetcherImpl(
+     URLRequestContext* context)
+     : context_(context) {
+@@ -639,7 +638,9 @@ CertNetFetcherImpl::AsyncCertNetFetcherImpl::~AsyncCertNetFetcherImpl() {
+   jobs_.clear();
+ }
+ 
+-bool JobComparator::operator()(const Job* job1, const Job* job2) const {
++bool CertNetFetcherJobComparator::operator()(
++    const CertNetFetcherJob* job1,
++    const CertNetFetcherJob* job2) const {
+   return job1->request_params() < job2->request_params();
+ }
+ 
+@@ -650,13 +651,13 @@ void CertNetFetcherImpl::AsyncCertNetFetcherImpl::Fetch(
+ 
+   // If there is an in-progress job that matches the request parameters use it.
+   // Otherwise start a new job.
+-  Job* job = FindJob(*request_params);
++  CertNetFetcherJob* job = FindJob(*request_params);
+   if (job) {
+     job->AttachRequest(std::move(request));
+     return;
+   }
+ 
+-  job = new Job(std::move(request_params), this);
++  job = new CertNetFetcherJob(std::move(request_params), this);
+   jobs_[job] = base::WrapUnique(job);
+   // Attach the request before calling StartURLRequest; this ensures that the
+   // request will get signalled if StartURLRequest completes the job
+@@ -673,36 +674,32 @@ void CertNetFetcherImpl::AsyncCertNetFetcherImpl::Shutdown() {
+   jobs_.clear();
+ }
+ 
+-namespace {
+-
+-struct JobToRequestParamsComparator {
+-  bool operator()(const JobSet::value_type& job,
++struct CertNetFetcherJobToRequestParamsComparator {
++  bool operator()(const CertNetFetcherJobSet::value_type& job,
+                   const CertNetFetcherImpl::RequestParams& value) const {
+     return job.first->request_params() < value;
+   }
+ };
+ 
+-}  // namespace
+-
+-Job* CertNetFetcherImpl::AsyncCertNetFetcherImpl::FindJob(
++CertNetFetcherJob* CertNetFetcherImpl::AsyncCertNetFetcherImpl::FindJob(
+     const RequestParams& params) {
+   DCHECK(thread_checker_.CalledOnValidThread());
+ 
+-  // The JobSet is kept in sorted order so items can be found using binary
+-  // search.
++  // The CertNetFetcherJobSet is kept in sorted order so items can be found
++  // using binary search.
+   auto it = std::lower_bound(jobs_.begin(), jobs_.end(), params,
+-                             JobToRequestParamsComparator());
++                             CertNetFetcherJobToRequestParamsComparator());
+   if (it != jobs_.end() && !(params < (*it).first->request_params()))
+     return (*it).first;
+   return nullptr;
+ }
+ 
+-std::unique_ptr<Job> CertNetFetcherImpl::AsyncCertNetFetcherImpl::RemoveJob(
+-    Job* job) {
++std::unique_ptr<CertNetFetcherJob>
++CertNetFetcherImpl::AsyncCertNetFetcherImpl::RemoveJob(CertNetFetcherJob* job) {
+   DCHECK(thread_checker_.CalledOnValidThread());
+   auto it = jobs_.find(job);
+   CHECK(it != jobs_.end());
+-  std::unique_ptr<Job> owned_job = std::move(it->second);
++  std::unique_ptr<CertNetFetcherJob> owned_job = std::move(it->second);
+   jobs_.erase(it);
+   return owned_job;
+ }
+-- 
+2.20.1
+
