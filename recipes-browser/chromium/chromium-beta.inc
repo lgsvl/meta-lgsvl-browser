@@ -1,9 +1,9 @@
 require chromium-upstream-tarball.inc
 
-PV = "75.0.3770.66"
+PV = "75.0.3770.80"
 
-SRC_URI[md5sum] = "1d3098232b2441b71a561bedc0e7d07e"
-SRC_URI[sha256sum] = "c59fb6dd51ce5dd96a3931545c0ba6f6f80db207f47ef00d511fa4970954ed0c"
+SRC_URI[md5sum] = "f5b5cae54486b5960c533640b47dceb8"
+SRC_URI[sha256sum] = "da828bc8d887821380b461abfbbd0e17538c211d56f240f03711b918c77a66d6"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/buildtools/third_party/libc++/trunk/LICENSE.TXT;md5=55d89dd7eec8d3b4204b680e27da3953 \
@@ -41,4 +41,5 @@ SRC_URI += " \
  file://0001-omnibox-AutocompleteMatch-constructor-cannot-be-noex.patch \
  file://0001-libstdc-do-not-assume-unique_ptr-has-ostream-operato.patch \
  file://0001-zlib-fix-ARMv8-CRC32-compilation-in-GCC.patch \
+ file://0001-Avoid-pure-virtual-crash-destroying-RenderProcessUse.patch \
 "
