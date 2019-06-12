@@ -1,9 +1,9 @@
 require chromium-upstream-tarball.inc
 
-PV = "76.0.3806.1"
+PV = "76.0.3809.12"
 
-SRC_URI[md5sum] = "b723a847981741428086932af2b456c4"
-SRC_URI[sha256sum] = "10712f2cdffa99a82787372f4018c71ee742b875d4c7885e30ac108a665d0d40"
+SRC_URI[md5sum] = "1832c6e9578512b8589ff3f67558cb2d"
+SRC_URI[sha256sum] = "973b2109a73ffcb7f8d93bd89f5b6cc15c6ea721c82d13a77e555a2883e4fa83"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/buildtools/third_party/libc++/trunk/LICENSE.TXT;md5=55d89dd7eec8d3b4204b680e27da3953 \
@@ -51,4 +51,6 @@ SRC_URI += " \
  file://0001-GCC-avoid-ambiguous-NoDestructor-creation-in-GetNeve.patch \
  file://0001-DisjoingRangeLockManager-Lock-move-constructor-assig.patch \
  file://0001-GCC-XSetWindowAttributes-struct-initialization-shoul.patch \
+ file://0001-GCC-remove-noexcept-in-history-QueryURLResult-move-c.patch \
+ file://0001-GCC-move-explicit-specialization-out-of-RunInfo.patch \
 "
