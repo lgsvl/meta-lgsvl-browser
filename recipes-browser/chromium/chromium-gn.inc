@@ -105,25 +105,26 @@ GN_ARGS += "is_debug=false is_official_build=true"
 # regardless of whether DEBUG_BUILD has been set or not. In addition, binutils,
 # file and other utilities are unable to read a 32-bit binary this size, which
 # causes it not to be stripped.
-# The solution is two-fold:
-# 1. Make sure -g is not passed on 32-bit architectures via DEBUG_FLAGS. -g is
-#    the same as -g2. -g1 generates an 800MB binary, which is a lot more
-#    manageable.
-# 2. Explicitly pass symbol_level=0 to GN. This causes -g0 to be passed
-#    instead, so that if DEBUG_BUILD is not set GN will not create a huge debug
-#    binary anyway. Since our compiler flags are passed after GN's, -g0 does
-#    not cause any issues if DEBUG_BUILD is set, as -g1 will be passed later.
-DEBUG_FLAGS_remove_i586 = "-g"
-DEBUG_FLAGS_append_i586 = "-g1"
-DEBUG_FLAGS_remove_x86-64 = "-g"
-DEBUG_FLAGS_append_x86-64 = "-g1"
-DEBUG_FLAGS_remove_armv6 = "-g"
-DEBUG_FLAGS_append_armv6 = "-g1"
-DEBUG_FLAGS_remove_armv7a = "-g"
-DEBUG_FLAGS_append_armv7a = "-g1"
-DEBUG_FLAGS_remove_rpi = "-g"
-DEBUG_FLAGS_append_rpi = "-g1"
-GN_ARGS += "symbol_level=0"
+# The solution is:
+# 1. Make sure -g is not passed via DEBUG_FLAGS. -g is the same as -g2. We
+#    do not want to override the explicit debug level setting we are adding
+#    through Chromium GN symbol-level variable.
+# 2. Explicitly pass symbol_level=1 to GN. This causes -g1 to be passed
+#    instead. This reduces around 800MB of the binary size, and that can
+#    be more easily handled.
+# 3. Provide "debug" PACKAGECONFIG that enables full debugging.
+# 4. Drop debug fission explicitely. Yocto will provide its own splitting
+#    of debugging information. WARNING: do not set it debugging for ELF 32
+#    bits platforms as it will cause issues compiling, linking and
+#    packaging.
+DEBUG_FLAGS_remove = "-g"
+PACKAGECONFIG[debug] = "symbol_level=2, symbol_level=1"
+GN_ARGS += "use_debug_fission=false"
+
+# By default we discard adding debug symbols for Blink. In case debug-blink is
+# added to PACKAGECONFIG, then the debugging level will match the one set for
+# the whole package (2 if "debug" variable is added, 1 if not).
+PACKAGECONFIG[debug-blink] = ",blink_symbol_level=0"
 
 # Disable Chrome Remote Desktop (aka Chromoting) support. Building host support
 # (so that the machine running this recipe can be controlled remotely from
