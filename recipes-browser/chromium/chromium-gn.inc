@@ -154,6 +154,9 @@ GN_ARGS += "treat_warnings_as_errors=false"
 # See https://groups.google.com/a/chromium.org/d/msg/chromium-packagers/ECWC57W7E0k/9Kc5UAmyDAAJ
 GN_ARGS += "fieldtrial_testing_like_official_build=true"
 
+# Disable compiling closures, as they require java runtime
+GN_ARGS += "closure_compile=false"
+
 # API keys for accessing Google services. By default, we use an invalid key
 # only to prevent the "you are missing an API key" infobar from being shown on
 # startup.
@@ -169,17 +172,25 @@ GN_ARGS += '\
         google_default_client_secret="${GOOGLE_DEFAULT_CLIENT_SECRET}" \
         '
 
+# Set a default value for jumbo file merge of 8. This should be good for build
+# servers and workstations with a big number of cores. In case build is
+# happening in a machine with less cores but still enough RAM a good value could
+# be 50.
+JUMBO_FILE_MERGE_LIMIT="8"
+PACKAGECONFIG[jumbo] = "use_jumbo_build=true jumbo_file_merge_limit=${JUMBO_FILE_MERGE_LIMIT}, use_jumbo_build=false"
+
 # Toolchains we will use for the build. We need to point to the toolchain file
 # we've created, set the right target architecture and make sure we are not
 # using Chromium's toolchain (bundled clang, bundled binutils etc).
 GN_ARGS += '\
-        custom_toolchain="//build/toolchain/yocto:yocto_target" \
-        gold_path="" \
-        host_toolchain="//build/toolchain/yocto:yocto_native" \
         is_clang=false \
         linux_use_bundled_binutils=false \
+        custom_toolchain="//build/toolchain/yocto:yocto_target" \
+        use_custom_libcxx=false \
+        gold_path="" \
         target_cpu="${@gn_arch_name('${TUNE_ARCH}')}" \
         v8_snapshot_toolchain="//build/toolchain/yocto:yocto_target" \
+        host_toolchain="//build/toolchain/yocto:yocto_native" \
         '
 
 # ARM builds need special additional flags (see ${S}/build/config/arm.gni).

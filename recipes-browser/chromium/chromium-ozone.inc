@@ -15,8 +15,5 @@ GN_ARGS += "\
  use_system_libwayland=true \
  use_system_minigbm=true \
  use_system_libdrm=true \
- use_custom_libcxx = false \
  use_xkbcommon=true \
- use_jumbo_build = true \
- closure_compile = false \
 "

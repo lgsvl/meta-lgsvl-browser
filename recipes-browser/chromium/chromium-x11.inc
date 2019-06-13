@@ -15,8 +15,3 @@ DEPENDS += "\
     libxtst \
 "
 
-GN_ARGS += "\
- closure_compile = false \
- use_custom_libcxx = false \
- use_jumbo_build = true \
-"
