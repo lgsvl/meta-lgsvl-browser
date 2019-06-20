@@ -1,0 +1,37 @@
+From cd5feef733b951391875749991641e87f7a860d2 Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jdapena@igalia.com>
+Date: Thu, 20 Jun 2019 12:08:46 +0200
+Subject: GCC: build ARM build because of missing symbols
+
+Swiftshader is failing to compile in GCC with ARM32. There are several
+build units mising.
+../../../chromium-77.0.3824.6/third_party/swiftshader/third_party/llvm-7.0/llvm/lib/Target/ARM/ARMParallelDSP.cpp:296: error: undefined reference to 'llvm::isConsecutiveAccess(llvm::Value*, llvm::Value*, llvm::DataLayout const&, llvm::ScalarEvolution&, bool)'
+../../../chromium-77.0.3824.6/third_party/swiftshader/third_party/llvm-7.0/llvm/lib/Target/ARM/ARMParallelDSP.cpp:192: error: undefined reference to 'llvm::LoopAccessInfo::LoopAccessInfo(llvm::Loop*, llvm::ScalarEvolution*, llvm::TargetLibraryInfo const*, llvm::AAResults*, llvm::DominatorTree*, llvm::LoopInfo*)'
+../../../chromium-77.0.3824.6/third_party/swiftshader/third_party/llvm-7.0/llvm/lib/Target/ARM/ARMTargetMachine.cpp:386: error: undefined reference to 'llvm::createLowerAtomicPass()'
+collect2: error: ld returned 1 exit status
+
+Bug: chromium:819294
+
+diff --git a/third_party/llvm-7.0/BUILD.gn b/third_party/llvm-7.0/BUILD.gn
+index 011272a2a..b51e2cf7b 100644
+--- a/third_party/llvm-7.0/BUILD.gn
++++ b/third_party/llvm-7.0/BUILD.gn
+@@ -142,6 +142,7 @@ swiftshader_source_set("swiftshader_llvm") {
+     "llvm/lib/Analysis/LazyBranchProbabilityInfo.cpp",
+     "llvm/lib/Analysis/LazyValueInfo.cpp",
+     "llvm/lib/Analysis/Loads.cpp",
++    "llvm/lib/Analysis/LoopAccessAnalysis.cpp",
+     "llvm/lib/Analysis/LoopAnalysisManager.cpp",
+     "llvm/lib/Analysis/LoopInfo.cpp",
+     "llvm/lib/Analysis/LoopPass.cpp",
+@@ -1072,6 +1073,7 @@ swiftshader_source_set("swiftshader_llvm_transforms") {
+     "llvm/lib/Transforms/Scalar/LICM.cpp",
+     "llvm/lib/Transforms/Scalar/LoopDataPrefetch.cpp",
+     "llvm/lib/Transforms/Scalar/LoopStrengthReduce.cpp",
++    "llvm/lib/Transforms/Scalar/LowerAtomic.cpp",
+     "llvm/lib/Transforms/Scalar/MergeICmps.cpp",
+     "llvm/lib/Transforms/Scalar/PartiallyInlineLibCalls.cpp",
+     "llvm/lib/Transforms/Scalar/Reassociate.cpp",
+-- 
+2.20.1
+

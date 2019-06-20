@@ -1,9 +1,9 @@
 require chromium-upstream-tarball.inc
 
-PV = "76.0.3809.12"
+PV = "77.0.3824.6"
 
-SRC_URI[md5sum] = "1832c6e9578512b8589ff3f67558cb2d"
-SRC_URI[sha256sum] = "973b2109a73ffcb7f8d93bd89f5b6cc15c6ea721c82d13a77e555a2883e4fa83"
+SRC_URI[md5sum] = "c834fc4930bf728a202c2e208493d703"
+SRC_URI[sha256sum] = "f7025bc7954df55373c695898f86c0f89d11ff61d594ee466b99e78edeb5f505"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/buildtools/third_party/libc++/trunk/LICENSE.TXT;md5=55d89dd7eec8d3b4204b680e27da3953 \
@@ -34,23 +34,12 @@ LIC_FILES_CHKSUM += "\
 SRC_URI += " \
  file://0001-Wrap-mksnapshot-and-torque-calls-on-Yocto-building-w.patch;patchdir=v8 \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
+ file://openscreen-v8-qemu-wrapper.patch;patchdir=third_party/openscreen/src \
  file://0001-Add-missing-limits-header-to-crashpad.patch;patchdir=third_party/crashpad/crashpad \
  file://0001-NEON-do-not-use-certain-calls-that-would-break-GCC-b.patch;patchdir=third_party/skia \
- file://0001-zlib-fix-ARMv8-CRC32-compilation-in-GCC.patch \
- file://0001-GCC-do-not-use-old-C-notation-to-assign-struct-with-.patch \
- file://0001-GCC-CertNetFetcherImpl-declares-Job-as-a-friend-but-.patch \
- file://0001-GCC-accessing-TransportParameters-enum-class-members.patch;patchdir=net/third_party/quiche/src \
  file://0001-GCC-remove-noexcept-from-move-constructor-and-assign.patch \
- file://0001-Fix-AutoCompleteMatch-move-constructor-assign-operat.patch \
- file://0001-Make-SharedMemoryMapping-move-constructor-noexcept.patch \
  file://0001-IWYU-ThemeService-requires-NativeTheme.patch \
- file://0001-Make-blink-LayoutUnit-HasFraction-constexpr.patch \
- file://0001-GCC-FeaturePolicyParser-ParseValueForFuzzer-is-not-i.patch \
- file://0001-Avoid-pure-virtual-crash-destroying-RenderProcessUse.patch \
- file://0001-ThrottlingController-Liveness-needs-to-be-uint32_t.patch \
- file://0001-GCC-avoid-ambiguous-NoDestructor-creation-in-GetNeve.patch \
- file://0001-DisjoingRangeLockManager-Lock-move-constructor-assig.patch \
- file://0001-GCC-XSetWindowAttributes-struct-initialization-shoul.patch \
  file://0001-GCC-remove-noexcept-in-history-QueryURLResult-move-c.patch \
- file://0001-GCC-move-explicit-specialization-out-of-RunInfo.patch \
+ file://0001-zlib-fix-gn-error-when-is_clang-false-target_cpu-arm.patch \
+ file://0001-GCC-build-ARM-build-because-of-missing-symbols.patch;patchdir=third_party/swiftshader \
 "
