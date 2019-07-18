@@ -42,4 +42,5 @@ SRC_URI += " \
  file://0001-libstdc-do-not-assume-unique_ptr-has-ostream-operato.patch \
  file://0001-zlib-fix-ARMv8-CRC32-compilation-in-GCC.patch \
  file://0001-Avoid-pure-virtual-crash-destroying-RenderProcessUse.patch \
+ file://0001-tcmalloc-Use-the-default-TLS-model-on-arm-gcc-always.patch \
 "

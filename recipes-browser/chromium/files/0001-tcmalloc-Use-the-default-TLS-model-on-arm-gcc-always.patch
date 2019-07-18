@@ -1,0 +1,33 @@
+From de514c5e001b954fbb77086999da118d9e58a23a Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jose.dapena@lge.com>
+Date: Fri, 12 Jul 2019 20:17:20 +0200
+Subject: tcmalloc: Use the default TLS model on arm-gcc, always
+
+Initially, the TLS model for the thread local heap pointer in
+ThreadCache was only set to default for arm-gcc in ChromeOS in
+https://codereview.chromium.org/2640263003
+
+But this issue is corrupting PlatformThread CurrentId thread_local
+storage in Linux, subsequently making PlatformThreadId calls unreliable.
+So, instead of disabling it specifically for ChromeOS, let's disable it
+for all GCC users.
+
+Bug: 973767
+Change-Id: Icf5908622ec128634f46412a682bdd6ea6b89cfe
+
+diff --git a/third_party/tcmalloc/gperftools-2.0/chromium/src/thread_cache.cc b/third_party/tcmalloc/gperftools-2.0/chromium/src/thread_cache.cc
+index 7ca92719b3d4..b599f30e243e 100644
+--- a/third_party/tcmalloc/gperftools-2.0/chromium/src/thread_cache.cc
++++ b/third_party/tcmalloc/gperftools-2.0/chromium/src/thread_cache.cc
+@@ -70,7 +70,7 @@ __thread ThreadCache* ThreadCache::threadlocal_heap_
+ // gcc has a problem with this tls model on arm.
+ // See https://bugs.chromium.org/p/chromium/issues/detail?id=650137
+ #if defined(HAVE___ATTRIBUTE__) && !defined(PGO_GENERATE) && \
+-    !(!defined(__clang__) && defined(OS_CHROMEOS) && defined(__arm__))
++    !(defined(COMPILER_GCC) && !defined(__clang__) && defined(__arm__))
+    __attribute__ ((tls_model ("initial-exec")))
+ # endif
+    ;
+-- 
+2.20.1
+

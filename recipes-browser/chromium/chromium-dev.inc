@@ -42,4 +42,5 @@ SRC_URI += " \
  file://0001-GCC-remove-noexcept-in-history-QueryURLResult-move-c.patch \
  file://0001-zlib-fix-gn-error-when-is_clang-false-target_cpu-arm.patch \
  file://0001-GCC-build-ARM-build-because-of-missing-symbols.patch;patchdir=third_party/swiftshader \
+ file://0001-tcmalloc-Use-the-default-TLS-model-on-arm-gcc-always.patch \
 "

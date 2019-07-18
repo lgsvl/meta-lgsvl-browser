@@ -54,4 +54,5 @@ SRC_URI += " \
  file://0001-GCC-remove-noexcept-in-history-QueryURLResult-move-c.patch \
  file://0001-GCC-move-explicit-specialization-out-of-RunInfo.patch \
  file://0001-ozone-wayland-Fix-method-prototype-match.patch \
+ file://0001-tcmalloc-Use-the-default-TLS-model-on-arm-gcc-always.patch \
 "
