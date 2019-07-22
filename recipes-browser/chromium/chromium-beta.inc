@@ -1,9 +1,9 @@
 require chromium-upstream-tarball.inc
 
-PV = "76.0.3809.46"
+PV = "76.0.3809.71"
 
-SRC_URI[md5sum] = "2b5c7ac5eb62d0f302ec8ee1ce35523b"
-SRC_URI[sha256sum] = "88ddb81ee20c52fc5fede5046befc80e5fa0403f2befc36c246f5337e7805cc0"
+SRC_URI[md5sum] = "10b979c8dfd20bcb09533de81ac88a9b"
+SRC_URI[sha256sum] = "22df73d3efdbc295ad7bd21be40662e8087c6eb1c32d8c19a199918284153888"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/buildtools/third_party/libc++/trunk/LICENSE.TXT;md5=55d89dd7eec8d3b4204b680e27da3953 \
@@ -32,7 +32,7 @@ LIC_FILES_CHKSUM += "\
 "
 
 SRC_URI += " \
- file://0001-Wrap-mksnapshot-and-torque-calls-on-Yocto-building-w.patch;patchdir=v8 \
+ file://0001-v8-7.6.303.22-Wrap-several-native-binary-calls-on-Yo.patch;patchdir=v8 \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
  file://0001-Add-missing-limits-header-to-crashpad.patch;patchdir=third_party/crashpad/crashpad \
  file://0001-NEON-do-not-use-certain-calls-that-would-break-GCC-b.patch;patchdir=third_party/skia \
