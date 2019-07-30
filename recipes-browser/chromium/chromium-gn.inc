@@ -269,6 +269,8 @@ do_compile() {
 	ninja -v "${PARALLEL_MAKE}" chrome chrome_sandbox
 }
 
+PRODUCT_LOGO_SIZES = "24 48 64 128 256"
+
 do_install() {
 	install -d ${D}${bindir}
 	install -d ${D}${datadir}
@@ -286,7 +288,7 @@ do_install() {
 	install -m 0644 chromium.desktop ${D}${datadir}/applications
 
 	# Install icons.
-	for size in 22 24 48 64 128 256; do
+	for size in ${PRODUCT_LOGO_SIZES}; do
 		install -d ${D}${datadir}/icons/hicolor/${size}x${size}
 		install -d ${D}${datadir}/icons/hicolor/${size}x${size}/apps
 		install -m 0644 \
