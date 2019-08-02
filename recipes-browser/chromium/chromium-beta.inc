@@ -1,9 +1,9 @@
 require chromium-upstream-tarball.inc
 
-PV = "76.0.3809.71"
+PV = "76.0.3809.87"
 
-SRC_URI[md5sum] = "10b979c8dfd20bcb09533de81ac88a9b"
-SRC_URI[sha256sum] = "22df73d3efdbc295ad7bd21be40662e8087c6eb1c32d8c19a199918284153888"
+SRC_URI[md5sum] = "abeb021fdf5591b0cf47c492c3e98dc1"
+SRC_URI[sha256sum] = "215ca6acee7b4fd3c95fe796260af4dc5454dbba3b701aa43afeb98a06dc4194"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/buildtools/third_party/libc++/trunk/LICENSE.TXT;md5=55d89dd7eec8d3b4204b680e27da3953 \
@@ -24,7 +24,6 @@ LIC_FILES_CHKSUM += "\
   file://${S}/third_party/libjpeg_turbo/LICENSE.md;md5=f568c3bdd0195918f507100b71862ee5 \
   file://${S}/third_party/libpng/LICENSE;md5=b0085051bf265bac2bfc38bc89f50000 \
   file://${S}/third_party/libsrtp/LICENSE;md5=2909fcf6f09ffff8430463d91c08c4e1\
-  file://${S}/third_party/mach_override/LICENSE;md5=0e9870caf60d27bfaff637979bfafc44 \
   file://${S}/third_party/ots/LICENSE;md5=e06eff2aa65b917034a81599bea73dc4 \
   file://${S}/third_party/protobuf/LICENSE;md5=37b5762e07f0af8c74ce80a8bda4266b \
   file://${S}/third_party/shaderc/src/LICENSE;md5=86d3f3a95c324c9479bd8986968f4327 \
@@ -57,6 +56,7 @@ SRC_URI += " \
  file://0001-GCC-move-explicit-specialization-out-of-RunInfo.patch \
  file://0001-ozone-wayland-Fix-method-prototype-match.patch \
  file://0001-tcmalloc-Use-the-default-TLS-model-on-arm-gcc-always.patch \
+ file://0001-tcmalloc-drop-initial-exec-TLS-model-on-arm-gcc-in-a.patch \
 "
 
 PRODUCT_LOGO_SIZES_append = " 22"
