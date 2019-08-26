@@ -1,0 +1,24 @@
+From 97df25b31834e16b8423d1a6a4805e7ed4c81453 Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jose.dapena@lge.com>
+Date: Thu, 22 Aug 2019 15:51:39 +0200
+Subject: IWYU: using CHAR_BIT in encryption utils requires including climits
+
+Bug: 957519
+Change-Id: I5f6e459fa217f3ef2a8efa2ffce4583d6c8306cd
+
+diff --git a/components/password_manager/core/browser/leak_detection/encryption_utils.cc b/components/password_manager/core/browser/leak_detection/encryption_utils.cc
+index 124ec31de7f7..0ba21985117a 100644
+--- a/components/password_manager/core/browser/leak_detection/encryption_utils.cc
++++ b/components/password_manager/core/browser/leak_detection/encryption_utils.cc
+@@ -4,6 +4,8 @@
+ 
+ #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
+ 
++#include <climits>
++
+ #include "base/stl_util.h"
+ #include "base/strings/strcat.h"
+ #include "base/strings/string_piece.h"
+-- 
+2.20.1
+

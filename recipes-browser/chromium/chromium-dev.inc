@@ -1,9 +1,9 @@
 require chromium-upstream-tarball.inc
 
-PV = "77.0.3860.5"
+PV = "78.0.3887.7"
 
-SRC_URI[md5sum] = "6f5be6fd668608d5fcd576b376cc2920"
-SRC_URI[sha256sum] = "dc068cf0c8fb1bdf4b0998f1c8c1254701ac70f9ee540face10ff7c6b82d6297"
+SRC_URI[md5sum] = "239241ebc712edd94e9e833e6993245e"
+SRC_URI[sha256sum] = "53c07675d4366c12b55646fe5ad9c9c90d1b581745541bd7f7fcbdc87137b974"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/buildtools/third_party/libc++/trunk/LICENSE.TXT;md5=55d89dd7eec8d3b4204b680e27da3953 \
@@ -36,11 +36,5 @@ SRC_URI += " \
  file://0001-Wrap-several-native-binary-calls-on-Yocto-building-w.patch;patchdir=v8 \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
  file://openscreen-v8-qemu-wrapper.patch;patchdir=third_party/openscreen/src \
- file://0001-tcmalloc-drop-initial-exec-TLS-model-on-arm-gcc-in-a.patch \
- file://0001-mojo-add-missing-noexcept-to-move-operator-construct.patch \
- file://0001-Do-not-assume-__has_builtin-is-available.patch;patchdir=third_party/angle \
- file://0001-Do-IWYU-in-a-few-header-files.patch \
- file://0001-BinaryUploadService-change-parameter-passing-that-ca.patch \
- file://0001-Make-base-WeakPtr-move-constructor-operator-noexcept.patch \
- file://0001-FontFaceCreationParams-use-WTF-String-for-filename-t.patch \
+ file://0001-IWYU-using-CHAR_BIT-in-encryption-utils-requires-inc.patch \
 "
