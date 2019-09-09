@@ -1,9 +1,9 @@
 require chromium-upstream-tarball.inc
 
-PV = "77.0.3865.42"
+PV = "77.0.3865.56"
 
-SRC_URI[md5sum] = "57738a31d5a473812db035d7bee79f2c"
-SRC_URI[sha256sum] = "9c68b76f8c234e279ae64ecf817285e0d3595e4857afd3341b430917e26dfd54"
+SRC_URI[md5sum] = "f6fff3d9a15dde0fcf45f9d6c80153aa"
+SRC_URI[sha256sum] = "3bd22d16ce044fd11d3b8ae75648c3eebd76778019a72436413e8d0ddd98e0f4"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/buildtools/third_party/libc++/trunk/LICENSE.TXT;md5=55d89dd7eec8d3b4204b680e27da3953 \
