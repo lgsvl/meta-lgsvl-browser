@@ -17,7 +17,6 @@ LICENSE = "BSD-3-Clause & LGPL-2.0 & LGPL-2.1"
 LIC_FILES_CHKSUM = "\
     file://${S}/LICENSE;md5=0fca02217a5d49a14dfe2d11837bb34d \
     file://${S}/LICENSE.chromium_os;md5=87dd8458232da630f5617873d42d8350 \
-    file://${S}/base/third_party/dmg_fp/LICENSE;md5=0893720de1a2e17053089dc16f743e11 \
     file://${S}/base/third_party/dynamic_annotations/LICENSE;md5=b6bd7011ecc1a4f7ac3525589f45e565 \
     file://${S}/base/third_party/libevent/LICENSE;md5=a2b0302a710150293fb85d2bfabd3de6 \
     file://${S}/base/third_party/nspr/LICENSE;md5=0806173dfb7e6d060074595e968fd02e \

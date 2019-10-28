@@ -1,0 +1,36 @@
+From 3e8697042c33850d8620694cb8a9c3cf80ee7905 Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jose.dapena@lge.com>
+Date: Fri, 30 Aug 2019 10:31:37 +0200
+Subject: [PATCH] Avoid partial specialization error in
+ TracerWrapperV8Reference
+
+TracerWrapperV8Reference class was declaring the template for
+TracedGlobalTrait of TracedGlobal as a partial specialization
+(declaring only a constexpr). This was breaking GCC build.
+
+Bug: 819294
+Change-Id: I624aeb4bcfd22de2a2452338c300ec7414eb2e35
+
+diff --git a/third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h b/third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h
+index 53cfd74a90af..563c6b2d1963 100644
+--- a/third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h
++++ b/third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h
+@@ -11,15 +11,6 @@
+ #include "third_party/blink/renderer/platform/heap/unified_heap_marking_visitor.h"
+ #include "v8/include/v8.h"
+ 
+-namespace v8 {
+-
+-template <typename T>
+-struct TracedGlobalTrait<v8::TracedGlobal<T>> {
+-  static constexpr bool kRequiresExplicitDestruction = false;
+-};
+-
+-}  // namespace v8
+-
+ namespace blink {
+ 
+ /**
+-- 
+2.20.1
+

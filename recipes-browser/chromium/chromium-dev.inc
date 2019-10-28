@@ -1,11 +1,12 @@
 require chromium-upstream-tarball.inc
 
-PV = "78.0.3887.7"
+PV = "79.0.3945.8"
 
-SRC_URI[md5sum] = "239241ebc712edd94e9e833e6993245e"
-SRC_URI[sha256sum] = "53c07675d4366c12b55646fe5ad9c9c90d1b581745541bd7f7fcbdc87137b974"
+SRC_URI[md5sum] = "471d81aea7fec95c62f345da16432940"
+SRC_URI[sha256sum] = "1de6e28b33e9b72a391dcf130fb15b2e017c3e990550aa1930880f8eb7be4cca"
 
 LIC_FILES_CHKSUM += "\
+  file://${S}/base/third_party/double_conversion/LICENSE;md5=1ea35644f0ec0d9767897115667e901f \
   file://${S}/buildtools/third_party/libc++/trunk/LICENSE.TXT;md5=55d89dd7eec8d3b4204b680e27da3953 \
   file://${S}/buildtools/third_party/libc++abi/trunk/LICENSE.TXT;md5=7b9334635b542c56868400a46b272b1e \
   file://${S}/third_party/SPIRV-Tools/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
@@ -15,7 +16,7 @@ LIC_FILES_CHKSUM += "\
   file://${S}/third_party/breakpad/LICENSE;md5=828152b41153892a725f0e7f56faff73 \
   file://${S}/third_party/chromevox/LICENSE;md5=45739090b454125d851ac7bb1bbd23a2 \
   file://${S}/third_party/d3/src/LICENSE;md5=0679931d76eb2f1dd1915249da84a722 \
-  file://${S}/third_party/expat/files/COPYING;md5=5b8620d98e49772d95fc1d291c26aa79 \
+  file://${S}/third_party/expat/src/expat/COPYING;md5=5b8620d98e49772d95fc1d291c26aa79 \
   file://${S}/third_party/ffmpeg/CREDITS.chromium;md5=f74504a10e06dc175c0e8e7e15105c05 \
   file://${S}/third_party/freetype/src/docs/FTL.TXT;md5=9f37b4e6afa3fef9dba8932b16bd3f97 \
   file://${S}/third_party/google_toolbox_for_mac/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
@@ -35,6 +36,11 @@ LIC_FILES_CHKSUM += "\
 SRC_URI += " \
  file://0001-Wrap-several-native-binary-calls-on-Yocto-building-w.patch;patchdir=v8 \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
- file://openscreen-v8-qemu-wrapper.patch;patchdir=third_party/openscreen/src \
  file://0001-IWYU-using-CHAR_BIT-in-encryption-utils-requires-inc.patch \
+ file://0001-IWYU-include-algorithm-to-use-std-lower_bound-in-ui-.patch \
+ file://0001-Reland-GCC-Fix-base-internal-InvokeFuncImpl.patch \
+ file://0001-GCC-use-brace-initializer-for-DohUpgrade-vector.patch \
+ file://0001-IWYU-missing-algorithm-include-in-Ozone-bitmap-curso.patch \
+ file://0001-GCC-avoid-clash-of-WebThemeEngine-ForcedColors-with-.patch \
+ file://0001-IWYU-launch_manager.h-uses-std-vector.patch \
 "

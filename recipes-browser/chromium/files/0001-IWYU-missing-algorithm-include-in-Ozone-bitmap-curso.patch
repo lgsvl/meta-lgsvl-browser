@@ -1,0 +1,30 @@
+From 492104cf0ddba3ea79a24e258ce49445cd967ca5 Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jose.dapena@lge.com>
+Date: Mon, 28 Oct 2019 10:29:10 +0100
+Subject: [PATCH] IWYU: missing <algorithm> include in Ozone bitmap cursor
+ factory
+
+bitmap_cursor_factory_ozone.cc is using std::find_if but not including
+required header <algorithm>.
+ui/base/cursor/ozone/bitmap_cursor_factory_ozone.cc:53:15: error: 'find_if' is not a member of 'std'; did you mean 'find'?
+   53 |   DCHECK(std::find_if(bitmaps_.begin(), bitmaps_.end(),
+
+Bug: 819294
+Change-Id: I00acc34c7f5fe6fb035da17dc8f15e03069bd5e3
+
+diff --git a/ui/base/cursor/ozone/bitmap_cursor_factory_ozone.cc b/ui/base/cursor/ozone/bitmap_cursor_factory_ozone.cc
+index d4afe5ccd05e..239ba350c8f6 100644
+--- a/ui/base/cursor/ozone/bitmap_cursor_factory_ozone.cc
++++ b/ui/base/cursor/ozone/bitmap_cursor_factory_ozone.cc
+@@ -4,6 +4,8 @@
+ 
+ #include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
+ 
++#include <algorithm>
++
+ #include "base/logging.h"
+ #include "third_party/skia/include/core/SkBitmap.h"
+ #include "ui/base/cursor/cursors_aura.h"
+-- 
+2.20.1
+

@@ -1,11 +1,12 @@
 require chromium-upstream-tarball.inc
 
-PV = "77.0.3865.56"
+PV = "78.0.3904.63"
 
-SRC_URI[md5sum] = "f6fff3d9a15dde0fcf45f9d6c80153aa"
-SRC_URI[sha256sum] = "3bd22d16ce044fd11d3b8ae75648c3eebd76778019a72436413e8d0ddd98e0f4"
+SRC_URI[md5sum] = "c9a610e01c2cb13bc3f96a1f7d0794a6"
+SRC_URI[sha256sum] = "7696d661527c9ec2531d43b76b2c43399d73ea34fd692736d6fa63f4d15dfff3"
 
 LIC_FILES_CHKSUM += "\
+  file://${S}/base/third_party/double_conversion/LICENSE;md5=1ea35644f0ec0d9767897115667e901f \
   file://${S}/buildtools/third_party/libc++/trunk/LICENSE.TXT;md5=55d89dd7eec8d3b4204b680e27da3953 \
   file://${S}/buildtools/third_party/libc++abi/trunk/LICENSE.TXT;md5=7b9334635b542c56868400a46b272b1e \
   file://${S}/third_party/SPIRV-Tools/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
@@ -35,9 +36,13 @@ LIC_FILES_CHKSUM += "\
 SRC_URI += " \
  file://0001-Wrap-several-native-binary-calls-on-Yocto-building-w.patch;patchdir=v8 \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
- file://openscreen-v8-qemu-wrapper.patch;patchdir=third_party/openscreen/src \
- file://0001-IWYU-include-memory-in-one_euro_filter.h-as-it-uses-.patch \
- file://0001-BinaryUploadService-change-parameter-passing-that-ca.patch \
- file://0001-Fix-build-failure-due-to-missing-include-for-std-num.patch \
- file://0001-FontFaceCreationParams-use-WTF-String-for-filename-t.patch \
+ file://0001-IWYU-using-CHAR_BIT-in-encryption-utils-requires-inc.patch \
+ file://0001-Fix-GCC-build-error.patch \
+ file://0001-dns_util-Make-DohUpgradeEntry-non-const-when-used-wi.patch \
+ file://0001-GCC-fix-build-of-DoH-upgrade-list.patch \
+ file://0001-Avoid-partial-specialization-error-in-TracerWrapperV.patch \
+ file://0001-GCC-remove-BlinkCloneableMessage-noexcept-in-move-as.patch \
+ file://0001-Make-parts-of-VideoCaptureSettings-and-AudioCaptureS.patch \
+ file://0001-GCC-remove-noexcept-declaration-of-blink-OriginAcces.patch \
+ file://0001-Add-missing-include-for-unique_ptr.patch \
 "
