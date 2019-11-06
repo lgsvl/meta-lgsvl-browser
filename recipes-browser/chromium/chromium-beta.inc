@@ -1,9 +1,9 @@
 require chromium-upstream-tarball.inc
 
-PV = "78.0.3904.63"
+PV = "79.0.3945.16"
 
-SRC_URI[md5sum] = "c9a610e01c2cb13bc3f96a1f7d0794a6"
-SRC_URI[sha256sum] = "7696d661527c9ec2531d43b76b2c43399d73ea34fd692736d6fa63f4d15dfff3"
+SRC_URI[md5sum] = "abc74864dc606c5b5fe2bc4f7a5380ae"
+SRC_URI[sha256sum] = "1133a5fa13bf0f2560a5b9006270039495f419628b3b0db5655f12b0cbf8805f"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/base/third_party/double_conversion/LICENSE;md5=1ea35644f0ec0d9767897115667e901f \
@@ -16,7 +16,7 @@ LIC_FILES_CHKSUM += "\
   file://${S}/third_party/breakpad/LICENSE;md5=828152b41153892a725f0e7f56faff73 \
   file://${S}/third_party/chromevox/LICENSE;md5=45739090b454125d851ac7bb1bbd23a2 \
   file://${S}/third_party/d3/src/LICENSE;md5=0679931d76eb2f1dd1915249da84a722 \
-  file://${S}/third_party/expat/files/COPYING;md5=5b8620d98e49772d95fc1d291c26aa79 \
+  file://${S}/third_party/expat/src/expat/COPYING;md5=5b8620d98e49772d95fc1d291c26aa79 \
   file://${S}/third_party/ffmpeg/CREDITS.chromium;md5=f74504a10e06dc175c0e8e7e15105c05 \
   file://${S}/third_party/freetype/src/docs/FTL.TXT;md5=9f37b4e6afa3fef9dba8932b16bd3f97 \
   file://${S}/third_party/google_toolbox_for_mac/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
@@ -37,12 +37,10 @@ SRC_URI += " \
  file://0001-Wrap-several-native-binary-calls-on-Yocto-building-w.patch;patchdir=v8 \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
  file://0001-IWYU-using-CHAR_BIT-in-encryption-utils-requires-inc.patch \
- file://0001-Fix-GCC-build-error.patch \
- file://0001-dns_util-Make-DohUpgradeEntry-non-const-when-used-wi.patch \
- file://0001-GCC-fix-build-of-DoH-upgrade-list.patch \
- file://0001-Avoid-partial-specialization-error-in-TracerWrapperV.patch \
- file://0001-GCC-remove-BlinkCloneableMessage-noexcept-in-move-as.patch \
- file://0001-Make-parts-of-VideoCaptureSettings-and-AudioCaptureS.patch \
- file://0001-GCC-remove-noexcept-declaration-of-blink-OriginAcces.patch \
- file://0001-Add-missing-include-for-unique_ptr.patch \
+ file://0001-IWYU-include-algorithm-to-use-std-lower_bound-in-ui-.patch \
+ file://0001-Reland-GCC-Fix-base-internal-InvokeFuncImpl.patch \
+ file://0001-GCC-use-brace-initializer-for-DohUpgrade-vector.patch \
+ file://0001-IWYU-missing-algorithm-include-in-Ozone-bitmap-curso.patch \
+ file://0001-GCC-avoid-clash-of-WebThemeEngine-ForcedColors-with-.patch \
+ file://0001-IWYU-launch_manager.h-uses-std-vector.patch \
 "
