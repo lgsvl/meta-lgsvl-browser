@@ -1,0 +1,45 @@
+From bf000e0721dc0c30f6650b644ac97a52bad2dc46 Mon Sep 17 00:00:00 2001
+From: Raphael Kubo da Costa <raphael.kubo.da.costa@intel.com>
+Date: Fri, 1 Nov 2019 18:02:56 +0000
+Subject: AddressInfo: Include <memory> for std::unique_ptr
+
+IWYU. This fixes the libstdc++ build after commit 135dadb4cd81 ("Encapsulate
+addrinfo in RAII type"):
+
+In file included from ../../net/dns/address_info.cc:5:
+../../net/dns/address_info.h:56:12: error: no template named 'unique_ptr' in namespace 'std'
+      std::unique_ptr<AddrInfoGetter> getter = nullptr);
+      ~~~~~^
+../../net/dns/address_info.h:73:34: error: no template named 'unique_ptr' in namespace 'std'
+  AddressInfo(addrinfo* ai, std::unique_ptr<AddrInfoGetter> getter);
+                            ~~~~~^
+../../net/dns/address_info.h:77:8: error: no template named 'unique_ptr' in namespace 'std'
+  std::unique_ptr<AddrInfoGetter> getter_;
+  ~~~~~^
+
+Bug: 957519
+Change-Id: I81f3403ad4b0aee6dc815241b41814d528b867ea
+Reviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/1894000
+Auto-Submit: Raphael Kubo da Costa <raphael.kubo.da.costa@intel.com>
+Commit-Queue: Eric Orth <ericorth@chromium.org>
+Reviewed-by: Eric Orth <ericorth@chromium.org>
+Cr-Commit-Position: refs/heads/master@{#711773}
+---
+ net/dns/address_info.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/dns/address_info.h b/net/dns/address_info.h
+index 782898535f24..95bc277c30ba 100644
+--- a/net/dns/address_info.h
++++ b/net/dns/address_info.h
+@@ -5,6 +5,7 @@
+ #ifndef NET_DNS_ADDRESS_INFO_H_
+ #define NET_DNS_ADDRESS_INFO_H_
+ 
++#include <memory>
+ #include <string>
+ #include <tuple>
+ 
+-- 
+2.20.1
+

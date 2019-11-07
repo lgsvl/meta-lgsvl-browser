@@ -1,0 +1,120 @@
+From 52055e609328cc1d8cd25bf092c25b655c9ab9b9 Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jose.dapena@lge.com>
+Date: Thu, 7 Nov 2019 10:38:34 +0100
+Subject: GCC: blink trace traits workaround GCC missing spezialiation in
+ non-namespace scope
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+GCC fails to build because blink::TraceKeyValuePairTraits explicit specialization
+of Trace<bool> is declared in the struct namespace. This is a new feature in C++17
+that is not supported in GCC.
+
+  ./../third_party/blink/renderer/platform/heap/trace_traits.h:333:13: error: explicit specialization in non-namespace scope ‘struct blink::TraceKeyValuePairTraits<Key, Value, KeyTraits, ValueTraits, Strongify>’
+     template <>
+               ^
+  ../../third_party/blink/renderer/platform/heap/trace_traits.h:334:67: error: template-id ‘Trace<true>’ in declaration of primary template
+     static bool Trace<true>(Visitor* visitor, Key& key, Value& value) {
+
+Bug tracking this in GCC: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=85282
+
+Bug: 819294
+Change-Id: I2e73d1c596fcf1eef58192071c160a2febdfea8b
+---
+ .../renderer/platform/heap/trace_traits.h     | 28 +++++++++++++++----
+ .../blink/renderer/platform/heap/visitor.h    | 17 +++++------
+ 2 files changed, 32 insertions(+), 13 deletions(-)
+
+diff --git a/third_party/blink/renderer/platform/heap/trace_traits.h b/third_party/blink/renderer/platform/heap/trace_traits.h
+index 41a8255b5226..a83a85152e54 100644
+--- a/third_party/blink/renderer/platform/heap/trace_traits.h
++++ b/third_party/blink/renderer/platform/heap/trace_traits.h
+@@ -296,7 +296,11 @@ template <typename Key,
+           typename Value,
+           typename KeyTraits,
+           typename ValueTraits,
+-          bool Strongify>
++          bool Strongify,
++          bool is_ephemeron =
++              KeyTraits::kWeakHandlingFlag ==
++              WTF::kWeakHandling&& ValueTraits::kWeakHandlingFlag !=
++              WTF::kWeakHandling>
+ struct TraceKeyValuePairTraits {
+   static constexpr bool kKeyIsWeak =
+       KeyTraits::kWeakHandlingFlag == WTF::kWeakHandling;
+@@ -315,7 +319,6 @@ struct TraceKeyValuePairTraits {
+   }
+ 
+   // Trace the value only if the key is alive.
+-  template <bool is_ephemeron = kKeyIsWeak && !kValueIsWeak>
+   static bool Trace(Visitor* visitor, Key& key, Value& value) {
+     const bool key_is_dead = blink::TraceCollectionIfEnabled < Strongify
+                                  ? WTF::kNoWeakHandling
+@@ -328,10 +331,25 @@ struct TraceKeyValuePairTraits {
+                : ValueTraits::kWeakHandlingFlag,
+            Value, ValueTraits > ::Trace(visitor, &value);
+   }
++};
+ 
+-  // Specializations for ephemerons:
+-  template <>
+-  static bool Trace<true>(Visitor* visitor, Key& key, Value& value) {
++// Specializations for ephemerons:
++template <typename Key,
++          typename Value,
++          typename KeyTraits,
++          typename ValueTraits,
++          bool Strongify>
++struct TraceKeyValuePairTraits<Key,
++                               Value,
++                               KeyTraits,
++                               ValueTraits,
++                               Strongify,
++                               true> {
++  static bool IsAlive(Key& key, Value& value) {
++    return TraceKeyValuePairTraits<Key, Value, KeyTraits, ValueTraits,
++                                   Strongify, false>::IsAlive(key, value);
++  }
++  static bool Trace(Visitor* visitor, Key& key, Value& value) {
+     static_assert(!blink::TraceTrait<Key>::kCanTraceMultipleObjects,
+                   "Ephemeron key cannot be a composite type");
+     return visitor->VisitEphemeronKeyValuePair(
+diff --git a/third_party/blink/renderer/platform/heap/visitor.h b/third_party/blink/renderer/platform/heap/visitor.h
+index a810d9735b55..cd16fa2a656f 100644
+--- a/third_party/blink/renderer/platform/heap/visitor.h
++++ b/third_party/blink/renderer/platform/heap/visitor.h
+@@ -151,14 +151,6 @@ class PLATFORM_EXPORT Visitor {
+     }
+   };
+ 
+-  template <>
+-  struct GetWeakTraceDescriptorDispatcher<true> {
+-    template <typename T>
+-    static TraceDescriptor GetWeakTraceDescriptor(T* backing) {
+-      return TraceTrait<T>::GetWeakTraceDescriptor(backing);
+-    }
+-  };
+-
+   template <
+       typename Traits,
+       bool =
+@@ -330,6 +322,15 @@ class PLATFORM_EXPORT Visitor {
+   ThreadState* const state_;
+ };
+ 
++template <>
++struct Visitor::GetWeakTraceDescriptorDispatcher<true> {
++  template <typename T>
++  static TraceDescriptor GetWeakTraceDescriptor(T* backing) {
++    return TraceTrait<T>::GetWeakTraceDescriptor(backing);
++  }
++};
++
++
+ }  // namespace blink
+ 
+ #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_VISITOR_H_
+-- 
+2.20.1
+

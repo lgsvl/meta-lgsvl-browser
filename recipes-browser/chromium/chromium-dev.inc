@@ -1,9 +1,9 @@
 require chromium-upstream-tarball.inc
 
-PV = "79.0.3945.8"
+PV = "80.0.3955.4"
 
-SRC_URI[md5sum] = "471d81aea7fec95c62f345da16432940"
-SRC_URI[sha256sum] = "1de6e28b33e9b72a391dcf130fb15b2e017c3e990550aa1930880f8eb7be4cca"
+SRC_URI[md5sum] = "bd8aef138ee6be89b6fb38a18bc6cf3d"
+SRC_URI[sha256sum] = "1a67f30f89e2d9a36f53f7ad6bc2c9c20b2978410107cc4ead6bffc2f0e73199"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/base/third_party/double_conversion/LICENSE;md5=1ea35644f0ec0d9767897115667e901f \
@@ -12,12 +12,12 @@ LIC_FILES_CHKSUM += "\
   file://${S}/third_party/SPIRV-Tools/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
   file://${S}/third_party/angle/LICENSE;md5=7abdb66a6948f39c2f469140db5184e2 \
   file://${S}/third_party/blink/LICENSE_FOR_ABOUT_CREDITS;md5=11e90d553b211de885f245900c4ccf89 \
-  file://${S}/third_party/boringssl/src/LICENSE;md5=e91719b7727a2d3464ec006154275572 \
+  file://${S}/third_party/boringssl/src/LICENSE;md5=9b082148f9953258347788edb83e401b \
   file://${S}/third_party/breakpad/LICENSE;md5=828152b41153892a725f0e7f56faff73 \
   file://${S}/third_party/chromevox/LICENSE;md5=45739090b454125d851ac7bb1bbd23a2 \
   file://${S}/third_party/d3/src/LICENSE;md5=0679931d76eb2f1dd1915249da84a722 \
   file://${S}/third_party/expat/src/expat/COPYING;md5=5b8620d98e49772d95fc1d291c26aa79 \
-  file://${S}/third_party/ffmpeg/CREDITS.chromium;md5=f74504a10e06dc175c0e8e7e15105c05 \
+  file://${S}/third_party/ffmpeg/CREDITS.chromium;md5=5af3cfcd2117a0fe5d3b2f7b488c4b3b \
   file://${S}/third_party/freetype/src/docs/FTL.TXT;md5=9f37b4e6afa3fef9dba8932b16bd3f97 \
   file://${S}/third_party/google_toolbox_for_mac/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
   file://${S}/third_party/harfbuzz-ng/src/COPYING;md5=e11f5c3149cdec4bb309babb020b32b9 \
@@ -36,11 +36,9 @@ LIC_FILES_CHKSUM += "\
 SRC_URI += " \
  file://0001-Wrap-several-native-binary-calls-on-Yocto-building-w.patch;patchdir=v8 \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
- file://0001-IWYU-using-CHAR_BIT-in-encryption-utils-requires-inc.patch \
- file://0001-IWYU-include-algorithm-to-use-std-lower_bound-in-ui-.patch \
- file://0001-Reland-GCC-Fix-base-internal-InvokeFuncImpl.patch \
- file://0001-GCC-use-brace-initializer-for-DohUpgrade-vector.patch \
- file://0001-IWYU-missing-algorithm-include-in-Ozone-bitmap-curso.patch \
- file://0001-GCC-avoid-clash-of-WebThemeEngine-ForcedColors-with-.patch \
- file://0001-IWYU-launch_manager.h-uses-std-vector.patch \
+ file://0001-AddressInfo-Include-memory-for-std-unique_ptr.patch \
+ file://0001-GCC-blink-trace-traits-workaround-GCC-missing-spezia.patch \
+ file://0001-GCC-fix-build-with-gcc9-in-trace_traits.h.patch \
+ file://0001-IWYU-include-algorithm-for-std-find_if-in-BitmapCurs.patch \
+ file://0001-IWYU-include-memory-for-unique_ptr-used-in-NeuralSty.patch \
 "
