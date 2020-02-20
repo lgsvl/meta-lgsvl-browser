@@ -1,9 +1,9 @@
 require chromium-upstream-tarball.inc
 
-PV = "80.0.3955.4"
+PV = "81.0.4021.2"
 
-SRC_URI[md5sum] = "bd8aef138ee6be89b6fb38a18bc6cf3d"
-SRC_URI[sha256sum] = "1a67f30f89e2d9a36f53f7ad6bc2c9c20b2978410107cc4ead6bffc2f0e73199"
+SRC_URI[md5sum] = "02595ccd60dab42146caff26f4349aa7"
+SRC_URI[sha256sum] = "45f1c7efacf0e628da2943725a155d1f9143b53c3d8e649de10d48c4f17c8b69"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/base/third_party/double_conversion/LICENSE;md5=1ea35644f0ec0d9767897115667e901f \
@@ -16,10 +16,8 @@ LIC_FILES_CHKSUM += "\
   file://${S}/third_party/breakpad/LICENSE;md5=828152b41153892a725f0e7f56faff73 \
   file://${S}/third_party/chromevox/LICENSE;md5=45739090b454125d851ac7bb1bbd23a2 \
   file://${S}/third_party/d3/src/LICENSE;md5=0679931d76eb2f1dd1915249da84a722 \
-  file://${S}/third_party/errorprone/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
   file://${S}/third_party/expat/src/expat/COPYING;md5=5b8620d98e49772d95fc1d291c26aa79 \
   file://${S}/third_party/ffmpeg/CREDITS.chromium;md5=5af3cfcd2117a0fe5d3b2f7b488c4b3b \
-  file://${S}/third_party/flot/LICENSE.txt;md5=fe1ea2158d814e4fc7227c8c6ccd7ab3 \
   file://${S}/third_party/freetype/src/docs/FTL.TXT;md5=9f37b4e6afa3fef9dba8932b16bd3f97 \
   file://${S}/third_party/google_toolbox_for_mac/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
   file://${S}/third_party/harfbuzz-ng/src/COPYING;md5=e11f5c3149cdec4bb309babb020b32b9 \
@@ -28,10 +26,10 @@ LIC_FILES_CHKSUM += "\
   file://${S}/third_party/libpng/LICENSE;md5=b0085051bf265bac2bfc38bc89f50000 \
   file://${S}/third_party/libsrtp/LICENSE;md5=2909fcf6f09ffff8430463d91c08c4e1\
   file://${S}/third_party/ots/LICENSE;md5=e06eff2aa65b917034a81599bea73dc4 \
-  file://${S}/third_party/pdfium/LICENSE;md5=defd64fe3646eb60a5d01fcbcc8b6b7c \
+  file://${S}/third_party/pdfium/LICENSE;md5=efe815679251504905d0f2c88a77c886 \
   file://${S}/third_party/protobuf/LICENSE;md5=37b5762e07f0af8c74ce80a8bda4266b \
   file://${S}/third_party/shaderc/src/LICENSE;md5=86d3f3a95c324c9479bd8986968f4327 \
-  file://${S}/third_party/skia/LICENSE;md5=d25bb58a1be2e1af9b58d31565a206dc \
+  file://${S}/third_party/skia/LICENSE;md5=822f02cc7736281816581cd064afbb1c \
   file://${S}/third_party/wtl/Ms-PL.txt;md5=1d2c3cdd7e748a6bc4213321d9157c5a \
   file://${S}/third_party/yasm/source/patched-yasm/COPYING;md5=a12d8903508fb6bfd49d8d82c6170dd9 \
   file://${S}/v8/LICENSE;md5=6611673a9587a522034a4be8f4df564c \
@@ -40,9 +38,17 @@ LIC_FILES_CHKSUM += "\
 SRC_URI += " \
  file://0001-Wrap-several-native-binary-calls-on-Yocto-building-w.patch;patchdir=v8 \
  file://0001-Use-v8-qemu-wrapper.sh-on-v8-context-snapshot-creati.patch \
- file://0001-AddressInfo-Include-memory-for-std-unique_ptr.patch \
- file://0001-GCC-blink-trace-traits-workaround-GCC-missing-spezia.patch \
- file://0001-GCC-fix-build-with-gcc9-in-trace_traits.h.patch \
- file://0001-IWYU-include-algorithm-for-std-find_if-in-BitmapCurs.patch \
- file://0001-IWYU-include-memory-for-unique_ptr-used-in-NeuralSty.patch \
+ file://0001-IWYU-missing-memory-include-for-unique_ptr-in-WebInp.patch \
+ file://0001-GCC-do-not-instantiate-CrossThreadCopier-template-fo.patch \
+ file://0001-GCC-workaround-error-resolving-IsA-template-in-Delet.patch \
+ file://0001-GCC-fix-clash-of-struct-xdg_surface-with-getter-xdg_.patch \
+ file://0001-GCC-fix-arm-NEON-extensions-for-zlib-insert_string.h.patch \
 "
+
+do_install_append() {
+        install -m 0755 crashpad_handler ${D}{libdir}/chromium/crashpad_handler
+}
+
+# Crashpad uses zlib internally, but it still does not handle properly the
+# NEON codepath for GCC.
+GN_ARGS_append_armv7ve += 'arm_use_neon=false'
