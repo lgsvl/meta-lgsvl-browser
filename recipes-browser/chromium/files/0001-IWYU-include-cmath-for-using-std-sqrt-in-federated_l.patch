@@ -1,0 +1,27 @@
+From 86509a8f5e860154fc3700c5c3a7d12ffaaa455c Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jdapena@igalia.com>
+Date: Wed, 10 Jun 2020 17:25:58 +0200
+Subject: IWYU: include cmath for using std::sqrt in federated_learning sim
+ hash
+
+Bug: 819294
+Change-Id: I4785f465efb51cb7d2c63cc3df5ed86c8e53362d
+---
+ components/federated_learning/sim_hash.cc | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/components/federated_learning/sim_hash.cc b/components/federated_learning/sim_hash.cc
+index 3624459f3383..8012adfbbe26 100644
+--- a/components/federated_learning/sim_hash.cc
++++ b/components/federated_learning/sim_hash.cc
+@@ -7,6 +7,7 @@
+ #include "base/hash/legacy_hash.h"
+ 
+ #include <algorithm>
++#include <cmath>
+ 
+ namespace federated_learning {
+ 
+-- 
+2.20.1
+

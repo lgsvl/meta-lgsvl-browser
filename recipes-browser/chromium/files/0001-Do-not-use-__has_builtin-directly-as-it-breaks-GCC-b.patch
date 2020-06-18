@@ -1,0 +1,51 @@
+From 326ccfda5cc63b2ff82d7d69a094344e0ac2ef67 Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jdapena@igalia.com>
+Date: Wed, 10 Jun 2020 17:37:28 +0200
+Subject: Do not use __has_builtin directly as it breaks GCC build.
+
+Bug: 819294
+---
+ libavutil/attributes.h | 6 ++++++
+ libavutil/common.h     | 4 ++--
+ 2 files changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/libavutil/attributes.h b/libavutil/attributes.h
+index ced108aa2c..74aa82c23f 100644
+--- a/libavutil/attributes.h
++++ b/libavutil/attributes.h
+@@ -164,4 +164,10 @@
+ #    define av_noreturn
+ #endif
+ 
++#if defined(__clang__)
++#    define av_has_builtin(x) __has_builtin(x)
++#else
++#    define av_has_builtin(x) 0
++#endif
++
+ #endif /* AVUTIL_ATTRIBUTES_H */
+diff --git a/libavutil/common.h b/libavutil/common.h
+index 451d5d7383..51c67263cf 100644
+--- a/libavutil/common.h
++++ b/libavutil/common.h
+@@ -299,7 +299,7 @@ static av_always_inline int av_sat_dsub32_c(int a, int b)
+  * @return sum with signed saturation
+  */
+ static av_always_inline int64_t av_sat_add64_c(int64_t a, int64_t b) {
+-#if (!defined(__INTEL_COMPILER) && AV_GCC_VERSION_AT_LEAST(5,1)) || (defined(__clang__) && __has_builtin(__builtin_add_overflow))
++#if (!defined(__INTEL_COMPILER) && AV_GCC_VERSION_AT_LEAST(5,1)) || (defined(__clang__) && av_has_builtin(__builtin_add_overflow))
+     int64_t tmp;
+     return !__builtin_add_overflow(a, b, &tmp) ? tmp : (tmp < 0 ? INT64_MAX : INT64_MIN);
+ #else
+@@ -319,7 +319,7 @@ static av_always_inline int64_t av_sat_add64_c(int64_t a, int64_t b) {
+  * @return difference with signed saturation
+  */
+ static av_always_inline int64_t av_sat_sub64_c(int64_t a, int64_t b) {
+-#if (!defined(__INTEL_COMPILER) && AV_GCC_VERSION_AT_LEAST(5,1)) || (defined(__clang__) && __has_builtin(__builtin_sub_overflow))
++#if (!defined(__INTEL_COMPILER) && AV_GCC_VERSION_AT_LEAST(5,1)) || (defined(__clang__) && av_has_builtin(__builtin_sub_overflow))
+     int64_t tmp;
+     return !__builtin_sub_overflow(a, b, &tmp) ? tmp : (tmp < 0 ? INT64_MAX : INT64_MIN);
+ #else
+-- 
+2.20.1
+

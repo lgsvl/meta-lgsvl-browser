@@ -59,7 +59,7 @@ COMPATIBLE_MACHINE_raspberrypi2 = "(.*)"
 # The wrapper script we use from upstream requires bash.
 RDEPENDS_${PN} = "bash"
 
-PACKAGECONFIG ??= "ftp webrtc use-gold"
+PACKAGECONFIG ??= "ftp use-gold"
 # ftp: Whether to build Chromium with support for the FTP protocol.
 PACKAGECONFIG[ftp] = "disable_ftp_support=false,disable_ftp_support=true"
 # proprietary-codecs: If enabled, this option will build Chromium with support
@@ -74,8 +74,6 @@ PACKAGECONFIG[proprietary-codecs] = '\
 # DO NOT USE IN PRODUCTION: this is only supposed to ease debugging and
 # testing.
 PACKAGECONFIG[root-profile] = ",,,"
-# webrtc: Whether to build Chromium with support for WebRTC.
-PACKAGECONFIG[webrtc] = "enable_webrtc=true,enable_webrtc=false"
 
 # use-gold: Whether to link Chromium with ld-gold or not.
 PACKAGECONFIG[use-gold] = "use_gold=true"
@@ -173,26 +171,34 @@ GN_ARGS += '\
         google_default_client_secret="${GOOGLE_DEFAULT_CLIENT_SECRET}" \
         '
 
-# Set a default value for jumbo file merge of 8. This should be good for build
-# servers and workstations with a big number of cores. In case build is
-# happening in a machine with less cores but still enough RAM a good value could
-# be 50.
-JUMBO_FILE_MERGE_LIMIT="8"
-PACKAGECONFIG[jumbo] = "use_jumbo_build=true jumbo_file_merge_limit=${JUMBO_FILE_MERGE_LIMIT}, use_jumbo_build=false"
-
 # Toolchains we will use for the build. We need to point to the toolchain file
 # we've created, set the right target architecture and make sure we are not
 # using Chromium's toolchain (bundled clang, bundled binutils etc).
 GN_ARGS += '\
-        is_clang=false \
-        linux_use_bundled_binutils=false \
-        custom_toolchain="//build/toolchain/yocto:yocto_target" \
-        use_custom_libcxx=false \
-        gold_path="" \
-        target_cpu="${@gn_arch_name('${TUNE_ARCH}')}" \
-        v8_snapshot_toolchain="//build/toolchain/yocto:yocto_target" \
-        host_toolchain="//build/toolchain/yocto:yocto_native" \
-        '
+  host_toolchain="//build/toolchain/cros:host" \
+  cros_host_is_clang=false \
+  use_custom_libcxx_for_host=false \
+  cros_host_ar="${BUILD_AR}" \
+  cros_host_cc="${BUILD_CC}" \
+  cros_host_cxx="${BUILD_CXX}" \
+  cros_host_extra_ldflags="${BUILD_LDFLAGS}" \
+  custom_toolchain="//build/toolchain/cros:target" \
+  is_clang=false \
+  use_custom_libcxx=false \
+  target_cpu="${@gn_arch_name('${TUNE_ARCH}')}" \
+  cros_target_ar="${AR}" \
+  cros_target_cc="${CC}" \
+  cros_target_cxx="${CXX}" \
+  v8_snapshot_toolchain="//build/toolchain/cros:v8_snapshot" \
+  cros_v8_snapshot_is_clang=false \
+  cros_v8_snapshot_ar="${BUILD_AR}" \
+  cros_v8_snapshot_cc="${BUILD_CC}" \
+  cros_v8_snapshot_cxx="${BUILD_CXX}" \
+  linux_use_bundled_binutils=false \
+  gold_path="" \
+  v8_enable_embedded_builtins=false \
+  use_v8_context_snapshot=false \
+'
 
 # ARM builds need special additional flags (see ${S}/build/config/arm.gni).
 ARM_FLOAT_ABI = "${@bb.utils.contains('TUNE_FEATURES', 'callconvention-hard', 'hard', 'softfp', d)}"
@@ -207,43 +213,6 @@ GN_ARGS_append_armv6 += 'arm_use_neon=false'
 
 # For Raspberry PI, default arm_arch setting is not valid and caused warnings
 GN_ARGS_append_armv7ve += 'arm_arch="armv7ve"'
-
-# V8's JIT infrastructure requires binaries such as mksnapshot and
-# mkpeephole to be run in the host during the build. However, these
-# binaries must have the same bit-width as the target (e.g. a x86_64
-# host targeting ARMv6 needs to produce a 32-bit binary). Instead of
-# depending on a third Yocto toolchain, we just build those binaries
-# for the target and run them on the host with QEMU.
-python do_create_v8_qemu_wrapper () {
-    """Creates a small wrapper that invokes QEMU to run some target V8 binaries
-    on the host."""
-    qemu_libdirs = [d.expand('${STAGING_DIR_HOST}${libdir}'),
-                    d.expand('${STAGING_DIR_HOST}${base_libdir}')]
-    qemu_cmd = qemu_wrapper_cmdline(d, d.getVar('STAGING_DIR_HOST', True),
-                                    qemu_libdirs)
-    wrapper_path = d.expand('${B}/v8-qemu-wrapper.sh')
-    with open(wrapper_path, 'w') as wrapper_file:
-        wrapper_file.write("""#!/bin/sh
-
-# This file has been generated automatically.
-# It invokes QEMU to run binaries built for the target in the host during the
-# build process.
-
-%s "$@"
-""" % qemu_cmd)
-    os.chmod(wrapper_path, 0o755)
-}
-do_create_v8_qemu_wrapper[dirs] = "${B}"
-addtask create_v8_qemu_wrapper after do_patch before do_configure
-
-python do_write_toolchain_file () {
-    """Writes a BUILD.gn file for Yocto detailing its toolchains."""
-    toolchain_dir = d.expand("${S}/build/toolchain/yocto")
-    bb.utils.mkdirhier(toolchain_dir)
-    toolchain_file = os.path.join(toolchain_dir, "BUILD.gn")
-    write_toolchain_file(d, toolchain_file)
-}
-addtask write_toolchain_file after do_patch before do_configure
 
 do_add_nodejs_symlink () {
 	# Adds a symlink to the node binary to the location expected by

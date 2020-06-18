@@ -1,0 +1,28 @@
+From afb48b33ab02ca833276bd05e702d26874382568 Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jdapena@igalia.com>
+Date: Wed, 17 Jun 2020 18:37:09 +0200
+Subject: [DO-NOT-COMMIT] Disable atk assert if toolchain is not target
+ toolchain
+
+Change-Id: I931f7086fc044024a4e6025421934fc26188c0f4
+---
+ build/config/linux/atk/BUILD.gn | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/build/config/linux/atk/BUILD.gn b/build/config/linux/atk/BUILD.gn
+index aad2efa60d6c..fa1af54fe859 100644
+--- a/build/config/linux/atk/BUILD.gn
++++ b/build/config/linux/atk/BUILD.gn
+@@ -9,9 +9,6 @@ import("//build/config/ui.gni")
+ # CrOS doesn't install GTK or any gnome packages.
+ assert(!is_chromeos)
+ 
+-# These packages should _only_ be expected when building for a target.
+-assert(current_toolchain == default_toolchain)
+-
+ if (use_atk) {
+   assert(use_glib, "use_atk=true requires that use_glib=true")
+ }
+-- 
+2.20.1
+

@@ -1,0 +1,38 @@
+From 786d870417b91f6909385f1a168226959f6ba3e3 Mon Sep 17 00:00:00 2001
+From: Raphael Kubo da Costa <raphael.kubo.da.costa@intel.com>
+Date: Thu, 11 Jun 2020 16:50:08 +0000
+Subject: x11::Connection: Undefine max and min after including Xlibint.h.
+
+This header defines max and min as macros, which can break the subsequent
+<algorithm> include with at least libstdc++.
+
+Bug: 957519
+Change-Id: Ib2b3fa3a61ce98874a2c4c1e2ffd2cd3d855ccaf
+Reviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/2240861
+Auto-Submit: Raphael Kubo da Costa <raphael.kubo.da.costa@intel.com>
+Commit-Queue: Thomas Anderson <thomasanderson@chromium.org>
+Reviewed-by: Thomas Anderson <thomasanderson@chromium.org>
+Cr-Commit-Position: refs/heads/master@{#777369}
+---
+ ui/gfx/x/connection.cc | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/ui/gfx/x/connection.cc b/ui/gfx/x/connection.cc
+index ad126138819d..7bc4aa69805c 100644
+--- a/ui/gfx/x/connection.cc
++++ b/ui/gfx/x/connection.cc
+@@ -9,6 +9,11 @@
+ #include <X11/Xlibint.h>
+ #include <xcb/xcb.h>
+ 
++// Xlibint.h defines those as macros, which breaks the C++ versions in
++// the std namespace.
++#undef max
++#undef min
++
+ #include <algorithm>
+ 
+ #include "base/command_line.h"
+-- 
+2.20.1
+

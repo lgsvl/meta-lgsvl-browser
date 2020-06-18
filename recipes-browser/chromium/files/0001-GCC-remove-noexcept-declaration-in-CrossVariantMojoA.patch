@@ -1,0 +1,58 @@
+From a3da3b7fa4a30fb10f742aee759135f08b00f365 Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jdapena@igalia.com>
+Date: Tue, 16 Jun 2020 17:12:47 +0200
+Subject: GCC: remove noexcept declaration in
+ CrossVariantMojoAssociatedReceive/Remote
+
+It breaks compilation of blink::WebServiceRegistrationObjectInfo that includes
+WebServiceWorkerObjectInfo instance. This one uses default move constructor
+without noexcept declaration, but has as members CrossVariantMojoAssociatedReceive
+and CrossVariantMojoAssociatedRemote with noexcept declaration in move constructor.
+declared noexcept.
+
+As resolved in other places, noexcept is not really much useful with -fno-exception
+and our codebase is not prepare to add it consistently. Clang will not report
+exception declaration incompatibilities in case -fno-exception is used, but GCC
+fails.
+
+Bug: 819294
+Change-Id: Id5c46c271a8a92352d769de9c3c263d3dce4c9c7
+---
+ .../blink/public/platform/cross_variant_mojo_util.h  | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/third_party/blink/public/platform/cross_variant_mojo_util.h b/third_party/blink/public/platform/cross_variant_mojo_util.h
+index 92c69cecf0df..9945e00419e2 100644
+--- a/third_party/blink/public/platform/cross_variant_mojo_util.h
++++ b/third_party/blink/public/platform/cross_variant_mojo_util.h
+@@ -131,10 +131,10 @@ class CrossVariantMojoAssociatedReceiver {
+   CrossVariantMojoAssociatedReceiver() = default;
+   ~CrossVariantMojoAssociatedReceiver() = default;
+ 
+-  CrossVariantMojoAssociatedReceiver(
+-      CrossVariantMojoAssociatedReceiver&&) noexcept = default;
++  CrossVariantMojoAssociatedReceiver(CrossVariantMojoAssociatedReceiver&&) =
++      default;
+   CrossVariantMojoAssociatedReceiver& operator=(
+-      CrossVariantMojoAssociatedReceiver&&) noexcept = default;
++      CrossVariantMojoAssociatedReceiver&&) = default;
+ 
+   CrossVariantMojoAssociatedReceiver(
+       const CrossVariantMojoAssociatedReceiver&) = delete;
+@@ -166,10 +166,10 @@ class CrossVariantMojoAssociatedRemote {
+   CrossVariantMojoAssociatedRemote() = default;
+   ~CrossVariantMojoAssociatedRemote() = default;
+ 
+-  CrossVariantMojoAssociatedRemote(
+-      CrossVariantMojoAssociatedRemote&&) noexcept = default;
++  CrossVariantMojoAssociatedRemote(CrossVariantMojoAssociatedRemote&&) =
++      default;
+   CrossVariantMojoAssociatedRemote& operator=(
+-      CrossVariantMojoAssociatedRemote&&) noexcept = default;
++      CrossVariantMojoAssociatedRemote&&) = default;
+ 
+   CrossVariantMojoAssociatedRemote(const CrossVariantMojoAssociatedRemote&) =
+       delete;
+-- 
+2.20.1
+
