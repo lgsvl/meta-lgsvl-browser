@@ -1,0 +1,31 @@
+From ef89d263cddbf5d7706672984a2ec996162eefad Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jdapena@igalia.com>
+Date: Fri, 10 Jul 2020 20:31:46 +0200
+Subject: GCC: do not enable CFI in any case
+
+CFI is enabled for linux desktop X86-64. But it is not actually
+supported in GCC. So this needs to be set to false in any case
+if compiler is GCC.
+
+Bug: 819294
+Change-Id: I81472c1493239e43e40af4c92a1c9c1316e0749a
+---
+ build/config/sanitizers/sanitizers.gni | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/build/config/sanitizers/sanitizers.gni b/build/config/sanitizers/sanitizers.gni
+index df40c9ddb41a..b26d30d70e79 100644
+--- a/build/config/sanitizers/sanitizers.gni
++++ b/build/config/sanitizers/sanitizers.gni
+@@ -55,7 +55,7 @@ declare_args() {
+   #
+   # Disable this on linux-chromeos to avoid using ThinLTO there;
+   # crbug.com/1033839. Similarly, don't use this on ARC builds.
+-  is_cfi = is_official_build &&
++  is_cfi = is_official_build && is_clang &&
+            ((target_os == "linux" && !is_chromeos && target_cpu == "x64") ||
+             (target_os == "chromeos" && is_chromeos_device))
+ 
+-- 
+2.20.1
+

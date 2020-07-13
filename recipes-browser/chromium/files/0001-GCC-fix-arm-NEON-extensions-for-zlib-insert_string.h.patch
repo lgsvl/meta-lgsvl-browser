@@ -1,4 +1,4 @@
-From 2de1712178a3511298aa47e968eadac29c9f6475 Mon Sep 17 00:00:00 2001
+From f4199e70c92fafaf8b0f8060de7ea710e714e8b8 Mon Sep 17 00:00:00 2001
 From: Jose Dapena Paz <jdapena@igalia.com>
 Date: Thu, 16 Jan 2020 11:43:02 +0100
 Subject: GCC: fix arm NEON extensions for zlib insert_string.h
@@ -10,16 +10,16 @@ as they are used in clang. They are not compatible.
 
 Change-Id: I19aa21fa6d107dd6530648a2a04326d8a2c2823f
 ---
- .../contrib/optimizations/insert_string.h     | 19 ++++++++++++-------
- 1 file changed, 12 insertions(+), 7 deletions(-)
+ .../contrib/optimizations/insert_string.h     | 20 +++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
 
 diff --git a/third_party/zlib/contrib/optimizations/insert_string.h b/third_party/zlib/contrib/optimizations/insert_string.h
-index 69eee3dc9e91..c6066fafb098 100644
+index d3bc33c5ab05..1152295066f6 100644
 --- a/third_party/zlib/contrib/optimizations/insert_string.h
 +++ b/third_party/zlib/contrib/optimizations/insert_string.h
-@@ -29,15 +29,20 @@
+@@ -28,16 +28,20 @@
+ #elif defined(CRC32_ARMV8_CRC32)
    #if defined(__clang__)
-     #undef TARGET_CPU_WITH_CRC
      #define __crc32cw __builtin_arm_crc32cw
 +    #if defined(__aarch64__)
 +      #define TARGET_CPU_WITH_CRC __attribute__((target("crc")))
@@ -31,20 +31,21 @@ index 69eee3dc9e91..c6066fafb098 100644
 +     * allowed. We can just include arm_acle.h.
 +     */
 +    #include <arm_acle.h>
-+  #else  // !defined(__GNUC__) && !defined(_aarch64__)
++  #else
 +    #error ARM CRC32 SIMD extensions only supported for Clang and GCC
    #endif
--
-   #define _cpu_crc32_u32 __crc32cw
 -
 -  #if defined(__aarch64__)
 -    #define TARGET_CPU_WITH_CRC __attribute__((target("crc")))
 -  #else  // !defined(__aarch64__)
 -    #define TARGET_CPU_WITH_CRC __attribute__((target("armv8-a,crc")))
 -  #endif  // defined(__aarch64__)
+-
+   #define _cpu_crc32_u32 __crc32cw
+-
  #endif
  // clang-format on
- TARGET_CPU_WITH_CRC
+ 
 -- 
 2.20.1
 

@@ -1,9 +1,8 @@
 require chromium-upstream-tarball.inc
 
-PV = "85.0.4168.2"
+PV = "85.0.4183.15"
 
-SRC_URI[md5sum] = "764a37e40cabae3cb7ea7be3b25db055"
-SRC_URI[sha256sum] = "1a7a7b42639ef1e8d4740454ca198e24615d1c5ff82fec4baeb0f62abfff359b"
+SRC_URI[sha256sum] = "0a4d0d6515f8d37f0d52a2cdf91fc9e17e30ccc55e4c3235681dae8df4c96bb5"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/base/third_party/double_conversion/LICENSE;md5=1ea35644f0ec0d9767897115667e901f \
@@ -35,24 +34,15 @@ LIC_FILES_CHKSUM += "\
 "
 
 SRC_URI += " \
-  file://0001-Do-not-use-__has_builtin-directly-as-it-breaks-GCC-b.patch;patchdir=third_party/ffmpeg \
-  file://0001-cros-search-service-Add-missing-include-cmath.patch \
-  file://0001-IWYU-include-cmath-for-using-std-sqrt-in-federated_l.patch \
-  file://0001-DO-NOT-COMMIT-Disable-atk-assert-if-toolchain-is-not.patch \
-  file://0001-IWYU-include-memory-in-ManagementService.patch \
-  file://0001-GCC-missing-calling-CBBFunctionToVector-in-Ed25519Pr.patch \
-  file://0001-bluetooth-fix-compile-error-in-dbus-fake-bluetooth-d.patch \
-  file://0001-IWYU-include-bitset-in-VP9ReferenceFrameVector.patch \
-  file://0001-IWYU-include-cstring-for-memset-and-memcpy-calls-in-.patch \
-  file://0001-IWYU-opencv-include-algorithm-and-cstring-in-emd.cpp.patch \
-  file://0001-GCC-avoid-clash-between-generated-type-x11-RandR-Con.patch \
-  file://0001-x11-Connection-Undefine-max-and-min-after-including-.patch \
-  file://0001-Add-missing-cstring-include-and-namespace-in-WebStri.patch \
-  file://0001-Do-not-use-NearbyConnection-as-parameter-passed-by-c.patch \
-  file://0001-GCC-do-not-use-DCHECK_EQ-NE-for-checking-PageNode-Op.patch \
-  file://0001-Add-include-to-fix-compilation-in-some-cases.patch \
-  file://0001-GCC-remove-noexcept-declaration-in-CrossVariantMojoA.patch \
-  file://0001-GCC-Fix-DHECK_EQ.patch \
+  file://0001-GCC-fix-arm-NEON-extensions-for-zlib-insert_string.h.patch \
+  file://0001-IWYU-int8_t-used-in-nearby-share-encrypted-metadata-.patch \
+  file://0001-IWYU-missing-include-for-std-vector-usage-in-ozone-p.patch \
+  file://0001-GCC-add-explicit-namespace-for-FrameWidget.patch \
+  file://0001-M85-Do-not-declare-method-by-copy-parameter-using-ab.patch \
+  file://0001-GCC-fix-operator-for-performance_manager-PageNode-Op.patch \
+  file://0001-fixup-do-not-return-to-128-integer-word-from-_mm_cmp.patch \
+  file://0001-fixup-SIMD-for-main-loop-of-a-rate-DelayNode.patch \
+  file://0001-GCC-do-not-enable-CFI-in-any-case.patch \
 "
 
 do_install_append() {

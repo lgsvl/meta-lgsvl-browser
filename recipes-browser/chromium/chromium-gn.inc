@@ -154,7 +154,7 @@ GN_ARGS += "treat_warnings_as_errors=false"
 GN_ARGS += "fieldtrial_testing_like_official_build=true"
 
 # Disable compiling closures, as they require java runtime
-GN_ARGS += "closure_compile=false"
+GN_ARGS += "enable_js_type_check=false"
 
 # API keys for accessing Google services. By default, we use an invalid key
 # only to prevent the "you are missing an API key" infobar from being shown on
@@ -287,7 +287,13 @@ do_install() {
 	install -m 0644 resources.pak ${D}${libdir}/chromium/resources.pak
 
 	install -m 0644 locales/*.pak ${D}${libdir}/chromium/locales/
+
+        install -d ${D}${libdir}/chromium/swiftshader
+        install -m 0755 swiftshader/* ${D}${libdir}/chromium/swiftshader
 }
+
+# Swiftshader libraries installed in chromium libdir do not have versioning
+INSANE_SKIP_${PN} = "dev-elf"
 
 FILES_${PN} = " \
         ${bindir}/chromium \

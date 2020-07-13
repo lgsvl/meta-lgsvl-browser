@@ -1,0 +1,26 @@
+From 95828b0ac568212b7d30d7ba0ef3e5342fdaf953 Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jdapena@igalia.com>
+Date: Mon, 6 Jul 2020 21:04:21 +0200
+Subject: IWYU: missing include for std::vector usage in ozone platform screen
+
+Bug: 819294
+Change-Id: I04fb2cb5d939b9181ec8e42b0d0a9595b43c365a
+---
+ ui/ozone/public/platform_screen.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/ui/ozone/public/platform_screen.h b/ui/ozone/public/platform_screen.h
+index 9ce293c0afff..ba20597d8c51 100644
+--- a/ui/ozone/public/platform_screen.h
++++ b/ui/ozone/public/platform_screen.h
+@@ -7,6 +7,7 @@
+ 
+ #include <set>
+ #include <string>
++#include <vector>
+ 
+ #include "base/component_export.h"
+ #include "base/macros.h"
+-- 
+2.20.1
+
