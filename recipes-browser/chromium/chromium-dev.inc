@@ -1,8 +1,8 @@
 require chromium-upstream-tarball.inc
 
-PV = "85.0.4183.15"
+PV = "85.0.4183.25"
 
-SRC_URI[sha256sum] = "0a4d0d6515f8d37f0d52a2cdf91fc9e17e30ccc55e4c3235681dae8df4c96bb5"
+SRC_URI[sha256sum] = "d2fc741df27ed35af96bdc0b128108de17fce8dca70283ae58b0cf9f272586ca"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/base/third_party/double_conversion/LICENSE;md5=1ea35644f0ec0d9767897115667e901f \
