@@ -2,7 +2,9 @@ SUMMARY = "Meta-build system from Google"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=0fca02217a5d49a14dfe2d11837bb34d"
 
-DEPENDS = "python3-native ninja-native"
+DEPENDS = "ninja-native"
+
+inherit pythonnative
 
 SRC_URI = "git://gn.googlesource.com/gn;procotol=https"
 
