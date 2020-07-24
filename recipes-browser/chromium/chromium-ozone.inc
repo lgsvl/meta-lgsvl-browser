@@ -17,3 +17,7 @@ GN_ARGS += "\
  use_system_libdrm=true \
  use_xkbcommon=true \
 "
+
+# Right now GBM buffers are not working properly on v3d driver used in RPI4
+GN_ARGS_append_raspberrypi4 = " use_wayland_gbm=false"
+GN_ARGS_append_raspberrypi4-64 = " use_wayland_gbm=false"

@@ -43,6 +43,7 @@ SRC_URI += " \
   file://0001-fixup-do-not-return-to-128-integer-word-from-_mm_cmp.patch \
   file://0001-fixup-SIMD-for-main-loop-of-a-rate-DelayNode.patch \
   file://0001-GCC-do-not-enable-CFI-in-any-case.patch \
+  file://0001-ozone-wayland-GN-should-not-assert-if-use_wayland_gb.patch \
 "
 
 do_install_append() {
