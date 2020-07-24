@@ -34,7 +34,7 @@ DEPENDS = "\
 DEPENDS_append_x86 = "yasm-native"
 DEPENDS_append_x86-64 = "yasm-native"
 
-inherit gtk-icon-cache qemu
+inherit gtk-icon-cache pythonnative qemu setuptools
 
 OUTPUT_DIR = "out/Release"
 B = "${WORKDIR}/build/${OUTPUT_DIR}"
