@@ -51,7 +51,6 @@ LIC_FILES_CHKSUM = "\
     file://${S}/third_party/ashmem/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
     file://${S}/third_party/brotli/LICENSE;md5=941ee9cd1609382f946352712a319b4b \
     file://${S}/third_party/bspatch/LICENSE;md5=3e837ede9697ce4c789c3ca32aabe003 \
-    file://${S}/third_party/cacheinvalidation/src/google/cacheinvalidation/COPYING;md5=3b83ef96387f14655fc854ddc3c6bd57 \
     file://${S}/third_party/ced/LICENSE;md5=3947f60c9d4b1ba51d193af511855a55 \
     file://${S}/third_party/cld_3/LICENSE;md5=d8b32ba83f8b11e4badd979f4319e706 \
     file://${S}/third_party/closure_compiler/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
