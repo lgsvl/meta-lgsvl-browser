@@ -1,0 +1,30 @@
+From e8c51804cc10eafb6e8cf9a449991c0fffa3e1ec Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jose.dapena@lge.com>
+Date: Fri, 24 Jul 2020 18:16:42 +0200
+Subject: GCC: fix type passed to vcvt_f32_f16 to be a float16x4_t in SkVx.h
+
+GCC intrisics type validation is stricter than the one in Clang, so
+passing a uint16x4_t to a function expected to accept float16x4_t
+is not valid.
+
+Bug: 819294
+---
+ include/private/SkVx.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/private/SkVx.h b/include/private/SkVx.h
+index e8440d4366..4e2b59d9d3 100644
+--- a/include/private/SkVx.h
++++ b/include/private/SkVx.h
+@@ -534,7 +534,7 @@ static inline Vec<N,float> from_half(const Vec<N,uint16_t>& x) {
+ #endif
+ #if defined(__aarch64__)
+     if /*constexpr*/ (N == 4) {
+-        return unchecked_bit_pun<Vec<N,float>>(vcvt_f32_f16(unchecked_bit_pun<uint16x4_t>(x)));
++        return unchecked_bit_pun<Vec<N,float>>(vcvt_f32_f16(unchecked_bit_pun<float16x4_t>(x)));
+     }
+ #endif
+     if /*constexpr*/ (N > 4) {
+-- 
+2.25.1
+

@@ -1,8 +1,8 @@
 require chromium-upstream-tarball.inc
 
-PV = "86.0.4209.2"
+PV = "86.0.4214.2"
 
-SRC_URI[sha256sum] = "669fe050ce8e3a79d372a382931e62df9e3dfd932e80346c972d447de61b4dd0"
+SRC_URI[sha256sum] = "b2e6d6528f78a66926d694b99725236f0113fc6ac8588bb3d1e7ff58cbc11167"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/base/third_party/double_conversion/LICENSE;md5=1ea35644f0ec0d9767897115667e901f \
@@ -36,11 +36,8 @@ LIC_FILES_CHKSUM += "\
 SRC_URI += " \
   file://0001-GCC-fix-arm-NEON-extensions-for-zlib-insert_string.h.patch \
   file://0001-GCC-do-not-enable-CFI-in-any-case.patch \
-  file://0001-ozone-wayland-GN-should-not-assert-if-use_wayland_gb.patch \
   file://0001-IWYU-memcpy-required-cstring-in-byte_array.h.patch;patchdir=third_party/nearby/src \
   file://0001-Remove-explicit-keyword-in-AtomicReference-construct.patch;patchdir=third_party/nearby/src \
-  file://0001-GCC-avoid-WTF-vector-backed-linked-list-template-spe.patch \
-  file://0001-libstdc-do-not-pass-const-types-to-std-vector-in-aut.patch \
   file://0001-GCC-fix-type-passed-to-vcvt_f32_f16-to-be-a-float16x.patch;patchdir=third_party/skia \
 "
 
