@@ -1,8 +1,8 @@
 require chromium-upstream-tarball.inc
 
-PV = "86.0.4214.2"
+PV = "86.0.4221.3"
 
-SRC_URI[sha256sum] = "b2e6d6528f78a66926d694b99725236f0113fc6ac8588bb3d1e7ff58cbc11167"
+SRC_URI[sha256sum] = "44960b027c2ab2613b52e09b58c2f0119099acb3f1e30084d7b8fd11c571395a"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/base/third_party/double_conversion/LICENSE;md5=1ea35644f0ec0d9767897115667e901f \
@@ -34,11 +34,10 @@ LIC_FILES_CHKSUM += "\
 "
 
 SRC_URI += " \
-  file://0001-GCC-fix-arm-NEON-extensions-for-zlib-insert_string.h.patch \
   file://0001-GCC-do-not-enable-CFI-in-any-case.patch \
   file://0001-IWYU-memcpy-required-cstring-in-byte_array.h.patch;patchdir=third_party/nearby/src \
   file://0001-Remove-explicit-keyword-in-AtomicReference-construct.patch;patchdir=third_party/nearby/src \
-  file://0001-GCC-fix-type-passed-to-vcvt_f32_f16-to-be-a-float16x.patch;patchdir=third_party/skia \
+  file://0001-IWYU-std-vector-used-in-fuzzy_finder.h-requires-incl.patch \
 "
 
 do_install_append() {
