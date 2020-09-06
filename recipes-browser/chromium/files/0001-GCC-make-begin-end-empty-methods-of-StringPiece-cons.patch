@@ -1,0 +1,51 @@
+From df3d6c22f98271df9e3fb61032af447eeb8cc475 Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jdapena@igalia.com>
+Date: Tue, 1 Sep 2020 17:26:24 +0200
+Subject: GCC: make begin/end/empty methods of StringPiece constexpr to allow
+ them to be called from base::ConsumeDurationNumber
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Compilation fails in GCC in base::ConsumeDurationNumber, as it
+is a constexpr but it calls methods begin/end/empty in
+StringPiece that are not constexpr. This change makes them
+constexpr.
+../../base/time/time.cc: In function ‘constexpr base::Optional<base::{anonymous}::ParsedDecimal> base::{anonymous}::ConsumeDurationNumber(base::StringPiece&)’:
+../../base/time/time.cc:67:63: error: call to non-‘constexpr’ function ‘const value_type* base::BasicStringPiece<STRING_TYPE>::begin() const [with STRING_TYPE = std::__cxx11::basic_string<char>; base::BasicStringPiece<STRING_TYPE>::const_iterator = const char*; base::BasicStringPiece<STRING_TYPE>::value_type = char]’
+   67 |   StringPiece::const_iterator orig_start = number_string.begin();
+      |                                            ~~~~~~~~~~~~~~~~~~~^~
+
+Bug: 819294
+Change-Id: If8813ac2651ac444cde7b874a1540c98c256c5b8
+---
+ base/strings/string_piece.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/base/strings/string_piece.h b/base/strings/string_piece.h
+index 3fc7620812c0..fe4b01e99097 100644
+--- a/base/strings/string_piece.h
++++ b/base/strings/string_piece.h
+@@ -198,7 +198,7 @@ template <typename STRING_TYPE> class BasicStringPiece {
+   constexpr const value_type* data() const { return ptr_; }
+   constexpr size_type size() const noexcept { return length_; }
+   constexpr size_type length() const noexcept { return length_; }
+-  bool empty() const { return length_ == 0; }
++  constexpr bool empty() const { return length_ == 0; }
+ 
+   constexpr value_type operator[](size_type i) const {
+     CHECK(i < length_);
+@@ -249,8 +249,8 @@ template <typename STRING_TYPE> class BasicStringPiece {
+     return STRING_TYPE(*this);
+   }
+ 
+-  const_iterator begin() const { return ptr_; }
+-  const_iterator end() const { return ptr_ + length_; }
++  constexpr const_iterator begin() const { return ptr_; }
++  constexpr const_iterator end() const { return ptr_ + length_; }
+   const_reverse_iterator rbegin() const {
+     return const_reverse_iterator(ptr_ + length_);
+   }
+-- 
+2.25.1
+

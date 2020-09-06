@@ -1,8 +1,8 @@
 require chromium-upstream-tarball.inc
 
-PV = "86.0.4229.0"
+PV = "87.0.4252.0"
 
-SRC_URI[sha256sum] = "dcb3dbb7bb5568ea31a820e053adb966819fd299726fe99f7f832aaa46af5af9"
+SRC_URI[sha256sum] = "5ea43fa7c79061f8fa5ce9f9f1e1776f1e639dad8fdfdd613af00f136dd3b4d3"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/base/third_party/double_conversion/LICENSE;md5=1ea35644f0ec0d9767897115667e901f \
@@ -21,7 +21,7 @@ LIC_FILES_CHKSUM += "\
   file://${S}/third_party/google_toolbox_for_mac/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
   file://${S}/third_party/harfbuzz-ng/src/COPYING;md5=8f787620b7d3866d9552fd1924c07572 \
   file://${S}/third_party/icu/LICENSE;md5=a3808a5b70071b07f87ff2205e4d75a0 \
-  file://${S}/third_party/libjpeg_turbo/LICENSE.md;md5=f568c3bdd0195918f507100b71862ee5 \
+  file://${S}/third_party/libjpeg_turbo/LICENSE.md;md5=26d6491346496a57f75f00a78199122e \
   file://${S}/third_party/libpng/LICENSE;md5=b0085051bf265bac2bfc38bc89f50000 \
   file://${S}/third_party/libsrtp/LICENSE;md5=2909fcf6f09ffff8430463d91c08c4e1\
   file://${S}/third_party/ots/LICENSE;md5=e06eff2aa65b917034a81599bea73dc4 \
@@ -37,6 +37,13 @@ SRC_URI += " \
   file://0001-GCC-do-not-enable-CFI-in-any-case.patch \
   file://0001-IWYU-memcpy-required-cstring-in-byte_array.h.patch;patchdir=third_party/nearby/src \
   file://0001-Remove-explicit-keyword-in-AtomicReference-construct.patch;patchdir=third_party/nearby/src \
+  file://0001-GCC-initialize-kImageMemoryBarrierData-with-initiali.patch;patchdir=third_party/angle \
+  file://0001-GCC-make-begin-end-empty-methods-of-StringPiece-cons.patch \
+  file://0001-GCC-do-not-use-namespace-linux-in-system-memory-pres.patch \
+  file://0001-libstdc-usage-of-std-floorf-in-NG-out-of-flow-layout.patch \
+  file://0001-IWYU-math.h-required-to-use-floor-in-QR-code-generat.patch \
+  file://0001-GCC-do-not-use-template-specialization-in-namespace-.patch \
+  file://0001-IWYU-usage-of-std-bitset-in-ui-AXEventGenerator-requ.patch \
 "
 
 do_install_append() {

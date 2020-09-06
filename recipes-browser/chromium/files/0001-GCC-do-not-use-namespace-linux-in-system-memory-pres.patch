@@ -1,0 +1,80 @@
+From 4a03024aa2d28cc377c3a0e40584eea40e8f74b8 Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jdapena@igalia.com>
+Date: Tue, 1 Sep 2020 17:38:44 +0200
+Subject: GCC: do not use namespace linux in system memory pressure evaluator
+
+GCC fails to compile system memory pressure evaluator, as the
+linux implementation is in linux namespace. But in GCC, linux
+is a reserved word, so it should not be used. To fix the
+problem, we rename the new namespace to os_linux.
+
+../../base/util/memory_pressure/system_memory_pressure_evaluator_linux.h:16:11: error: expected identifier before numeric constant
+   16 | namespace linux {
+      |           ^~~~~
+
+Bug: 819294
+Change-Id: I3edcbbbb91fe99aab8c0be952385bb38bb1e27e5
+---
+ base/util/memory_pressure/system_memory_pressure_evaluator.cc | 2 +-
+ .../memory_pressure/system_memory_pressure_evaluator_linux.cc | 4 ++--
+ .../memory_pressure/system_memory_pressure_evaluator_linux.h  | 4 ++--
+ 3 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/base/util/memory_pressure/system_memory_pressure_evaluator.cc b/base/util/memory_pressure/system_memory_pressure_evaluator.cc
+index babb4f8f9a1f..4a9963b6a399 100644
+--- a/base/util/memory_pressure/system_memory_pressure_evaluator.cc
++++ b/base/util/memory_pressure/system_memory_pressure_evaluator.cc
+@@ -46,7 +46,7 @@ SystemMemoryPressureEvaluator::CreateDefaultSystemEvaluator(
+   }
+   return evaluator;
+ #elif defined(OS_LINUX) && !defined(OS_CHROMEOS)
+-  return std::make_unique<util::linux::SystemMemoryPressureEvaluator>(
++  return std::make_unique<util::os_linux::SystemMemoryPressureEvaluator>(
+       monitor->CreateVoter());
+ #endif
+   return nullptr;
+diff --git a/base/util/memory_pressure/system_memory_pressure_evaluator_linux.cc b/base/util/memory_pressure/system_memory_pressure_evaluator_linux.cc
+index 258d983e289e..1878d8887c02 100644
+--- a/base/util/memory_pressure/system_memory_pressure_evaluator_linux.cc
++++ b/base/util/memory_pressure/system_memory_pressure_evaluator_linux.cc
+@@ -32,7 +32,7 @@ int GetAvailableSystemMemoryMiB(const base::SystemMemoryInfoKB& mem_info) {
+ }  // namespace
+ 
+ namespace util {
+-namespace linux {
++namespace os_linux {
+ 
+ const base::TimeDelta SystemMemoryPressureEvaluator::kModeratePressureCooldown =
+     base::TimeDelta::FromSeconds(10);
+@@ -153,5 +153,5 @@ SystemMemoryPressureEvaluator::CalculateCurrentPressureLevel() {
+   return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+ }
+ 
+-}  // namespace linux
++}  // namespace os_linux
+ }  // namespace util
+diff --git a/base/util/memory_pressure/system_memory_pressure_evaluator_linux.h b/base/util/memory_pressure/system_memory_pressure_evaluator_linux.h
+index 0f5c43d80fc5..3a244279150a 100644
+--- a/base/util/memory_pressure/system_memory_pressure_evaluator_linux.h
++++ b/base/util/memory_pressure/system_memory_pressure_evaluator_linux.h
+@@ -13,7 +13,7 @@
+ #include "base/util/memory_pressure/system_memory_pressure_evaluator.h"
+ 
+ namespace util {
+-namespace linux {
++namespace os_linux {
+ 
+ // Linux memory pressure voter. Because there is no OS provided signal this
+ // polls at a low frequency, and applies internal hysteresis.
+@@ -106,7 +106,7 @@ class SystemMemoryPressureEvaluator
+   SEQUENCE_CHECKER(sequence_checker_);
+ };
+ 
+-}  // namespace linux
++}  // namespace os_linux
+ }  // namespace util
+ 
+ #endif  // BASE_UTIL_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_LINUX_H_
+-- 
+2.25.1
+

@@ -1,0 +1,34 @@
+From 84cacc08a34add1862c4bf587fcd8249d6579fa3 Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jdapena@igalia.com>
+Date: Tue, 1 Sep 2020 17:58:50 +0200
+Subject: IWYU: math.h required to use floor() in QR code generator
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+../../chrome/common/qr_code_generator/qr_code_generator.cc: In member function ‘unsigned int QRCodeGenerator::CountPenaltyPoints() const’:
+../../chrome/common/qr_code_generator/qr_code_generator.cc:977:40: error: ‘floor’ was not declared in this scope
+  977 |   penalty += 5 * static_cast<unsigned>(floor(deviation));
+      |                                        ^~~~~
+
+Bug: 957519
+Change-Id: Ibf428161deeea35111edcbc9085459ec4966a50d
+---
+ chrome/common/qr_code_generator/qr_code_generator.cc | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/chrome/common/qr_code_generator/qr_code_generator.cc b/chrome/common/qr_code_generator/qr_code_generator.cc
+index a47fc2b0326c..d7186fc1f5df 100644
+--- a/chrome/common/qr_code_generator/qr_code_generator.cc
++++ b/chrome/common/qr_code_generator/qr_code_generator.cc
+@@ -4,6 +4,7 @@
+ 
+ #include "chrome/common/qr_code_generator/qr_code_generator.h"
+ 
++#include <math.h>
+ #include <string.h>
+ 
+ #include <ostream>
+-- 
+2.25.1
+

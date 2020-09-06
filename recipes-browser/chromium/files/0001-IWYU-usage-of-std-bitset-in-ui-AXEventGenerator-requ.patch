@@ -1,0 +1,27 @@
+From e72fcc2b55055509f114cf2b8ce72442ff0c4424 Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jdapena@igalia.com>
+Date: Tue, 1 Sep 2020 20:31:53 +0200
+Subject: IWYU: usage of std::bitset in ui::AXEventGenerator requires bitset
+ include.
+
+Bug:957519
+Change-Id: I7b763c1d5dee77d3a2b12f5169d6ad86e5dcbc7c
+---
+ ui/accessibility/ax_event_generator.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/ui/accessibility/ax_event_generator.h b/ui/accessibility/ax_event_generator.h
+index 5fa24397fb32..85f3209c25e3 100644
+--- a/ui/accessibility/ax_event_generator.h
++++ b/ui/accessibility/ax_event_generator.h
+@@ -5,6 +5,7 @@
+ #ifndef UI_ACCESSIBILITY_AX_EVENT_GENERATOR_H_
+ #define UI_ACCESSIBILITY_AX_EVENT_GENERATOR_H_
+ 
++#include <bitset>
+ #include <map>
+ #include <ostream>
+ #include <set>
+-- 
+2.25.1
+
