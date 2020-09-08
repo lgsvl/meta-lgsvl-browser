@@ -14,7 +14,6 @@ DEPENDS = "\
     glib-2.0 \
     gn-native \
     gperf-native \
-    jpeg \
     libwebp \
     libxml2 \
     libxslt \
@@ -86,7 +85,7 @@ GN_ARGS = "\
         use_gnome_keyring=false \
         use_kerberos=false \
         use_pulseaudio=${@bb.utils.contains('DISTRO_FEATURES', 'pulseaudio', 'true', 'false', d)} \
-        use_system_libjpeg=true \
+        use_system_libjpeg=false \
         "
 
 # From Chromium's BUILDCONFIG.gn:
@@ -236,7 +235,7 @@ do_configure() {
 
 do_compile[progress] = "outof:^\[(\d+)/(\d+)\]\s+"
 do_compile() {
-	ninja -v "${PARALLEL_MAKE}" chrome chrome_sandbox
+	ninja -v "${PARALLEL_MAKE}" chrome chrome_sandbox libjpeg_turbo_unittests
 }
 
 PRODUCT_LOGO_SIZES = "24 48 64 128 256"

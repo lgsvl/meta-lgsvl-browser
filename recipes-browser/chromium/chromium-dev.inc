@@ -44,6 +44,7 @@ SRC_URI += " \
   file://0001-IWYU-math.h-required-to-use-floor-in-QR-code-generat.patch \
   file://0001-GCC-do-not-use-template-specialization-in-namespace-.patch \
   file://0001-IWYU-usage-of-std-bitset-in-ui-AXEventGenerator-requ.patch \
+  file://0001-GCC-fix-NEON-type-casts.patch;patchdir=third_party/libjpeg_turbo \
 "
 
 do_install_append() {
