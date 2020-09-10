@@ -235,7 +235,7 @@ do_configure() {
 
 do_compile[progress] = "outof:^\[(\d+)/(\d+)\]\s+"
 do_compile() {
-	ninja -v "${PARALLEL_MAKE}" chrome chrome_sandbox libjpeg_turbo_unittests
+	ninja -v "${PARALLEL_MAKE}" chrome chrome_sandbox
 }
 
 PRODUCT_LOGO_SIZES = "24 48 64 128 256"
