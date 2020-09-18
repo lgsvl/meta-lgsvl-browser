@@ -188,6 +188,7 @@ GN_ARGS += '\
   cros_target_ar="${AR}" \
   cros_target_cc="${CC}" \
   cros_target_cxx="${CXX}" \
+  cros_target_extra_ldflags="${LDFLAGS}" \
   v8_snapshot_toolchain="//build/toolchain/cros:v8_snapshot" \
   cros_v8_snapshot_is_clang=false \
   cros_v8_snapshot_ar="${BUILD_AR}" \
