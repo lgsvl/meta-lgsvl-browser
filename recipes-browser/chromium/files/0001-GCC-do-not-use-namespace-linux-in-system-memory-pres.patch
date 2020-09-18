@@ -1,7 +1,10 @@
-From 4a03024aa2d28cc377c3a0e40584eea40e8f74b8 Mon Sep 17 00:00:00 2001
+From 93b973c322ccd01b67463df483a491cf9fb24874 Mon Sep 17 00:00:00 2001
 From: Jose Dapena Paz <jdapena@igalia.com>
-Date: Tue, 1 Sep 2020 17:38:44 +0200
+Date: Tue, 15 Sep 2020 17:59:18 +0000
 Subject: GCC: do not use namespace linux in system memory pressure evaluator
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
 GCC fails to compile system memory pressure evaluator, as the
 linux implementation is in linux namespace. But in GCC, linux
@@ -14,11 +17,16 @@ problem, we rename the new namespace to os_linux.
 
 Bug: 819294
 Change-Id: I3edcbbbb91fe99aab8c0be952385bb38bb1e27e5
+Reviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/2394158
+Reviewed-by: Sébastien Marchand <sebmarchand@chromium.org>
+Commit-Queue: José Dapena Paz <jdapena@igalia.com>
+Cr-Commit-Position: refs/heads/master@{#807099}
 ---
  base/util/memory_pressure/system_memory_pressure_evaluator.cc | 2 +-
  .../memory_pressure/system_memory_pressure_evaluator_linux.cc | 4 ++--
  .../memory_pressure/system_memory_pressure_evaluator_linux.h  | 4 ++--
- 3 files changed, 5 insertions(+), 5 deletions(-)
+ .../system_memory_pressure_evaluator_linux_unittest.cc        | 4 ++--
+ 4 files changed, 7 insertions(+), 7 deletions(-)
 
 diff --git a/base/util/memory_pressure/system_memory_pressure_evaluator.cc b/base/util/memory_pressure/system_memory_pressure_evaluator.cc
 index babb4f8f9a1f..4a9963b6a399 100644
@@ -75,6 +83,26 @@ index 0f5c43d80fc5..3a244279150a 100644
  }  // namespace util
  
  #endif  // BASE_UTIL_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_LINUX_H_
+diff --git a/base/util/memory_pressure/system_memory_pressure_evaluator_linux_unittest.cc b/base/util/memory_pressure/system_memory_pressure_evaluator_linux_unittest.cc
+index e5db67e87972..dff871ebfa88 100644
+--- a/base/util/memory_pressure/system_memory_pressure_evaluator_linux_unittest.cc
++++ b/base/util/memory_pressure/system_memory_pressure_evaluator_linux_unittest.cc
+@@ -13,7 +13,7 @@
+ #include "testing/gtest/include/gtest/gtest.h"
+ 
+ namespace util {
+-namespace linux {
++namespace os_linux {
+ 
+ namespace {
+ 
+@@ -257,5 +257,5 @@ TEST_F(LinuxSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
+   testing::Mock::VerifyAndClearExpectations(&evaluator);
+ }
+ 
+-}  // namespace linux
++}  // namespace os_linux
+ }  // namespace util
 -- 
 2.25.1
 

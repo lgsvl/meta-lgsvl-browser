@@ -1,8 +1,8 @@
 require chromium-upstream-tarball.inc
 
-PV = "87.0.4252.0"
+PV = "87.0.4263.3"
 
-SRC_URI[sha256sum] = "5ea43fa7c79061f8fa5ce9f9f1e1776f1e639dad8fdfdd613af00f136dd3b4d3"
+SRC_URI[sha256sum] = "7342983452353c1dd6fec5fbcf91e1b95b6b6ec190335cdebaf404422acd6ef9"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/base/third_party/double_conversion/LICENSE;md5=1ea35644f0ec0d9767897115667e901f \
@@ -37,13 +37,10 @@ SRC_URI += " \
   file://0001-GCC-do-not-enable-CFI-in-any-case.patch \
   file://0001-IWYU-memcpy-required-cstring-in-byte_array.h.patch;patchdir=third_party/nearby/src \
   file://0001-Remove-explicit-keyword-in-AtomicReference-construct.patch;patchdir=third_party/nearby/src \
-  file://0001-GCC-initialize-kImageMemoryBarrierData-with-initiali.patch;patchdir=third_party/angle \
-  file://0001-GCC-make-begin-end-empty-methods-of-StringPiece-cons.patch \
   file://0001-GCC-do-not-use-namespace-linux-in-system-memory-pres.patch \
-  file://0001-libstdc-usage-of-std-floorf-in-NG-out-of-flow-layout.patch \
-  file://0001-IWYU-math.h-required-to-use-floor-in-QR-code-generat.patch \
-  file://0001-GCC-do-not-use-template-specialization-in-namespace-.patch \
-  file://0001-IWYU-usage-of-std-bitset-in-ui-AXEventGenerator-requ.patch \
+  file://0001-GCC-do-not-use-anonymous-structs.patch \
+  file://0001-GCC-avoid-GCC-getting-confused-with-wrong-using-reso.patch \
+  file://0001-GCC-do-not-make-pdf-Thumbnail-move-constructor-assig.patch \
   file://0001-GCC-fix-NEON-type-casts.patch;patchdir=third_party/libjpeg_turbo \
 "
 
