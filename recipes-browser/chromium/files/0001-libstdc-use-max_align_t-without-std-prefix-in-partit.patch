@@ -1,0 +1,41 @@
+From 2dd8d6fdae8031db47666a7cdd5e144cb6cb8ca7 Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jdapena@igalia.com>
+Date: Tue, 22 Sep 2020 13:18:55 +0200
+Subject: libstdc++: use max_align_t without std prefix in partition alloc
+ constants.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Using std::max_align_t would require using cstddef instead of stddef.h. As
+partition alloc constants is including stddef.h, let's remove the std::
+namespace prefix.
+
+This fixes this error building with libstdc++
+../../base/allocator/partition_allocator/partition_alloc_constants.h:200:51: error: ‘max_align_t’ is not a member of ‘std’; did you mean ‘max_align_t’?
+
+Bug: 957519
+Change-Id: I72b22428937e7b7b1e6bb31fb0ac0bef3b72c581
+---
+ .../allocator/partition_allocator/partition_alloc_constants.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/base/allocator/partition_allocator/partition_alloc_constants.h b/base/allocator/partition_allocator/partition_alloc_constants.h
+index 0c74dbe96c79..5243d795706f 100644
+--- a/base/allocator/partition_allocator/partition_alloc_constants.h
++++ b/base/allocator/partition_allocator/partition_alloc_constants.h
+@@ -195,9 +195,9 @@ NumPartitionPagesPerSuperPage() {
+ // platforms, as Chrome's requirement is C++14 as of 2020.
+ #if defined(__STDCPP_DEFAULT_NEW_ALIGNMENT__)
+ static constexpr size_t kAlignment =
+-    std::max(alignof(std::max_align_t), __STDCPP_DEFAULT_NEW_ALIGNMENT__);
++    std::max(alignof(max_align_t), __STDCPP_DEFAULT_NEW_ALIGNMENT__);
+ #else
+-static constexpr size_t kAlignment = alignof(std::max_align_t);
++static constexpr size_t kAlignment = alignof(max_align_t);
+ #endif
+ static_assert(kAlignment <= 16,
+               "PartitionAlloc doesn't support a fundamental alignment larger "
+-- 
+2.25.1
+

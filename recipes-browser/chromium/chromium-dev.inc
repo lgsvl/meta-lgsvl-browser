@@ -1,8 +1,8 @@
 require chromium-upstream-tarball.inc
 
-PV = "87.0.4263.3"
+PV = "87.0.4270.0"
 
-SRC_URI[sha256sum] = "7342983452353c1dd6fec5fbcf91e1b95b6b6ec190335cdebaf404422acd6ef9"
+SRC_URI[sha256sum] = "dfcc78c1b8bd5c447004dbd50f95b9c83666e308d7e77a9a50a4c4663edf3aa9"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/base/third_party/double_conversion/LICENSE;md5=1ea35644f0ec0d9767897115667e901f \
@@ -37,11 +37,9 @@ SRC_URI += " \
   file://0001-GCC-do-not-enable-CFI-in-any-case.patch \
   file://0001-IWYU-memcpy-required-cstring-in-byte_array.h.patch;patchdir=third_party/nearby/src \
   file://0001-Remove-explicit-keyword-in-AtomicReference-construct.patch;patchdir=third_party/nearby/src \
-  file://0001-GCC-do-not-use-namespace-linux-in-system-memory-pres.patch \
-  file://0001-GCC-do-not-use-anonymous-structs.patch \
-  file://0001-GCC-avoid-GCC-getting-confused-with-wrong-using-reso.patch \
-  file://0001-GCC-do-not-make-pdf-Thumbnail-move-constructor-assig.patch \
-  file://0001-GCC-fix-NEON-type-casts.patch;patchdir=third_party/libjpeg_turbo \
+  file://0001-libstdc-use-max_align_t-without-std-prefix-in-partit.patch \
+  file://0001-IWYU-uint32_t-requires-stdint.h-include-in-printing-.patch \
+  file://0001-IWYU-std-sort-requires-include-algorithm-in-AutoFill.patch \
 "
 
 do_install_append() {
