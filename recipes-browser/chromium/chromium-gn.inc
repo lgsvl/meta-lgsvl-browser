@@ -107,15 +107,17 @@ GN_ARGS += "is_debug=false is_official_build=true"
 # 1. Make sure -g is not passed via DEBUG_FLAGS. -g is the same as -g2. We
 #    do not want to override the explicit debug level setting we are adding
 #    through Chromium GN symbol-level variable.
-# 2. Explicitly pass symbol_level=1 to GN. This causes -g1 to be passed
+# 2. Optimizations are dropped, as Chromium will select the ones it needs.
+# 3. Explicitly pass symbol_level=1 to GN. This causes -g1 to be passed
 #    instead. This reduces around 800MB of the binary size, and that can
 #    be more easily handled.
-# 3. Provide "debug" PACKAGECONFIG that enables full debugging.
-# 4. Drop debug fission explicitely. Yocto will provide its own splitting
+# 4. Provide "debug" PACKAGECONFIG that enables full debugging.
+# 5. Drop debug fission explicitely. Yocto will provide its own splitting
 #    of debugging information. WARNING: do not set it debugging for ELF 32
 #    bits platforms as it will cause issues compiling, linking and
 #    packaging.
 DEBUG_FLAGS_remove = "-g"
+SELECTED_OPTIMIZATION = "${DEBUG_FLAGS}"
 PACKAGECONFIG[debug] = "symbol_level=2, symbol_level=1"
 GN_ARGS += "use_debug_fission=false"
 
@@ -188,6 +190,9 @@ GN_ARGS += '\
   cros_target_ar="${AR}" \
   cros_target_cc="${CC}" \
   cros_target_cxx="${CXX}" \
+  cros_target_extra_cflags="${CFLAGS}" \
+  cros_target_extra_cxxflags="${CXXFLAGS}" \
+  cros_target_extra_cppflags="${CPPFLAGS}" \
   cros_target_extra_ldflags="${LDFLAGS}" \
   v8_snapshot_toolchain="//build/toolchain/cros:v8_snapshot" \
   cros_v8_snapshot_is_clang=false \
