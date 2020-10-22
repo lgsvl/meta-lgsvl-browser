@@ -5,6 +5,7 @@ def gn_arch_name(yocto_arch):
         'aarch64': 'arm64',
         'arm': 'arm',
         'i586': 'x86',
+        'i686': 'x86',
         'x86_64': 'x64',
     }
     try:
