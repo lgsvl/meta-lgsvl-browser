@@ -27,13 +27,12 @@ DEPENDS = "\
     pciutils \
     pkgconfig-native \
     ${@bb.utils.contains('DISTRO_FEATURES', 'pulseaudio', 'pulseaudio', '', d)} \
-    qemu-native \
     virtual/libgl \
     "
 DEPENDS_append_x86 = "yasm-native"
 DEPENDS_append_x86-64 = "yasm-native"
 
-inherit gtk-icon-cache pythonnative qemu setuptools
+inherit gtk-icon-cache pythonnative setuptools
 
 OUTPUT_DIR = "out/Release"
 B = "${WORKDIR}/build/${OUTPUT_DIR}"
@@ -172,9 +171,8 @@ GN_ARGS += '\
         google_default_client_secret="${GOOGLE_DEFAULT_CLIENT_SECRET}" \
         '
 
-# Toolchains we will use for the build. We need to point to the toolchain file
-# we've created, set the right target architecture and make sure we are not
-# using Chromium's toolchain (bundled clang, bundled binutils etc).
+# Use ChromeOS toolchains, as they are also working for cross compiling
+# Chrome. They should allow to use GCC toolchains accordingly.
 GN_ARGS += '\
   host_toolchain="//build/toolchain/cros:host" \
   cros_host_is_clang=false \
