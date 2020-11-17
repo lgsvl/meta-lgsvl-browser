@@ -1,8 +1,8 @@
 require chromium-upstream-tarball.inc
 
-PV = "87.0.4270.0"
+PV = "88.0.4315.5"
 
-SRC_URI[sha256sum] = "dfcc78c1b8bd5c447004dbd50f95b9c83666e308d7e77a9a50a4c4663edf3aa9"
+SRC_URI[sha256sum] = "7cc2db24c1a3989fd8b6461b89307e2a8994187363e336ceb47523dc8555d54c"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/base/third_party/double_conversion/LICENSE;md5=1ea35644f0ec0d9767897115667e901f \
@@ -29,17 +29,16 @@ LIC_FILES_CHKSUM += "\
   file://${S}/third_party/protobuf/LICENSE;md5=37b5762e07f0af8c74ce80a8bda4266b \
   file://${S}/third_party/shaderc/src/LICENSE;md5=86d3f3a95c324c9479bd8986968f4327 \
   file://${S}/third_party/skia/LICENSE;md5=822f02cc7736281816581cd064afbb1c \
+  file://${S}/third_party/woff2/LICENSE;md5=027c71da9e4664fdf192e6ec615f4d18 \
   file://${S}/third_party/wtl/Ms-PL.txt;md5=1d2c3cdd7e748a6bc4213321d9157c5a \
   file://${S}/v8/LICENSE;md5=6611673a9587a522034a4be8f4df564c \
 "
 
 SRC_URI += " \
   file://0001-GCC-do-not-enable-CFI-in-any-case.patch \
-  file://0001-IWYU-memcpy-required-cstring-in-byte_array.h.patch;patchdir=third_party/nearby/src \
-  file://0001-Remove-explicit-keyword-in-AtomicReference-construct.patch;patchdir=third_party/nearby/src \
-  file://0001-libstdc-use-max_align_t-without-std-prefix-in-partit.patch \
-  file://0001-IWYU-uint32_t-requires-stdint.h-include-in-printing-.patch \
-  file://0001-IWYU-std-sort-requires-include-algorithm-in-AutoFill.patch \
+  file://0001-GCC-Scoped-type-name-the-same-as-name-in-outer-scope.patch \
+  file://0001-GOLD-workaround-static-constexpr-linking-problem-wit.patch;patchdir=third_party/skia \
+  file://0001-GCC-move-attribute-to-the-start-of-function-definiti.patch \
 "
 
 do_install_append() {

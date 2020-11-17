@@ -6,6 +6,7 @@ DEPENDS = "\
     alsa-lib \
     atk \
     bison-native \
+    ca-certificates-native \
     dbus \
     expat \
     flac \
@@ -29,8 +30,8 @@ DEPENDS = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'pulseaudio', 'pulseaudio', '', d)} \
     virtual/libgl \
     "
-DEPENDS_append_x86 = "yasm-native"
-DEPENDS_append_x86-64 = "yasm-native"
+DEPENDS_append_x86 = "yasm-native libva"
+DEPENDS_append_x86-64 = "yasm-native libva"
 
 inherit gtk-icon-cache pythonnative setuptools
 
@@ -239,6 +240,9 @@ do_configure() {
 
 do_compile[progress] = "outof:^\[(\d+)/(\d+)\]\s+"
 do_compile() {
+        # We need to do this because curl by default will try to fetch ca-certificates.crt
+        # from the native sysroot used to compile curl-native
+        export CURL_CA_BUNDLE=${STAGING_DIR_NATIVE}/etc/ssl/certs/ca-certificates.crt
 	ninja -v "${PARALLEL_MAKE}" chrome chrome_sandbox
 }
 

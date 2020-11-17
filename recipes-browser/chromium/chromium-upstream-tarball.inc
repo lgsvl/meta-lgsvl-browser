@@ -120,7 +120,6 @@ LIC_FILES_CHKSUM = "\
     file://${S}/third_party/wds/src/COPYING;md5=cb8aedd3bced19bd8026d96a8b6876d7 \
     file://${S}/third_party/web-animations-js/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
     file://${S}/third_party/webrtc/LICENSE;md5=ad296492125bc71530d06234d9bfebe0 \
-    file://${S}/third_party/woff2/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
     file://${S}/third_party/xdg-utils/LICENSE;md5=a5367a90934098d6b05af3b746405014 \
     file://${S}/third_party/zlib/LICENSE;md5=f09575dbfb09420642318b413159496f \
     file://${S}/url/third_party/mozilla/LICENSE.txt;md5=437ced1e9b232651b0912a9594da43b2 \

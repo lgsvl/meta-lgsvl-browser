@@ -1,0 +1,77 @@
+From ff2abfefa194727b995fed475f3382c22b2797b8 Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jdapena@igalia.com>
+Date: Mon, 16 Nov 2020 18:03:32 +0100
+Subject: GOLD: workaround static constexpr linking problem with
+ SkImageFilters::CropRect::kNoCropRect
+
+Skia linking fails in GOLD because of missing instanciation of kNoCropRect
+in SkImageFilters::CropRect. This breaks compilation of skia_renderer
+service. More details of this kind of issue in GOLD can be seen in
+https://chromium-review.googlesource.com/c/chromium/src/+/2436824
+
+To workaround this, we move the declaration from being a member of
+a struct to a namespace constexpr.
+
+bug: chromium:819294
+---
+ include/effects/SkImageFilters.h            | 15 +++++++++------
+ src/effects/imagefilters/SkImageFilters.cpp |  4 ----
+ 2 files changed, 9 insertions(+), 10 deletions(-)
+
+diff --git a/include/effects/SkImageFilters.h b/include/effects/SkImageFilters.h
+index 0295c0dde7..d9e596c59c 100644
+--- a/include/effects/SkImageFilters.h
++++ b/include/effects/SkImageFilters.h
+@@ -23,6 +23,11 @@ class SkColorFilter;
+ class SkPaint;
+ class SkRegion;
+ 
++namespace sk_image_filters {
++  static constexpr SkRect kNoCropRect = {SK_ScalarNegativeInfinity, SK_ScalarNegativeInfinity,
++                                         SK_ScalarInfinity, SK_ScalarInfinity};
++}
++
+ // A set of factory functions providing useful SkImageFilter effects. For image filters that take an
+ // input filter, providing nullptr means it will automatically use the dynamic source image. This
+ // source depends on how the filter is applied, but is either the contents of a saved layer when
+@@ -33,18 +38,16 @@ public:
+     // to those types as a crop rect for the image filter factories. It's not intended to be used
+     // directly.
+     struct CropRect {
+-        static constexpr SkRect kNoCropRect = {SK_ScalarNegativeInfinity, SK_ScalarNegativeInfinity,
+-                                               SK_ScalarInfinity, SK_ScalarInfinity};
+-        CropRect() : fCropRect(kNoCropRect) {}
++        CropRect() : fCropRect(sk_image_filters::kNoCropRect) {}
+         // Intentionally not explicit so callers don't have to use this type but can use SkIRect or
+         // SkRect as desired.
+-        CropRect(std::nullptr_t) : fCropRect(kNoCropRect) {}
++        CropRect(std::nullptr_t) : fCropRect(sk_image_filters::kNoCropRect) {}
+         CropRect(const SkIRect& crop) : fCropRect(SkRect::Make(crop)) {}
+         CropRect(const SkRect& crop) : fCropRect(crop) {}
+         CropRect(const SkIRect* optionalCrop) : fCropRect(optionalCrop ? SkRect::Make(*optionalCrop)
+-                                                                       : kNoCropRect) {}
++                                                                       : sk_image_filters::kNoCropRect) {}
+         CropRect(const SkRect* optionalCrop) : fCropRect(optionalCrop ? *optionalCrop
+-                                                                      : kNoCropRect) {}
++                                                                      : sk_image_filters::kNoCropRect) {}
+ 
+         SkRect fCropRect;
+     };
+diff --git a/src/effects/imagefilters/SkImageFilters.cpp b/src/effects/imagefilters/SkImageFilters.cpp
+index bb5c9a0a3b..8e5b567c5f 100644
+--- a/src/effects/imagefilters/SkImageFilters.cpp
++++ b/src/effects/imagefilters/SkImageFilters.cpp
+@@ -47,10 +47,6 @@ static SkImageFilter::CropRect to_legacy_crop_rect(const SkImageFilters::CropRec
+                                          : SkImageFilter::CropRect(SkRect::MakeEmpty(), 0x0);
+ }
+ 
+-// Allow kNoCropRect to be referenced (for certain builds, e.g. macOS libFuzzer chromium target,
+-// see crbug.com/1139725)
+-constexpr SkRect SkImageFilters::CropRect::kNoCropRect;
+-
+ void SkImageFilters::RegisterFlattenables() {
+     SkAlphaThresholdFilter::RegisterFlattenables();
+     SkArithmeticImageFilter::RegisterFlattenables();
+-- 
+2.25.1
+
