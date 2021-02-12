@@ -1,0 +1,41 @@
+From b22e3c54df78a290a31f2dff546c69d14b835809 Mon Sep 17 00:00:00 2001
+From: Stephan Hartmann <stha09@googlemail.com>
+Date: Mon, 8 Feb 2021 21:22:50 +0000
+Subject: libstdc++: fix incomplete type for DelegatedInkTrailData
+
+libstdc++ does not allow incomplete type for T2 with std::pair<T1,T2>,
+which is used by std::unordered_map. Include full definition of
+DelegatedInkTrailData.
+
+Bug: 957519
+Change-Id: I7ec05c72f7f31ce834c1a722efec7ac7fd20c46d
+Reviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/2680052
+Reviewed-by: vmpstr <vmpstr@chromium.org>
+Commit-Queue: vmpstr <vmpstr@chromium.org>
+Cr-Commit-Position: refs/heads/master@{#851890}
+---
+ .../viz/service/display/delegated_ink_point_renderer_base.h     | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/components/viz/service/display/delegated_ink_point_renderer_base.h b/components/viz/service/display/delegated_ink_point_renderer_base.h
+index 534996a735af..1dd1e3405abf 100644
+--- a/components/viz/service/display/delegated_ink_point_renderer_base.h
++++ b/components/viz/service/display/delegated_ink_point_renderer_base.h
+@@ -11,13 +11,13 @@
+ #include <vector>
+ 
+ #include "base/optional.h"
++#include "components/viz/service/display/delegated_ink_trail_data.h"
+ #include "components/viz/service/viz_service_export.h"
+ #include "mojo/public/cpp/bindings/receiver.h"
+ #include "services/viz/public/mojom/compositing/delegated_ink_point.mojom.h"
+ 
+ namespace viz {
+ class DelegatedInkMetadata;
+-class DelegatedInkTrailData;
+ 
+ // The number of points to predict into the future, when prediction is
+ // available.
+-- 
+2.25.1
+

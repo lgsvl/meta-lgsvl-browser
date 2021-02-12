@@ -1,14 +1,13 @@
 require chromium-upstream-tarball.inc
 
-PV = "88.0.4315.5"
+PV = "90.0.4408.0"
 
-SRC_URI[sha256sum] = "7cc2db24c1a3989fd8b6461b89307e2a8994187363e336ceb47523dc8555d54c"
+SRC_URI[sha256sum] = "640eeedcba37d1884c5c44237ffe3a903edae2aaf3e7df345223c862be35e12d"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/base/third_party/double_conversion/LICENSE;md5=1ea35644f0ec0d9767897115667e901f \
   file://${S}/buildtools/third_party/libc++/trunk/LICENSE.TXT;md5=55d89dd7eec8d3b4204b680e27da3953 \
   file://${S}/buildtools/third_party/libc++abi/trunk/LICENSE.TXT;md5=7b9334635b542c56868400a46b272b1e \
-  file://${S}/third_party/SPIRV-Tools/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
   file://${S}/third_party/angle/LICENSE;md5=7abdb66a6948f39c2f469140db5184e2 \
   file://${S}/third_party/blink/LICENSE_FOR_ABOUT_CREDITS;md5=11e90d553b211de885f245900c4ccf89 \
   file://${S}/third_party/boringssl/src/LICENSE;md5=9b082148f9953258347788edb83e401b \
@@ -20,7 +19,7 @@ LIC_FILES_CHKSUM += "\
   file://${S}/third_party/freetype/src/docs/FTL.TXT;md5=9f37b4e6afa3fef9dba8932b16bd3f97 \
   file://${S}/third_party/google_toolbox_for_mac/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
   file://${S}/third_party/harfbuzz-ng/src/COPYING;md5=8f787620b7d3866d9552fd1924c07572 \
-  file://${S}/third_party/icu/LICENSE;md5=a3808a5b70071b07f87ff2205e4d75a0 \
+  file://${S}/third_party/icu/LICENSE;md5=002d2fdc32d17f0ec06e9a47f2c0c8d0 \
   file://${S}/third_party/libjpeg_turbo/LICENSE.md;md5=26d6491346496a57f75f00a78199122e \
   file://${S}/third_party/libpng/LICENSE;md5=b0085051bf265bac2bfc38bc89f50000 \
   file://${S}/third_party/libsrtp/LICENSE;md5=2909fcf6f09ffff8430463d91c08c4e1\
@@ -35,10 +34,14 @@ LIC_FILES_CHKSUM += "\
 "
 
 SRC_URI += " \
-  file://0001-GCC-do-not-enable-CFI-in-any-case.patch \
-  file://0001-GCC-Scoped-type-name-the-same-as-name-in-outer-scope.patch \
-  file://0001-GOLD-workaround-static-constexpr-linking-problem-wit.patch;patchdir=third_party/skia \
-  file://0001-GCC-move-attribute-to-the-start-of-function-definiti.patch \
+  file://0001-GCC-only-set-is_cfi-for-Clang-builds.patch \
+  file://0001-GCC-workaround-on-make_visitor-visibility-issue-in-Q.patch;patchdir=net/third_party/quiche/src \
+  file://0001-libstdc-fix-incomplete-type-for-DelegatedInkTrailDat.patch \
+  file://0001-IWYU-add-ctime-for-std-time.patch \
+  file://0001-IWYU-add-missing-include-for-std-unique_ptr.patch \
+  file://0001-PCScan-Make-gcc-compile-avx2-and-sse3-intrinsics.patch \
+  file://0001-IWYU-include-memory-for-std-unique_ptr.patch \
+  file://0001-GCC-make-base-InSeconds-F-constexpr.patch \
 "
 
 do_install_append() {

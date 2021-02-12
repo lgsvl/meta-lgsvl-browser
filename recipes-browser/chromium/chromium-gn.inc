@@ -3,37 +3,21 @@ require chromium-unbundle.inc
 require gn-utils.inc
 
 DEPENDS = "\
-    alsa-lib \
-    atk \
-    bison-native \
     ca-certificates-native \
-    dbus \
-    expat \
-    flac \
-    fontconfig \
-    freetype \
-    glib-2.0 \
     gn-native \
-    gperf-native \
-    libwebp \
-    libxml2 \
-    libxslt \
     ninja-native \
     nodejs-native \
     nspr \
     nspr-native \
     nss \
     nss-native \
-    pango \
     pciutils \
     pkgconfig-native \
     ${@bb.utils.contains('DISTRO_FEATURES', 'pulseaudio', 'pulseaudio', '', d)} \
     virtual/libgl \
     "
-DEPENDS_append_x86 = "yasm-native libva"
-DEPENDS_append_x86-64 = "yasm-native libva"
 
-inherit gtk-icon-cache pythonnative setuptools
+inherit gtk-icon-cache python3native setuptools
 
 OUTPUT_DIR = "out/Release"
 B = "${WORKDIR}/build/${OUTPUT_DIR}"
@@ -58,7 +42,7 @@ COMPATIBLE_MACHINE_raspberrypi2 = "(.*)"
 # The wrapper script we use from upstream requires bash.
 RDEPENDS_${PN} = "bash"
 
-PACKAGECONFIG ??= "ftp use-gold"
+PACKAGECONFIG ??= "ftp"
 # ftp: Whether to build Chromium with support for the FTP protocol.
 PACKAGECONFIG[ftp] = "disable_ftp_support=false,disable_ftp_support=true"
 # proprietary-codecs: If enabled, this option will build Chromium with support
@@ -75,7 +59,10 @@ PACKAGECONFIG[proprietary-codecs] = '\
 PACKAGECONFIG[root-profile] = ",,,"
 
 # use-gold: Whether to link Chromium with ld-gold or not.
-PACKAGECONFIG[use-gold] = "use_gold=true"
+PACKAGECONFIG[use-gold] = "use_gold=true,use_gold=false"
+
+# Use media acceleration provided by libVA
+PACKAGECONFIG[vaapi] = "use_vaapi=true,use_vaapi=false,libva"
 
 # Base GN arguments, mostly related to features we want to enable or disable.
 GN_ARGS = "\
@@ -157,6 +144,9 @@ GN_ARGS += "fieldtrial_testing_like_official_build=true"
 # Disable compiling closures, as they require java runtime
 GN_ARGS += "enable_js_type_check=false"
 
+# Libaom fails to build in 
+GN_ARGS += "enable_libaom=false"
+
 # API keys for accessing Google services. By default, we use an invalid key
 # only to prevent the "you are missing an API key" infobar from being shown on
 # startup.
@@ -217,6 +207,9 @@ GN_ARGS_append_armv6 += 'arm_use_neon=false'
 
 # For Raspberry PI, default arm_arch setting is not valid and caused warnings
 GN_ARGS_append_armv7ve += 'arm_arch="armv7ve"'
+
+# Libaom fails to build on ARM because of missing aom_arm_cpu_caps symbol
+GN_ARGS_append_arm = ' enable_libaom=false'
 
 do_add_nodejs_symlink () {
 	# Adds a symlink to the node binary to the location expected by
