@@ -14,7 +14,7 @@ B = "${WORKDIR}/build"
 do_configure () {
   cd ${S}
   echo ${S}
-  ${PYTHON} build/gen.py --out-path=${B}
+  ${PYTHON} build/gen.py --out-path=${B} --no-strip
 }
 
 do_compile () {
