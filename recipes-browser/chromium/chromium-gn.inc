@@ -17,7 +17,13 @@ DEPENDS = "\
     virtual/libgl \
     "
 
-inherit gtk-icon-cache python3native setuptools
+inherit gtk-icon-cache
+
+# Chromium expects python3 by default for building, but it did not complete the migration
+# so some scripts also require python2 in the path (see python2_action in codebase).
+inherit python3native setuptools
+DEPENDS += "python-native setuptools"
+EXTRANATIVEPATH += "python-native"
 
 OUTPUT_DIR = "out/Release"
 B = "${WORKDIR}/build/${OUTPUT_DIR}"
@@ -228,7 +234,7 @@ addtask add_nodejs_symlink after do_configure before do_compile
 do_configure() {
 	cd ${S}
 #	./build/linux/unbundle/replace_gn_files.py --system-libraries ${GN_UNBUNDLE_LIBS}
-	gn gen --args='${GN_ARGS}' "${B}"
+	gn gen --args='${GN_ARGS}' --script-executable="${PYTHON}" "${B}"
 }
 
 do_compile[progress] = "outof:^\[(\d+)/(\d+)\]\s+"

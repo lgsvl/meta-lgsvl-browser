@@ -4,7 +4,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=0fca02217a5d49a14dfe2d11837bb34d"
 
 DEPENDS = "ninja-native"
 
-inherit pythonnative
+inherit python3native
 
 SRC_URI = "git://gn.googlesource.com/gn;procotol=https"
 
@@ -14,7 +14,7 @@ B = "${WORKDIR}/build"
 do_configure () {
   cd ${S}
   echo ${S}
-  python build/gen.py --out-path=${B}
+  ${PYTHON} build/gen.py --out-path=${B}
 }
 
 do_compile () {
