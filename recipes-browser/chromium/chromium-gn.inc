@@ -24,8 +24,7 @@ inherit python3native setuptools
 DEPENDS += "python-native setuptools"
 EXTRANATIVEPATH += "python-native"
 
-OUTPUT_DIR = "out/Release"
-B = "${WORKDIR}/build/${OUTPUT_DIR}"
+B = "${WORKDIR}/build"
 
 SRC_URI += " \
         ${@bb.utils.contains('PACKAGECONFIG', 'root-profile', 'file://root-user-profile.patch', '', d)} \
