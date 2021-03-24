@@ -1,5 +1,4 @@
 require chromium.inc
-require chromium-unbundle.inc
 require gn-utils.inc
 
 DEPENDS = "\
@@ -233,7 +232,6 @@ addtask add_nodejs_symlink after do_configure before do_compile
 
 do_configure() {
 	cd ${S}
-#	./build/linux/unbundle/replace_gn_files.py --system-libraries ${GN_UNBUNDLE_LIBS}
 	gn gen --args='${GN_ARGS}' --script-executable="${PYTHON}" "${B}"
 }
 
