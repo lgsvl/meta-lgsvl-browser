@@ -27,7 +27,6 @@ EXTRANATIVEPATH += "python-native"
 B = "${WORKDIR}/build"
 
 SRC_URI += " \
-        ${@bb.utils.contains('PACKAGECONFIG', 'root-profile', 'file://root-user-profile.patch', '', d)} \
         file://wrapper-extra-flags.patch \
         "
 
@@ -61,12 +60,6 @@ PACKAGECONFIG[proprietary-codecs] = '\
         ffmpeg_branding="Chrome" proprietary_codecs=true, \
         ffmpeg_branding="Chromium" proprietary_codecs=false \
         '
-# root-profile: If enabled, adds a patch to the Chromium binary wrapper that
-# automatically sets root's user profile directory to /root/chromium-profile.
-# DO NOT USE IN PRODUCTION: this is only supposed to ease debugging and
-# testing.
-PACKAGECONFIG[root-profile] = ",,,"
-
 # use-gold: Whether to link Chromium with ld-gold or not.
 PACKAGECONFIG[use-gold] = "use_gold=true,use_gold=false"
 
