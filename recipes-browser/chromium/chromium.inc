@@ -14,9 +14,6 @@ DEPENDS = "\
     pciutils \
     pkgconfig-native \
     virtual/libgl \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'pulseaudio', 'pulseaudio', '', d)} \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'virtual/egl wayland libxkbcommon', '', d)} \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'libx11 libxcomposite libxcursor libxdamage libxext libxfixes libxi libxrandr libxrender libxscrnsaver libxtst', '', d)} \
 "
 
 inherit gtk-icon-cache
@@ -49,7 +46,14 @@ COMPATIBLE_MACHINE_raspberrypi2 = "(.*)"
 # The wrapper script we use from upstream requires bash.
 RDEPENDS_${PN} = "bash"
 
-PACKAGECONFIG ??= "ftp use-gold"
+PACKAGECONFIG ??= "\
+  ftp \
+  use-gold \
+  ${@bb.utils.contains('DISTRO_FEATURES', 'pulseaudio', 'pulseaudio', '', d)} \
+  ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', '', d)} \
+  ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d)} \
+"
+
 # ftp: Whether to build Chromium with support for the FTP protocol.
 PACKAGECONFIG[ftp] = "disable_ftp_support=false,disable_ftp_support=true"
 # proprietary-codecs: If enabled, this option will build Chromium with support
@@ -71,6 +75,19 @@ PACKAGECONFIG[use-gold] = "use_gold=true,use_gold=false"
 # Use media acceleration provided by libVA
 PACKAGECONFIG[vaapi] = "use_vaapi=true,use_vaapi=false,libva"
 
+# Build with pulseaudio support
+PACKAGECONFIG[pulseaudio] = "use_pulseaudio=true,use_pulseaudio=false,pulseaudio"
+
+# Compile with wayland support
+PACKAGECONFIG[wayland] = "ozone_platform_wayland=true,ozone_platform_wayland=false,virtual/egl wayland libxkbcommon"
+
+# Compile with X11 support
+PACKAGECONFIG[x11] = "\
+    use_x11=true ozone_platform_x11=true,\
+    use_x11=false ozone_platform_x11=false,\
+    libx11 libxcomposite libxcursor libxdamage libxext libxfixes libxi libxrandr libxrender libxscrnsaver libxtst\
+"
+
 # Base GN arguments, mostly related to features we want to enable or disable.
 GN_ARGS = "\
         ${PACKAGECONFIG_CONFARGS} \
@@ -78,7 +95,6 @@ GN_ARGS = "\
         use_gconf=false \
         use_gnome_keyring=false \
         use_kerberos=false \
-        use_pulseaudio=${@bb.utils.contains('DISTRO_FEATURES', 'pulseaudio', 'true', 'false', d)} \
         use_system_libjpeg=false \
         use_system_libwayland=true \
         use_system_minigbm=true \
@@ -162,9 +178,6 @@ GN_ARGS += "enable_libaom=false"
 GN_ARGS += "\
     ozone_auto_platforms=false \
     ozone_platform_headless=true \
-    ozone_platform_wayland=${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'true', 'false', d)} \
-    ozone_platform_x11=${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'true', 'false', d)} \
-    use_x11=${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'true', 'false', d)} \
 "
 
 # API keys for accessing Google services. By default, we use an invalid key
