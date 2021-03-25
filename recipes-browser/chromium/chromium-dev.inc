@@ -167,14 +167,11 @@ SRC_URI += " \
   file://0001-GCC-fix-type-confusion-in-EffectPaintPropertyNode.patch \
   file://0001-GCC-fix-template-specialization-in-ToV8Traits-IDLArr.patch \
   file://0001-GCC-move-attribute-to-the-start-of-function-definiti.patch \
-  file://0001-Add-full-16-bit-scaling-up-by-2x-function.patch;patchdir=third_party/libyuv \
-  file://0001-Replace-MOV-.4s-with-MOV-.16b-for-GCC-compatability.patch;patchdir=third_party/libyuv \
 "
+
+# Temporary fix while libyuv ARM64 neon support is broken on GCC
+GN_ARGS_append_aarch64 = " libyuv_use_neon=false "
 
 do_install_append() {
         install -m 0755 crashpad_handler ${D}${libdir}/chromium/crashpad_handler
 }
-
-# Crashpad uses zlib internally, but it still does not handle properly the
-# NEON codepath for GCC.
-GN_ARGS_append_armv7ve += 'arm_use_neon=false'
