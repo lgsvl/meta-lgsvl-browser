@@ -46,7 +46,7 @@ COMPATIBLE_MACHINE_raspberrypi2 = "(.*)"
 # The wrapper script we use from upstream requires bash.
 RDEPENDS_${PN} = "bash"
 
-PACKAGECONFIG ??= "ftp"
+PACKAGECONFIG ??= "ftp use-gold"
 # ftp: Whether to build Chromium with support for the FTP protocol.
 PACKAGECONFIG[ftp] = "disable_ftp_support=false,disable_ftp_support=true"
 # proprietary-codecs: If enabled, this option will build Chromium with support
