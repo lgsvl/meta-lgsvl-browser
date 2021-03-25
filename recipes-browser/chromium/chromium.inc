@@ -49,9 +49,7 @@ RDEPENDS_${PN} = "bash"
 PACKAGECONFIG ??= "\
   ftp \
   use-gold \
-  ${@bb.utils.contains('DISTRO_FEATURES', 'pulseaudio', 'pulseaudio', '', d)} \
-  ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', '', d)} \
-  ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d)} \
+  ${@bb.utils.filter('DISTRO_FEATURES', 'pulseaudio wayland x11', d)} \
 "
 
 # ftp: Whether to build Chromium with support for the FTP protocol.
