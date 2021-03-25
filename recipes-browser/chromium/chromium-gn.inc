@@ -4,6 +4,7 @@ require gn-utils.inc
 DEPENDS = "\
     ca-certificates-native \
     gn-native \
+    gtk+3 \
     ninja-native \
     nodejs-native \
     nspr \
@@ -12,9 +13,11 @@ DEPENDS = "\
     nss-native \
     pciutils \
     pkgconfig-native \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'pulseaudio', 'pulseaudio', '', d)} \
     virtual/libgl \
-    "
+    ${@bb.utils.contains('DISTRO_FEATURES', 'pulseaudio', 'pulseaudio', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'virtual/egl wayland libxkbcommon', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'libx11 libxcomposite libxcursor libxdamage libxext libxfixes libxi libxrandr libxrender libxscrnsaver libxtst', '', d)} \
+"
 
 inherit gtk-icon-cache
 
@@ -77,7 +80,11 @@ GN_ARGS = "\
         use_kerberos=false \
         use_pulseaudio=${@bb.utils.contains('DISTRO_FEATURES', 'pulseaudio', 'true', 'false', d)} \
         use_system_libjpeg=false \
-        "
+        use_system_libwayland=true \
+        use_system_minigbm=true \
+        use_system_libdrm=true \
+        use_xkbcommon=true \
+"
 
 # From Chromium's BUILDCONFIG.gn:
 # Set to enable the official build level of optimization. This has nothing
@@ -151,6 +158,14 @@ GN_ARGS += "enable_js_type_check=false"
 # Libaom fails to build in 
 GN_ARGS += "enable_libaom=false"
 
+# Ozone backends
+GN_ARGS += "\
+    ozone_auto_platforms=false \
+    ozone_platform_headless=true \
+    ozone_platform_wayland=${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'true', 'false', d)} \
+    ozone_platform_x11=${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'true', 'false', d)} \
+"
+
 # API keys for accessing Google services. By default, we use an invalid key
 # only to prevent the "you are missing an API key" infobar from being shown on
 # startup.
@@ -220,6 +235,10 @@ GN_ARGS_append_armv7ve += 'arm_arch="armv7ve"'
 
 # Libaom fails to build on ARM because of missing aom_arm_cpu_caps symbol
 GN_ARGS_append_arm = ' enable_libaom=false'
+
+# Right now GBM buffers are not working properly on v3d driver used in RPI4
+GN_ARGS_append_raspberrypi4 = " use_wayland_gbm=false"
+GN_ARGS_append_raspberrypi4-64 = " use_wayland_gbm=false"
 
 do_add_nodejs_symlink () {
 	# Adds a symlink to the node binary to the location expected by
