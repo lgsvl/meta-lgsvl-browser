@@ -248,6 +248,10 @@ GN_ARGS_append_armv6 += 'arm_use_neon=false'
 # For Raspberry PI, default arm_arch setting is not valid and caused warnings
 GN_ARGS_append_armv7ve += 'arm_arch="armv7ve"'
 
+# Crashpad uses zlib internally, but it still does not handle properly the
+# NEON codepath for GCC.
+GN_ARGS_append_armv7ve += 'arm_use_neon=false'
+
 # Libaom fails to build on ARM because of missing aom_arm_cpu_caps symbol
 GN_ARGS_append_arm = ' enable_libaom=false'
 
