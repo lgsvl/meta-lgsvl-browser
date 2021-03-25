@@ -1,8 +1,8 @@
 require chromium-upstream-tarball.inc
 
-PV = "90.0.4408.0"
+PV = "91.0.4455.2"
 
-SRC_URI[sha256sum] = "640eeedcba37d1884c5c44237ffe3a903edae2aaf3e7df345223c862be35e12d"
+SRC_URI[sha256sum] = "71c093fd8980eda2876b4a931ba291c68cca123f9ae2255e13877aedbb0c1c5b"
 
 LIC_FILES_CHKSUM += "\
   file://${S}/base/third_party/double_conversion/LICENSE;md5=1ea35644f0ec0d9767897115667e901f \
@@ -34,14 +34,11 @@ LIC_FILES_CHKSUM += "\
 "
 
 SRC_URI += " \
-  file://0001-GCC-only-set-is_cfi-for-Clang-builds.patch \
-  file://0001-GCC-workaround-on-make_visitor-visibility-issue-in-Q.patch;patchdir=net/third_party/quiche/src \
-  file://0001-libstdc-fix-incomplete-type-for-DelegatedInkTrailDat.patch \
-  file://0001-IWYU-add-ctime-for-std-time.patch \
-  file://0001-IWYU-add-missing-include-for-std-unique_ptr.patch \
-  file://0001-PCScan-Make-gcc-compile-avx2-and-sse3-intrinsics.patch \
-  file://0001-IWYU-include-memory-for-std-unique_ptr.patch \
-  file://0001-GCC-make-base-InSeconds-F-constexpr.patch \
+  file://0001-GCC-fix-type-confusion-in-pcscan.patch \
+  file://0001-GCC-fix-type-confusion-in-EffectPaintPropertyNode.patch \
+  file://0001-GCC-fix-template-specialization-in-ToV8Traits-IDLArr.patch \
+  file://0001-GCC-move-attribute-to-the-start-of-function-definiti.patch \
+  file://0001-Replace-MOV-.4s-with-MOV-.16b-for-GCC-compatability.patch;patchdir=third_party/libyuv \
 "
 
 do_install_append() {
