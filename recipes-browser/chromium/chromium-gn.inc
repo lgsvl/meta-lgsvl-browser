@@ -198,6 +198,12 @@ GN_ARGS += '\
   use_v8_context_snapshot=false \
 '
 
+# As we use GCC, disable cfi and thin LTO
+GN_ARGS += '\
+  is_cfi=false \
+  use_thin_lto=false \
+'
+
 # ARM builds need special additional flags (see ${S}/build/config/arm.gni).
 ARM_FLOAT_ABI = "${@bb.utils.contains('TUNE_FEATURES', 'callconvention-hard', 'hard', 'softfp', d)}"
 GN_ARGS_append_armv6 = ' arm_version=6 arm_float_abi="${ARM_FLOAT_ABI}"'
