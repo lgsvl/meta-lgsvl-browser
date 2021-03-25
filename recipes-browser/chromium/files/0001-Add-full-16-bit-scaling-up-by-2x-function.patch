@@ -1,0 +1,1540 @@
+From c41eabe3d4e1c30f8cb1c5f8660583bf168d426a Mon Sep 17 00:00:00 2001
+From: Yuan Tong <tongyuan200097@gmail.com>
+Date: Tue, 2 Mar 2021 23:41:07 +0800
+Subject: Add full 16 bit scaling up by 2x function
+
+R=fbarchard@chromium.org
+
+Change-Id: I4a869aefdc16e34357a615727711594c5d8e3a80
+Bug: libyuv:882
+Reviewed-on: https://chromium-review.googlesource.com/c/libyuv/libyuv/+/2719842
+Reviewed-by: Frank Barchard <fbarchard@chromium.org>
+---
+ include/libyuv/scale_row.h |  64 ++++++-
+ source/scale.cc            | 129 ++++++++++++--
+ source/scale_any.cc        |  72 ++++++--
+ source/scale_gcc.cc        | 343 +++++++++++++++++++++++++++++++++----
+ source/scale_neon.cc       | 102 ++++++++++-
+ source/scale_neon64.cc     | 104 ++++++++++-
+ unit_test/scale_test.cc    | 278 ++++++++++++++++++++++++++++++
+ 7 files changed, 1028 insertions(+), 64 deletions(-)
+
+diff --git a/include/libyuv/scale_row.h b/include/libyuv/scale_row.h
+index 18ffb546..9ad51a56 100644
+--- a/include/libyuv/scale_row.h
++++ b/include/libyuv/scale_row.h
+@@ -81,8 +81,10 @@ extern "C" {
+ #define HAS_SCALEROWUP2LINEAR_SSSE3
+ #define HAS_SCALEROWUP2BILINEAR_SSE2
+ #define HAS_SCALEROWUP2BILINEAR_SSSE3
+-#define HAS_SCALEROWUP2LINEAR_16_SSSE3
+-#define HAS_SCALEROWUP2BILINEAR_16_SSSE3
++#define HAS_SCALEROWUP2LINEAR_12_SSSE3
++#define HAS_SCALEROWUP2BILINEAR_12_SSSE3
++#define HAS_SCALEROWUP2LINEAR_16_SSE2
++#define HAS_SCALEROWUP2BILINEAR_16_SSE2
+ #define HAS_SCALEUVROWUP2LINEAR_SSSE3
+ #define HAS_SCALEUVROWUP2BILINEAR_SSSE3
+ #define HAS_SCALEUVROWUP2LINEAR_16_SSE2
+@@ -98,6 +100,8 @@ extern "C" {
+ #define HAS_SCALEUVROWDOWN2BOX_AVX2
+ #define HAS_SCALEROWUP2LINEAR_AVX2
+ #define HAS_SCALEROWUP2BILINEAR_AVX2
++#define HAS_SCALEROWUP2LINEAR_12_AVX2
++#define HAS_SCALEROWUP2BILINEAR_12_AVX2
+ #define HAS_SCALEROWUP2LINEAR_16_AVX2
+ #define HAS_SCALEROWUP2BILINEAR_16_AVX2
+ #define HAS_SCALEUVROWUP2LINEAR_AVX2
+@@ -134,6 +138,8 @@ extern "C" {
+ #define HAS_SCALEUVROWDOWNEVEN_NEON
+ #define HAS_SCALEROWUP2LINEAR_NEON
+ #define HAS_SCALEROWUP2BILINEAR_NEON
++#define HAS_SCALEROWUP2LINEAR_12_NEON
++#define HAS_SCALEROWUP2BILINEAR_12_NEON
+ #define HAS_SCALEROWUP2LINEAR_16_NEON
+ #define HAS_SCALEROWUP2BILINEAR_16_NEON
+ #define HAS_SCALEUVROWUP2LINEAR_NEON
+@@ -611,10 +617,18 @@ void ScaleRowUp2_Bilinear_SSE2(const uint8_t* src_ptr,
+                                uint8_t* dst_ptr,
+                                ptrdiff_t dst_stride,
+                                int dst_width);
+-void ScaleRowUp2_Linear_16_SSSE3(const uint16_t* src_ptr,
++void ScaleRowUp2_Linear_12_SSSE3(const uint16_t* src_ptr,
+                                  uint16_t* dst_ptr,
+                                  int dst_width);
+-void ScaleRowUp2_Bilinear_16_SSSE3(const uint16_t* src_ptr,
++void ScaleRowUp2_Bilinear_12_SSSE3(const uint16_t* src_ptr,
++                                   ptrdiff_t src_stride,
++                                   uint16_t* dst_ptr,
++                                   ptrdiff_t dst_stride,
++                                   int dst_width);
++void ScaleRowUp2_Linear_16_SSE2(const uint16_t* src_ptr,
++                                 uint16_t* dst_ptr,
++                                 int dst_width);
++void ScaleRowUp2_Bilinear_16_SSE2(const uint16_t* src_ptr,
+                                    ptrdiff_t src_stride,
+                                    uint16_t* dst_ptr,
+                                    ptrdiff_t dst_stride,
+@@ -635,6 +649,14 @@ void ScaleRowUp2_Bilinear_AVX2(const uint8_t* src_ptr,
+                                uint8_t* dst_ptr,
+                                ptrdiff_t dst_stride,
+                                int dst_width);
++void ScaleRowUp2_Linear_12_AVX2(const uint16_t* src_ptr,
++                                uint16_t* dst_ptr,
++                                int dst_width);
++void ScaleRowUp2_Bilinear_12_AVX2(const uint16_t* src_ptr,
++                                  ptrdiff_t src_stride,
++                                  uint16_t* dst_ptr,
++                                  ptrdiff_t dst_stride,
++                                  int dst_width);
+ void ScaleRowUp2_Linear_16_AVX2(const uint16_t* src_ptr,
+                                 uint16_t* dst_ptr,
+                                 int dst_width);
+@@ -651,7 +673,15 @@ void ScaleRowUp2_Bilinear_Any_SSE2(const uint8_t* src_ptr,
+                                    uint8_t* dst_ptr,
+                                    ptrdiff_t dst_stride,
+                                    int dst_width);
+-void ScaleRowUp2_Linear_16_Any_SSSE3(const uint16_t* src_ptr,
++void ScaleRowUp2_Linear_12_Any_SSSE3(const uint16_t* src_ptr,
++                                     uint16_t* dst_ptr,
++                                     int dst_width);
++void ScaleRowUp2_Bilinear_12_Any_SSSE3(const uint16_t* src_ptr,
++                                       ptrdiff_t src_stride,
++                                       uint16_t* dst_ptr,
++                                       ptrdiff_t dst_stride,
++                                       int dst_width);
++void ScaleRowUp2_Linear_16_Any_SSE2(const uint16_t* src_ptr,
+                                      uint16_t* dst_ptr,
+                                      int dst_width);
+ void ScaleRowUp2_Bilinear_16_Any_SSSE3(const uint16_t* src_ptr,
+@@ -675,6 +705,14 @@ void ScaleRowUp2_Bilinear_Any_AVX2(const uint8_t* src_ptr,
+                                    uint8_t* dst_ptr,
+                                    ptrdiff_t dst_stride,
+                                    int dst_width);
++void ScaleRowUp2_Linear_12_Any_AVX2(const uint16_t* src_ptr,
++                                    uint16_t* dst_ptr,
++                                    int dst_width);
++void ScaleRowUp2_Bilinear_12_Any_AVX2(const uint16_t* src_ptr,
++                                      ptrdiff_t src_stride,
++                                      uint16_t* dst_ptr,
++                                      ptrdiff_t dst_stride,
++                                      int dst_width);
+ void ScaleRowUp2_Linear_16_Any_AVX2(const uint16_t* src_ptr,
+                                     uint16_t* dst_ptr,
+                                     int dst_width);
+@@ -1424,6 +1462,14 @@ void ScaleRowUp2_Bilinear_NEON(const uint8_t* src_ptr,
+                                uint8_t* dst_ptr,
+                                ptrdiff_t dst_stride,
+                                int dst_width);
++void ScaleRowUp2_Linear_12_NEON(const uint16_t* src_ptr,
++                                uint16_t* dst_ptr,
++                                int dst_width);
++void ScaleRowUp2_Bilinear_12_NEON(const uint16_t* src_ptr,
++                                  ptrdiff_t src_stride,
++                                  uint16_t* dst_ptr,
++                                  ptrdiff_t dst_stride,
++                                  int dst_width);
+ void ScaleRowUp2_Linear_16_NEON(const uint16_t* src_ptr,
+                                 uint16_t* dst_ptr,
+                                 int dst_width);
+@@ -1440,6 +1486,14 @@ void ScaleRowUp2_Bilinear_Any_NEON(const uint8_t* src_ptr,
+                                    uint8_t* dst_ptr,
+                                    ptrdiff_t dst_stride,
+                                    int dst_width);
++void ScaleRowUp2_Linear_12_Any_NEON(const uint16_t* src_ptr,
++                                    uint16_t* dst_ptr,
++                                    int dst_width);
++void ScaleRowUp2_Bilinear_12_Any_NEON(const uint16_t* src_ptr,
++                                      ptrdiff_t src_stride,
++                                      uint16_t* dst_ptr,
++                                      ptrdiff_t dst_stride,
++                                      int dst_width);
+ void ScaleRowUp2_Linear_16_Any_NEON(const uint16_t* src_ptr,
+                                     uint16_t* dst_ptr,
+                                     int dst_width);
+diff --git a/source/scale.cc b/source/scale.cc
+index 4a5dc94a..3ccd2111 100644
+--- a/source/scale.cc
++++ b/source/scale.cc
+@@ -1459,7 +1459,7 @@ void ScalePlaneUp2_Bilinear(int src_width,
+ // its original width, using linear interpolation.
+ // stride is in count of uint16_t.
+ // This is used to scale U and V planes of I210 to I410 and I212 to I412.
+-void ScalePlaneUp2_16_Linear(int src_width,
++void ScalePlaneUp2_12_Linear(int src_width,
+                              int src_height,
+                              int dst_width,
+                              int dst_height,
+@@ -1476,21 +1476,21 @@ void ScalePlaneUp2_16_Linear(int src_width,
+   // This function can only scale up by 2 times horizontally.
+   assert(src_width == ((dst_width + 1) / 2));
+ 
+-#ifdef HAS_SCALEROWUP2LINEAR_16_SSSE3
++#ifdef HAS_SCALEROWUP2LINEAR_12_SSSE3
+   if (TestCpuFlag(kCpuHasSSSE3)) {
+-    ScaleRowUp = ScaleRowUp2_Linear_16_Any_SSSE3;
++    ScaleRowUp = ScaleRowUp2_Linear_12_Any_SSSE3;
+   }
+ #endif
+ 
+-#ifdef HAS_SCALEROWUP2LINEAR_16_AVX2
++#ifdef HAS_SCALEROWUP2LINEAR_12_AVX2
+   if (TestCpuFlag(kCpuHasAVX2)) {
+-    ScaleRowUp = ScaleRowUp2_Linear_16_Any_AVX2;
++    ScaleRowUp = ScaleRowUp2_Linear_12_Any_AVX2;
+   }
+ #endif
+ 
+-#ifdef HAS_SCALEROWUP2LINEAR_16_NEON
++#ifdef HAS_SCALEROWUP2LINEAR_12_NEON
+   if (TestCpuFlag(kCpuHasNEON)) {
+-    ScaleRowUp = ScaleRowUp2_Linear_16_Any_NEON;
++    ScaleRowUp = ScaleRowUp2_Linear_12_Any_NEON;
+   }
+ #endif
+ 
+@@ -1513,7 +1513,7 @@ void ScalePlaneUp2_16_Linear(int src_width,
+ // its original size, using bilinear interpolation.
+ // stride is in count of uint16_t.
+ // This is used to scale U and V planes of I010 to I410 and I012 to I412.
+-void ScalePlaneUp2_16_Bilinear(int src_width,
++void ScalePlaneUp2_12_Bilinear(int src_width,
+                                int src_height,
+                                int dst_width,
+                                int dst_height,
+@@ -1530,7 +1530,103 @@ void ScalePlaneUp2_16_Bilinear(int src_width,
+   assert(src_width == ((dst_width + 1) / 2));
+   assert(src_height == ((dst_height + 1) / 2));
+ 
+-#ifdef HAS_SCALEROWUP2BILINEAR_16_SSSE3
++#ifdef HAS_SCALEROWUP2BILINEAR_12_SSSE3
++  if (TestCpuFlag(kCpuHasSSSE3)) {
++    Scale2RowUp = ScaleRowUp2_Bilinear_12_Any_SSSE3;
++  }
++#endif
++
++#ifdef HAS_SCALEROWUP2BILINEAR_12_AVX2
++  if (TestCpuFlag(kCpuHasAVX2)) {
++    Scale2RowUp = ScaleRowUp2_Bilinear_12_Any_AVX2;
++  }
++#endif
++
++#ifdef HAS_SCALEROWUP2BILINEAR_12_NEON
++  if (TestCpuFlag(kCpuHasNEON)) {
++    Scale2RowUp = ScaleRowUp2_Bilinear_12_Any_NEON;
++  }
++#endif
++
++  Scale2RowUp(src_ptr, 0, dst_ptr, 0, dst_width);
++  dst_ptr += dst_stride;
++  for (x = 0; x < src_height - 1; ++x) {
++    Scale2RowUp(src_ptr, src_stride, dst_ptr, dst_stride, dst_width);
++    src_ptr += src_stride;
++    dst_ptr += 2 * dst_stride;
++  }
++  if (!(dst_height & 1)) {
++    Scale2RowUp(src_ptr, 0, dst_ptr, 0, dst_width);
++  }
++}
++
++void ScalePlaneUp2_16_Linear(int src_width,
++                             int src_height,
++                             int dst_width,
++                             int dst_height,
++                             int src_stride,
++                             int dst_stride,
++                             const uint16_t* src_ptr,
++                             uint16_t* dst_ptr) {
++  void (*ScaleRowUp)(const uint16_t* src_ptr, uint16_t* dst_ptr,
++                     int dst_width) = ScaleRowUp2_Linear_16_Any_C;
++  int i;
++  int y;
++  int dy;
++
++  // This function can only scale up by 2 times horizontally.
++  assert(src_width == ((dst_width + 1) / 2));
++
++#ifdef HAS_SCALEROWUP2LINEAR_16_SSE2
++  if (TestCpuFlag(kCpuHasSSE2)) {
++    ScaleRowUp = ScaleRowUp2_Linear_16_Any_SSE2;
++  }
++#endif
++
++#ifdef HAS_SCALEROWUP2LINEAR_16_AVX2
++  if (TestCpuFlag(kCpuHasAVX2)) {
++    ScaleRowUp = ScaleRowUp2_Linear_16_Any_AVX2;
++  }
++#endif
++
++#ifdef HAS_SCALEROWUP2LINEAR_16_NEON
++  if (TestCpuFlag(kCpuHasNEON)) {
++    ScaleRowUp = ScaleRowUp2_Linear_16_Any_NEON;
++  }
++#endif
++
++  if (dst_height == 1) {
++    ScaleRowUp(src_ptr + ((src_height - 1) / 2) * src_stride, dst_ptr,
++               dst_width);
++  } else {
++    dy = FixedDiv(src_height - 1, dst_height - 1);
++    y = (1 << 15) - 1;
++    for (i = 0; i < dst_height; ++i) {
++      ScaleRowUp(src_ptr + (y >> 16) * src_stride, dst_ptr, dst_width);
++      dst_ptr += dst_stride;
++      y += dy;
++    }
++  }
++}
++
++void ScalePlaneUp2_16_Bilinear(int src_width,
++                               int src_height,
++                               int dst_width,
++                               int dst_height,
++                               int src_stride,
++                               int dst_stride,
++                               const uint16_t* src_ptr,
++                               uint16_t* dst_ptr) {
++  void (*Scale2RowUp)(const uint16_t* src_ptr, ptrdiff_t src_stride,
++                      uint16_t* dst_ptr, ptrdiff_t dst_stride, int dst_width) =
++  ScaleRowUp2_Bilinear_16_Any_C;
++  int x;
++
++  // This function can only scale up by 2 times.
++  assert(src_width == ((dst_width + 1) / 2));
++  assert(src_height == ((dst_height + 1) / 2));
++
++#ifdef HAS_SCALEROWUP2BILINEAR_16_SSE2
+   if (TestCpuFlag(kCpuHasSSSE3)) {
+     Scale2RowUp = ScaleRowUp2_Bilinear_16_Any_SSSE3;
+   }
+@@ -1945,6 +2041,17 @@ void ScalePlane_16(const uint16_t* src,
+                      dst_stride, src, dst);
+     return;
+   }
++  if ((dst_width + 1) / 2 == src_width && filtering == kFilterLinear) {
++    ScalePlaneUp2_16_Linear(src_width, src_height, dst_width, dst_height,
++                            src_stride, dst_stride, src, dst);
++    return;
++  }
++  if ((dst_height + 1) / 2 == src_height && (dst_width + 1) / 2 == src_width &&
++      (filtering == kFilterBilinear || filtering == kFilterBox)) {
++    ScalePlaneUp2_16_Bilinear(src_width, src_height, dst_width, dst_height,
++                              src_stride, dst_stride, src, dst);
++    return;
++  }
+   if (filtering && dst_height > src_height) {
+     ScalePlaneBilinearUp_16(src_width, src_height, dst_width, dst_height,
+                             src_stride, dst_stride, src, dst, filtering);
+@@ -1981,13 +2088,13 @@ void ScalePlane_12(const uint16_t* src,
+   }
+ 
+   if ((dst_width + 1) / 2 == src_width && filtering == kFilterLinear) {
+-    ScalePlaneUp2_16_Linear(src_width, src_height, dst_width, dst_height,
++    ScalePlaneUp2_12_Linear(src_width, src_height, dst_width, dst_height,
+                             src_stride, dst_stride, src, dst);
+     return;
+   }
+   if ((dst_height + 1) / 2 == src_height && (dst_width + 1) / 2 == src_width &&
+       (filtering == kFilterBilinear || filtering == kFilterBox)) {
+-    ScalePlaneUp2_16_Bilinear(src_width, src_height, dst_width, dst_height,
++    ScalePlaneUp2_12_Bilinear(src_width, src_height, dst_width, dst_height,
+                               src_stride, dst_stride, src, dst);
+     return;
+   }
+diff --git a/source/scale_any.cc b/source/scale_any.cc
+index d30f5833..7a7af248 100644
+--- a/source/scale_any.cc
++++ b/source/scale_any.cc
+@@ -656,14 +656,22 @@ SUH2LANY(ScaleRowUp2_Linear_Any_SSSE3,
+          uint8_t)
+ #endif
+ 
+-#ifdef HAS_SCALEROWUP2LINEAR_16_SSSE3
+-SUH2LANY(ScaleRowUp2_Linear_16_Any_SSSE3,
+-         ScaleRowUp2_Linear_16_SSSE3,
++#ifdef HAS_SCALEROWUP2LINEAR_12_SSSE3
++SUH2LANY(ScaleRowUp2_Linear_12_Any_SSSE3,
++         ScaleRowUp2_Linear_12_SSSE3,
+          ScaleRowUp2_Linear_16_C,
+          15,
+          uint16_t)
+ #endif
+ 
++#ifdef HAS_SCALEROWUP2LINEAR_16_SSE2
++SUH2LANY(ScaleRowUp2_Linear_16_Any_SSE2,
++         ScaleRowUp2_Linear_16_SSE2,
++         ScaleRowUp2_Linear_16_C,
++         7,
++         uint16_t)
++#endif
++
+ #ifdef HAS_SCALEROWUP2LINEAR_AVX2
+ SUH2LANY(ScaleRowUp2_Linear_Any_AVX2,
+          ScaleRowUp2_Linear_AVX2,
+@@ -672,11 +680,19 @@ SUH2LANY(ScaleRowUp2_Linear_Any_AVX2,
+          uint8_t)
+ #endif
+ 
++#ifdef HAS_SCALEROWUP2LINEAR_12_AVX2
++SUH2LANY(ScaleRowUp2_Linear_12_Any_AVX2,
++         ScaleRowUp2_Linear_12_AVX2,
++         ScaleRowUp2_Linear_16_C,
++         31,
++         uint16_t)
++#endif
++
+ #ifdef HAS_SCALEROWUP2LINEAR_16_AVX2
+ SUH2LANY(ScaleRowUp2_Linear_16_Any_AVX2,
+          ScaleRowUp2_Linear_16_AVX2,
+          ScaleRowUp2_Linear_16_C,
+-         31,
++         15,
+          uint16_t)
+ #endif
+ 
+@@ -688,11 +704,19 @@ SUH2LANY(ScaleRowUp2_Linear_Any_NEON,
+          uint8_t)
+ #endif
+ 
++#ifdef HAS_SCALEROWUP2LINEAR_12_NEON
++SUH2LANY(ScaleRowUp2_Linear_12_Any_NEON,
++         ScaleRowUp2_Linear_12_NEON,
++         ScaleRowUp2_Linear_16_C,
++         7,
++         uint16_t)
++#endif
++
+ #ifdef HAS_SCALEROWUP2LINEAR_16_NEON
+ SUH2LANY(ScaleRowUp2_Linear_16_Any_NEON,
+          ScaleRowUp2_Linear_16_NEON,
+          ScaleRowUp2_Linear_16_C,
+-         15,
++         7,
+          uint16_t)
+ #endif
+ 
+@@ -744,14 +768,22 @@ SU2BLANY(ScaleRowUp2_Bilinear_Any_SSE2,
+          uint8_t)
+ #endif
+ 
+-#ifdef HAS_SCALEROWUP2BILINEAR_16_SSSE3
+-SU2BLANY(ScaleRowUp2_Bilinear_16_Any_SSSE3,
+-         ScaleRowUp2_Bilinear_16_SSSE3,
++#ifdef HAS_SCALEROWUP2BILINEAR_12_SSSE3
++SU2BLANY(ScaleRowUp2_Bilinear_12_Any_SSSE3,
++         ScaleRowUp2_Bilinear_12_SSSE3,
+          ScaleRowUp2_Bilinear_16_C,
+          15,
+          uint16_t)
+ #endif
+ 
++#ifdef HAS_SCALEROWUP2BILINEAR_16_SSE2
++SU2BLANY(ScaleRowUp2_Bilinear_16_Any_SSSE3,
++         ScaleRowUp2_Bilinear_16_SSE2,
++         ScaleRowUp2_Bilinear_16_C,
++         7,
++         uint16_t)
++#endif
++
+ #ifdef HAS_SCALEROWUP2BILINEAR_SSSE3
+ SU2BLANY(ScaleRowUp2_Bilinear_Any_SSSE3,
+          ScaleRowUp2_Bilinear_SSSE3,
+@@ -768,6 +800,14 @@ SU2BLANY(ScaleRowUp2_Bilinear_Any_AVX2,
+          uint8_t)
+ #endif
+ 
++#ifdef HAS_SCALEROWUP2BILINEAR_12_AVX2
++SU2BLANY(ScaleRowUp2_Bilinear_12_Any_AVX2,
++         ScaleRowUp2_Bilinear_12_AVX2,
++         ScaleRowUp2_Bilinear_16_C,
++         15,
++         uint16_t)
++#endif
++
+ #ifdef HAS_SCALEROWUP2BILINEAR_16_AVX2
+ SU2BLANY(ScaleRowUp2_Bilinear_16_Any_AVX2,
+          ScaleRowUp2_Bilinear_16_AVX2,
+@@ -784,11 +824,19 @@ SU2BLANY(ScaleRowUp2_Bilinear_Any_NEON,
+          uint8_t)
+ #endif
+ 
++#ifdef HAS_SCALEROWUP2BILINEAR_12_NEON
++SU2BLANY(ScaleRowUp2_Bilinear_12_Any_NEON,
++         ScaleRowUp2_Bilinear_12_NEON,
++         ScaleRowUp2_Bilinear_16_C,
++         15,
++         uint16_t)
++#endif
++
+ #ifdef HAS_SCALEROWUP2BILINEAR_16_NEON
+ SU2BLANY(ScaleRowUp2_Bilinear_16_Any_NEON,
+          ScaleRowUp2_Bilinear_16_NEON,
+          ScaleRowUp2_Bilinear_16_C,
+-         15,
++         7,
+          uint16_t)
+ #endif
+ 
+@@ -860,7 +908,7 @@ SBUH2LANY(ScaleUVRowUp2_Linear_16_Any_AVX2,
+ SBUH2LANY(ScaleUVRowUp2_Linear_Any_NEON,
+           ScaleUVRowUp2_Linear_NEON,
+           ScaleUVRowUp2_Linear_C,
+-          7,
++          15,
+           uint8_t)
+ #endif
+ 
+@@ -868,7 +916,7 @@ SBUH2LANY(ScaleUVRowUp2_Linear_Any_NEON,
+ SBUH2LANY(ScaleUVRowUp2_Linear_16_Any_NEON,
+           ScaleUVRowUp2_Linear_16_NEON,
+           ScaleUVRowUp2_Linear_16_C,
+-          7,
++          15,
+           uint16_t)
+ #endif
+ 
+@@ -966,7 +1014,7 @@ SBU2BLANY(ScaleUVRowUp2_Bilinear_Any_NEON,
+ SBU2BLANY(ScaleUVRowUp2_Bilinear_16_Any_NEON,
+           ScaleUVRowUp2_Bilinear_16_NEON,
+           ScaleUVRowUp2_Bilinear_16_C,
+-          3,
++          7,
+           uint16_t)
+ #endif
+ 
+diff --git a/source/scale_gcc.cc b/source/scale_gcc.cc
+index f03903f0..b1d39cf8 100644
+--- a/source/scale_gcc.cc
++++ b/source/scale_gcc.cc
+@@ -950,8 +950,8 @@ void ScaleRowUp2_Bilinear_SSE2(const uint8_t* src_ptr,
+ }
+ #endif
+ 
+-#ifdef HAS_SCALEROWUP2LINEAR_16_SSSE3
+-void ScaleRowUp2_Linear_16_SSSE3(const uint16_t* src_ptr,
++#ifdef HAS_SCALEROWUP2LINEAR_12_SSSE3
++void ScaleRowUp2_Linear_12_SSSE3(const uint16_t* src_ptr,
+                                  uint16_t* dst_ptr,
+                                  int dst_width) {
+   asm volatile(
+@@ -1000,8 +1000,8 @@ void ScaleRowUp2_Linear_16_SSSE3(const uint16_t* src_ptr,
+ }
+ #endif
+ 
+-#ifdef HAS_SCALEROWUP2BILINEAR_16_SSSE3
+-void ScaleRowUp2_Bilinear_16_SSSE3(const uint16_t* src_ptr,
++#ifdef HAS_SCALEROWUP2BILINEAR_12_SSSE3
++void ScaleRowUp2_Bilinear_12_SSSE3(const uint16_t* src_ptr,
+                                    ptrdiff_t src_stride,
+                                    uint16_t* dst_ptr,
+                                    ptrdiff_t dst_stride,
+@@ -1045,11 +1045,11 @@ void ScaleRowUp2_Bilinear_16_SSSE3(const uint16_t* src_ptr,
+       "paddw       %%xmm3,%%xmm5                 \n"  // near+far
+       "paddw       %%xmm1,%%xmm1                 \n"  // 2*near
+       "paddw       %%xmm3,%%xmm3                 \n"  // 2*near
+-      "paddw       %%xmm4,%%xmm1                 \n"  // 3*near+far (1, lo)
+-      "paddw       %%xmm5,%%xmm3                 \n"  // 3*near+far (1, hi)
++      "paddw       %%xmm4,%%xmm1                 \n"  // 3*near+far (2, lo)
++      "paddw       %%xmm5,%%xmm3                 \n"  // 3*near+far (2, hi)
+ 
+-      // xmm4 xmm1   xmm0 xmm2
+-      // xmm5 xmm2   xmm1 xmm3
++      // xmm0 xmm2
++      // xmm1 xmm3
+ 
+       "movdqa      %%xmm0,%%xmm4                 \n"
+       "movdqa      %%xmm1,%%xmm5                 \n"
+@@ -1099,6 +1099,166 @@ void ScaleRowUp2_Bilinear_16_SSSE3(const uint16_t* src_ptr,
+ }
+ #endif
+ 
++#ifdef HAS_SCALEROWUP2LINEAR_16_SSE2
++void ScaleRowUp2_Linear_16_SSE2(const uint16_t* src_ptr,
++                                uint16_t* dst_ptr,
++                                int dst_width) {
++  asm volatile(
++      "pxor        %%xmm5,%%xmm5                 \n"
++      "pcmpeqd     %%xmm4,%%xmm4                 \n"
++      "psrld       $31,%%xmm4                    \n"
++      "pslld       $1,%%xmm4                     \n"  // all 2
++
++      LABELALIGN
++      "1:                                        \n"
++      "movq        (%0),%%xmm0                   \n"  // 0123 (16b)
++      "movq        2(%0),%%xmm1                  \n"  // 1234 (16b)
++
++      "punpcklwd   %%xmm5,%%xmm0                 \n"  // 0123 (32b)
++      "punpcklwd   %%xmm5,%%xmm1                 \n"  // 1234 (32b)
++
++      "movdqa      %%xmm0,%%xmm2                 \n"
++      "movdqa      %%xmm1,%%xmm3                 \n"
++
++      "pshufd      $0b10110001,%%xmm2,%%xmm2     \n"  // 1032 (even, far)
++      "pshufd      $0b10110001,%%xmm3,%%xmm3     \n"  // 2143 (odd, far)
++
++      "paddd       %%xmm4,%%xmm2                 \n"  // far+2 (lo)
++      "paddd       %%xmm4,%%xmm3                 \n"  // far+2 (hi)
++      "paddd       %%xmm0,%%xmm2                 \n"  // near+far+2 (lo)
++      "paddd       %%xmm1,%%xmm3                 \n"  // near+far+2 (hi)
++      "paddd       %%xmm0,%%xmm0                 \n"  // 2*near (lo)
++      "paddd       %%xmm1,%%xmm1                 \n"  // 2*near (hi)
++      "paddd       %%xmm2,%%xmm0                 \n"  // 3*near+far+2 (lo)
++      "paddd       %%xmm3,%%xmm1                 \n"  // 3*near+far+2 (hi)
++
++      "psrld       $2,%%xmm0                     \n"  // 3/4*near+1/4*far (lo)
++      "psrld       $2,%%xmm1                     \n"  // 3/4*near+1/4*far (hi)
++      "packssdw    %%xmm1,%%xmm0                 \n"
++      "pshufd      $0b11011000,%%xmm0,%%xmm0     \n"
++      "movdqu      %%xmm0,(%1)                   \n"
++
++      "lea         0x8(%0),%0                    \n"
++      "lea         0x10(%1),%1                   \n"  // 4 pixel to 8 pixel
++      "sub         $0x8,%2                       \n"
++      "jg          1b                            \n"
++      : "+r"(src_ptr),   // %0
++        "+r"(dst_ptr),   // %1
++        "+r"(dst_width)  // %2
++      :
++      : "memory", "cc", "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5");
++}
++#endif
++
++#ifdef HAS_SCALEROWUP2BILINEAR_16_SSE2
++void ScaleRowUp2_Bilinear_16_SSE2(const uint16_t* src_ptr,
++                                  ptrdiff_t src_stride,
++                                  uint16_t* dst_ptr,
++                                  ptrdiff_t dst_stride,
++                                  int dst_width) {
++  asm volatile(
++      "pxor        %%xmm7,%%xmm7                 \n"
++      "pcmpeqd     %%xmm6,%%xmm6                 \n"
++      "psrld       $31,%%xmm6                    \n"
++      "pslld       $3,%%xmm6                     \n"  // all 8
++
++      LABELALIGN
++      "1:                                        \n"
++      "movq        (%0),%%xmm0                   \n"  // 0011 (16b, 1u1v)
++      "movq        4(%0),%%xmm1                  \n"  // 1122 (16b, 1u1v)
++      "punpcklwd   %%xmm7,%%xmm0                 \n"  // 0011 (near) (32b, 1u1v)
++      "punpcklwd   %%xmm7,%%xmm1                 \n"  // 1122 (near) (32b, 1u1v)
++      "movdqa      %%xmm0,%%xmm2                 \n"
++      "movdqa      %%xmm1,%%xmm3                 \n"
++      "pshufd      $0b01001110,%%xmm2,%%xmm2     \n"  // 1100 (far) (1, lo)
++      "pshufd      $0b01001110,%%xmm3,%%xmm3     \n"  // 2211 (far) (1, hi)
++      "paddd       %%xmm0,%%xmm2                 \n"  // near+far (1, lo)
++      "paddd       %%xmm1,%%xmm3                 \n"  // near+far (1, hi)
++      "paddd       %%xmm0,%%xmm0                 \n"  // 2*near (1, lo)
++      "paddd       %%xmm1,%%xmm1                 \n"  // 2*near (1, hi)
++      "paddd       %%xmm2,%%xmm0                 \n"  // 3*near+far (1, lo)
++      "paddd       %%xmm3,%%xmm1                 \n"  // 3*near+far (1, hi)
++
++      "movq        (%0),%%xmm0                   \n"  // 0123 (16b)
++      "movq        2(%0),%%xmm1                  \n"  // 1234 (16b)
++      "punpcklwd   %%xmm7,%%xmm0                 \n"  // 0123 (32b)
++      "punpcklwd   %%xmm7,%%xmm1                 \n"  // 1234 (32b)
++      "movdqa      %%xmm0,%%xmm2                 \n"
++      "movdqa      %%xmm1,%%xmm3                 \n"
++      "pshufd      $0b10110001,%%xmm2,%%xmm2     \n"  // 1032 (even, far)
++      "pshufd      $0b10110001,%%xmm3,%%xmm3     \n"  // 2143 (odd, far)
++      "paddd       %%xmm0,%%xmm2                 \n"  // near+far (lo)
++      "paddd       %%xmm1,%%xmm3                 \n"  // near+far (hi)
++      "paddd       %%xmm0,%%xmm0                 \n"  // 2*near (lo)
++      "paddd       %%xmm1,%%xmm1                 \n"  // 2*near (hi)
++      "paddd       %%xmm2,%%xmm0                 \n"  // 3*near+far (1, lo)
++      "paddd       %%xmm3,%%xmm1                 \n"  // 3*near+far (1, hi)
++
++      "movq        (%0,%3,2),%%xmm2              \n"
++      "movq        2(%0,%3,2),%%xmm3             \n"
++      "punpcklwd   %%xmm7,%%xmm2                 \n"  // 0123 (32b)
++      "punpcklwd   %%xmm7,%%xmm3                 \n"  // 1234 (32b)
++      "movdqa      %%xmm2,%%xmm4                 \n"
++      "movdqa      %%xmm3,%%xmm5                 \n"
++      "pshufd      $0b10110001,%%xmm4,%%xmm4     \n"  // 1032 (even, far)
++      "pshufd      $0b10110001,%%xmm5,%%xmm5     \n"  // 2143 (odd, far)
++      "paddd       %%xmm2,%%xmm4                 \n"  // near+far (lo)
++      "paddd       %%xmm3,%%xmm5                 \n"  // near+far (hi)
++      "paddd       %%xmm2,%%xmm2                 \n"  // 2*near (lo)
++      "paddd       %%xmm3,%%xmm3                 \n"  // 2*near (hi)
++      "paddd       %%xmm4,%%xmm2                 \n"  // 3*near+far (2, lo)
++      "paddd       %%xmm5,%%xmm3                 \n"  // 3*near+far (2, hi)
++
++      "movdqa      %%xmm0,%%xmm4                 \n"
++      "movdqa      %%xmm2,%%xmm5                 \n"
++      "paddd       %%xmm0,%%xmm4                 \n"  // 6*near+2*far (1, lo)
++      "paddd       %%xmm6,%%xmm5                 \n"  // 3*near+far+8 (2, lo)
++      "paddd       %%xmm0,%%xmm4                 \n"  // 9*near+3*far (1, lo)
++      "paddd       %%xmm5,%%xmm4                 \n"  // 9 3 3 1 + 8 (1, lo)
++      "psrld       $4,%%xmm4                     \n"  // ^ div by 16 (1, lo)
++
++      "movdqa      %%xmm2,%%xmm5                 \n"
++      "paddd       %%xmm2,%%xmm5                 \n"  // 6*near+2*far (2, lo)
++      "paddd       %%xmm6,%%xmm0                 \n"  // 3*near+far+8 (1, lo)
++      "paddd       %%xmm2,%%xmm5                 \n"  // 9*near+3*far (2, lo)
++      "paddd       %%xmm0,%%xmm5                 \n"  // 9 3 3 1 + 8 (2, lo)
++      "psrld       $4,%%xmm5                     \n"  // ^ div by 16 (2, lo)
++
++      "movdqa      %%xmm1,%%xmm0                 \n"
++      "movdqa      %%xmm3,%%xmm2                 \n"
++      "paddd       %%xmm1,%%xmm0                 \n"  // 6*near+2*far (1, hi)
++      "paddd       %%xmm6,%%xmm2                 \n"  // 3*near+far+8 (2, hi)
++      "paddd       %%xmm1,%%xmm0                 \n"  // 9*near+3*far (1, hi)
++      "paddd       %%xmm2,%%xmm0                 \n"  // 9 3 3 1 + 8 (1, hi)
++      "psrld       $4,%%xmm0                     \n"  // ^ div by 16 (1, hi)
++
++      "movdqa      %%xmm3,%%xmm2                 \n"
++      "paddd       %%xmm3,%%xmm2                 \n"  // 6*near+2*far (2, hi)
++      "paddd       %%xmm6,%%xmm1                 \n"  // 3*near+far+8 (1, hi)
++      "paddd       %%xmm3,%%xmm2                 \n"  // 9*near+3*far (2, hi)
++      "paddd       %%xmm1,%%xmm2                 \n"  // 9 3 3 1 + 8 (2, hi)
++      "psrld       $4,%%xmm2                     \n"  // ^ div by 16 (2, hi)
++
++      "packssdw    %%xmm0,%%xmm4                 \n"
++      "pshufd      $0b11011000,%%xmm4,%%xmm4     \n"
++      "movdqu      %%xmm4,(%1)                   \n"  // store above
++      "packssdw    %%xmm2,%%xmm5                 \n"
++      "pshufd      $0b11011000,%%xmm4,%%xmm4     \n"
++      "movdqu      %%xmm5,(%1,%4,2)              \n"  // store below
++
++      "lea         0x8(%0),%0                    \n"
++      "lea         0x10(%1),%1                   \n"  // 4 pixel to 8 pixel
++      "sub         $0x8,%2                       \n"
++      "jg          1b                            \n"
++      : "+r"(src_ptr),                // %0
++        "+r"(dst_ptr),                // %1
++        "+r"(dst_width)               // %2
++      : "r"((intptr_t)(src_stride)),  // %3
++        "r"((intptr_t)(dst_stride))   // %4
++      : "memory", "cc", "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5", "xmm6");
++}
++#endif
++
+ #ifdef HAS_SCALEROWUP2LINEAR_SSSE3
+ void ScaleRowUp2_Linear_SSSE3(const uint8_t* src_ptr,
+                               uint8_t* dst_ptr,
+@@ -1352,8 +1512,8 @@ void ScaleRowUp2_Bilinear_AVX2(const uint8_t* src_ptr,
+ }
+ #endif
+ 
+-#ifdef HAS_SCALEROWUP2LINEAR_16_AVX2
+-void ScaleRowUp2_Linear_16_AVX2(const uint16_t* src_ptr,
++#ifdef HAS_SCALEROWUP2LINEAR_12_AVX2
++void ScaleRowUp2_Linear_12_AVX2(const uint16_t* src_ptr,
+                                 uint16_t* dst_ptr,
+                                 int dst_width) {
+   asm volatile(
+@@ -1402,8 +1562,8 @@ void ScaleRowUp2_Linear_16_AVX2(const uint16_t* src_ptr,
+ }
+ #endif
+ 
+-#ifdef HAS_SCALEROWUP2BILINEAR_16_AVX2
+-void ScaleRowUp2_Bilinear_16_AVX2(const uint16_t* src_ptr,
++#ifdef HAS_SCALEROWUP2BILINEAR_12_AVX2
++void ScaleRowUp2_Bilinear_12_AVX2(const uint16_t* src_ptr,
+                                   ptrdiff_t src_stride,
+                                   uint16_t* dst_ptr,
+                                   ptrdiff_t dst_stride,
+@@ -1466,6 +1626,139 @@ void ScaleRowUp2_Bilinear_16_AVX2(const uint16_t* src_ptr,
+ }
+ #endif
+ 
++#ifdef HAS_SCALEROWUP2LINEAR_16_AVX2
++void ScaleRowUp2_Linear_16_AVX2(const uint16_t* src_ptr,
++                                uint16_t* dst_ptr,
++                                int dst_width) {
++  asm volatile(
++      "vpcmpeqd    %%ymm4,%%ymm4,%%ymm4          \n"
++      "vpsrld      $31,%%ymm4,%%ymm4             \n"
++      "vpslld      $1,%%ymm4,%%ymm4              \n"  // all 2
++
++      LABELALIGN
++      "1:                                        \n"
++      "vmovdqu     (%0),%%xmm0                   \n"  // 01234567 (16b, 1u1v)
++      "vmovdqu     2(%0),%%xmm1                  \n"  // 12345678 (16b, 1u1v)
++
++      "vpmovzxwd   %%xmm0,%%ymm0                 \n"  // 01234567 (32b, 1u1v)
++      "vpmovzxwd   %%xmm1,%%ymm1                 \n"  // 12345678 (32b, 1u1v)
++
++      "vpshufd     $0b10110001,%%ymm0,%%ymm2     \n"  // 10325476 (lo, far)
++      "vpshufd     $0b10110001,%%ymm1,%%ymm3     \n"  // 21436587 (hi, far)
++
++      "vpaddd      %%ymm4,%%ymm2,%%ymm2          \n"  // far+2 (lo)
++      "vpaddd      %%ymm4,%%ymm3,%%ymm3          \n"  // far+2 (hi)
++      "vpaddd      %%ymm0,%%ymm2,%%ymm2          \n"  // near+far+2 (lo)
++      "vpaddd      %%ymm1,%%ymm3,%%ymm3          \n"  // near+far+2 (hi)
++      "vpaddd      %%ymm0,%%ymm0,%%ymm0          \n"  // 2*near (lo)
++      "vpaddd      %%ymm1,%%ymm1,%%ymm1          \n"  // 2*near (hi)
++      "vpaddd      %%ymm0,%%ymm2,%%ymm0          \n"  // 3*near+far+2 (lo)
++      "vpaddd      %%ymm1,%%ymm3,%%ymm1          \n"  // 3*near+far+2 (hi)
++
++      "vpsrld      $2,%%ymm0,%%ymm0              \n"  // 3/4*near+1/4*far (lo)
++      "vpsrld      $2,%%ymm1,%%ymm1              \n"  // 3/4*near+1/4*far (hi)
++      "vpackusdw   %%ymm1,%%ymm0,%%ymm0          \n"
++      "vpshufd     $0b11011000,%%ymm0,%%ymm0     \n"
++      "vmovdqu     %%ymm0,(%1)                   \n"
++
++      "lea         0x10(%0),%0                   \n"
++      "lea         0x20(%1),%1                   \n"  // 8 pixel to 16 pixel
++      "sub         $0x10,%2                      \n"
++      "jg          1b                            \n"
++      "vzeroupper                                \n"
++      : "+r"(src_ptr),   // %0
++        "+r"(dst_ptr),   // %1
++        "+r"(dst_width)  // %2
++      :
++      : "memory", "cc", "xmm0", "xmm1", "xmm2", "xmm3", "xmm4");
++}
++#endif
++
++#ifdef HAS_SCALEROWUP2BILINEAR_16_AVX2
++void ScaleRowUp2_Bilinear_16_AVX2(const uint16_t* src_ptr,
++                                  ptrdiff_t src_stride,
++                                  uint16_t* dst_ptr,
++                                  ptrdiff_t dst_stride,
++                                  int dst_width) {
++  asm volatile(
++      "vpcmpeqd    %%ymm6,%%ymm6,%%ymm6          \n"
++      "vpsrld      $31,%%ymm6,%%ymm6             \n"
++      "vpslld      $3,%%ymm6,%%ymm6              \n"  // all 8
++
++      LABELALIGN
++      "1:                                        \n"
++
++      "vmovdqu     (%0),%%xmm0                   \n"  // 01234567 (16b, 1u1v)
++      "vmovdqu     2(%0),%%xmm1                  \n"  // 12345678 (16b, 1u1v)
++      "vpmovzxwd   %%xmm0,%%ymm0                 \n"  // 01234567 (32b, 1u1v)
++      "vpmovzxwd   %%xmm1,%%ymm1                 \n"  // 12345678 (32b, 1u1v)
++      "vpshufd     $0b10110001,%%ymm0,%%ymm2     \n"  // 10325476 (lo, far)
++      "vpshufd     $0b10110001,%%ymm1,%%ymm3     \n"  // 21436587 (hi, far)
++      "vpaddd      %%ymm0,%%ymm2,%%ymm2          \n"  // near+far (lo)
++      "vpaddd      %%ymm1,%%ymm3,%%ymm3          \n"  // near+far (hi)
++      "vpaddd      %%ymm0,%%ymm0,%%ymm0          \n"  // 2*near (lo)
++      "vpaddd      %%ymm1,%%ymm1,%%ymm1          \n"  // 2*near (hi)
++      "vpaddd      %%ymm0,%%ymm2,%%ymm0          \n"  // 3*near+far (1, lo)
++      "vpaddd      %%ymm1,%%ymm3,%%ymm1          \n"  // 3*near+far (1, hi)
++
++      "vmovdqu     (%0,%3,2),%%xmm2              \n"  // 01234567 (16b, 1u1v)
++      "vmovdqu     2(%0,%3,2),%%xmm3             \n"  // 12345678 (16b, 1u1v)
++      "vpmovzxwd   %%xmm2,%%ymm2                 \n"  // 01234567 (32b, 1u1v)
++      "vpmovzxwd   %%xmm3,%%ymm3                 \n"  // 12345678 (32b, 1u1v)
++      "vpshufd     $0b10110001,%%ymm2,%%ymm4     \n"  // 10325476 (lo, far)
++      "vpshufd     $0b10110001,%%ymm3,%%ymm5     \n"  // 21436587 (hi, far)
++      "vpaddd      %%ymm2,%%ymm4,%%ymm4          \n"  // near+far (lo)
++      "vpaddd      %%ymm3,%%ymm5,%%ymm5          \n"  // near+far (hi)
++      "vpaddd      %%ymm2,%%ymm2,%%ymm2          \n"  // 2*near (lo)
++      "vpaddd      %%ymm3,%%ymm3,%%ymm3          \n"  // 2*near (hi)
++      "vpaddd      %%ymm2,%%ymm4,%%ymm2          \n"  // 3*near+far (2, lo)
++      "vpaddd      %%ymm3,%%ymm5,%%ymm3          \n"  // 3*near+far (2, hi)
++
++      "vpaddd      %%ymm0,%%ymm0,%%ymm4          \n"  // 6*near+2*far (1, lo)
++      "vpaddd      %%ymm6,%%ymm2,%%ymm5          \n"  // 3*near+far+8 (2, lo)
++      "vpaddd      %%ymm4,%%ymm0,%%ymm4          \n"  // 9*near+3*far (1, lo)
++      "vpaddd      %%ymm4,%%ymm5,%%ymm4          \n"  // 9 3 3 1 + 8 (1, lo)
++      "vpsrld      $4,%%ymm4,%%ymm4              \n"  // ^ div by 16 (1, lo)
++
++      "vpaddd      %%ymm2,%%ymm2,%%ymm5          \n"  // 6*near+2*far (2, lo)
++      "vpaddd      %%ymm6,%%ymm0,%%ymm0          \n"  // 3*near+far+8 (1, lo)
++      "vpaddd      %%ymm5,%%ymm2,%%ymm5          \n"  // 9*near+3*far (2, lo)
++      "vpaddd      %%ymm5,%%ymm0,%%ymm5          \n"  // 9 3 3 1 + 8 (2, lo)
++      "vpsrld      $4,%%ymm5,%%ymm5              \n"  // ^ div by 16 (2, lo)
++
++      "vpaddd      %%ymm1,%%ymm1,%%ymm0          \n"  // 6*near+2*far (1, hi)
++      "vpaddd      %%ymm6,%%ymm3,%%ymm2          \n"  // 3*near+far+8 (2, hi)
++      "vpaddd      %%ymm0,%%ymm1,%%ymm0          \n"  // 9*near+3*far (1, hi)
++      "vpaddd      %%ymm0,%%ymm2,%%ymm0          \n"  // 9 3 3 1 + 8 (1, hi)
++      "vpsrld      $4,%%ymm0,%%ymm0              \n"  // ^ div by 16 (1, hi)
++
++      "vpaddd      %%ymm3,%%ymm3,%%ymm2          \n"  // 6*near+2*far (2, hi)
++      "vpaddd      %%ymm6,%%ymm1,%%ymm1          \n"  // 3*near+far+8 (1, hi)
++      "vpaddd      %%ymm2,%%ymm3,%%ymm2          \n"  // 9*near+3*far (2, hi)
++      "vpaddd      %%ymm2,%%ymm1,%%ymm2          \n"  // 9 3 3 1 + 8 (2, hi)
++      "vpsrld      $4,%%ymm2,%%ymm2              \n"  // ^ div by 16 (2, hi)
++
++      "vpackusdw   %%ymm0,%%ymm4,%%ymm4          \n"
++      "vpshufd     $0b11011000,%%ymm4,%%ymm4     \n"
++      "vmovdqu     %%ymm4,(%1)                   \n"  // store above
++      "vpackusdw   %%ymm2,%%ymm5,%%ymm5          \n"
++      "vpshufd     $0b11011000,%%ymm5,%%ymm5     \n"
++      "vmovdqu     %%ymm5,(%1,%4,2)              \n"  // store below
++
++      "lea         0x10(%0),%0                   \n"
++      "lea         0x20(%1),%1                   \n"  // 8 pixel to 16 pixel
++      "sub         $0x10,%2                      \n"
++      "jg          1b                            \n"
++      "vzeroupper                                \n"
++      : "+r"(src_ptr),                // %0
++        "+r"(dst_ptr),                // %1
++        "+r"(dst_width)               // %2
++      : "r"((intptr_t)(src_stride)),  // %3
++        "r"((intptr_t)(dst_stride))   // %4
++      : "memory", "cc", "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5", "xmm6");
++}
++#endif
++
+ // Reads 16xN bytes and produces 16 shorts at a time.
+ void ScaleAddRow_SSE2(const uint8_t* src_ptr,
+                       uint16_t* dst_ptr,
+@@ -2522,7 +2815,6 @@ void ScaleUVRowUp2_Linear_16_AVX2(const uint16_t* src_ptr,
+                                   uint16_t* dst_ptr,
+                                   int dst_width) {
+   asm volatile(
+-      "vpxor       %%xmm5,%%xmm5,%%xmm5          \n"
+       "vpcmpeqd    %%ymm4,%%ymm4,%%ymm4          \n"
+       "vpsrld      $31,%%ymm4,%%ymm4             \n"
+       "vpslld      $1,%%ymm4,%%ymm4              \n"  // all 2
+@@ -2532,11 +2824,8 @@ void ScaleUVRowUp2_Linear_16_AVX2(const uint16_t* src_ptr,
+       "vmovdqu     (%0),%%xmm0                   \n"  // 00112233 (16b, 1u1v)
+       "vmovdqu     4(%0),%%xmm1                  \n"  // 11223344 (16b, 1u1v)
+ 
+-      "vpermq      $0b11011000,%%ymm0,%%ymm0     \n"  // 0011000022330000
+-      "vpermq      $0b11011000,%%ymm1,%%ymm1     \n"  // 1122000033440000
+-
+-      "vpunpcklwd  %%ymm5,%%ymm0,%%ymm0          \n"  // 00112233 (32b, 1u1v)
+-      "vpunpcklwd  %%ymm5,%%ymm1,%%ymm1          \n"  // 11223344 (32b, 1u1v)
++      "vpmovzxwd   %%xmm0,%%ymm0                 \n"  // 01234567 (32b, 1u1v)
++      "vpmovzxwd   %%xmm1,%%ymm1                 \n"  // 12345678 (32b, 1u1v)
+ 
+       "vpshufd     $0b01001110,%%ymm0,%%ymm2     \n"  // 11003322 (lo, far)
+       "vpshufd     $0b01001110,%%ymm1,%%ymm3     \n"  // 22114433 (hi, far)
+@@ -2564,7 +2853,7 @@ void ScaleUVRowUp2_Linear_16_AVX2(const uint16_t* src_ptr,
+         "+r"(dst_ptr),   // %1
+         "+r"(dst_width)  // %2
+       :
+-      : "memory", "cc", "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5");
++      : "memory", "cc", "xmm0", "xmm1", "xmm2", "xmm3", "xmm4");
+ }
+ #endif
+ 
+@@ -2575,7 +2864,6 @@ void ScaleUVRowUp2_Bilinear_16_AVX2(const uint16_t* src_ptr,
+                                     ptrdiff_t dst_stride,
+                                     int dst_width) {
+   asm volatile(
+-      "vpxor       %%xmm7,%%xmm7,%%xmm7          \n"
+       "vpcmpeqd    %%ymm6,%%ymm6,%%ymm6          \n"
+       "vpsrld      $31,%%ymm6,%%ymm6             \n"
+       "vpslld      $3,%%ymm6,%%ymm6              \n"  // all 8
+@@ -2585,10 +2873,8 @@ void ScaleUVRowUp2_Bilinear_16_AVX2(const uint16_t* src_ptr,
+ 
+       "vmovdqu     (%0),%%xmm0                   \n"  // 00112233 (16b, 1u1v)
+       "vmovdqu     4(%0),%%xmm1                  \n"  // 11223344 (16b, 1u1v)
+-      "vpermq      $0b11011000,%%ymm0,%%ymm0     \n"  // 0011000022330000
+-      "vpermq      $0b11011000,%%ymm1,%%ymm1     \n"  // 1122000033440000
+-      "vpunpcklwd  %%ymm7,%%ymm0,%%ymm0          \n"  // 00112233 (32b, 1u1v)
+-      "vpunpcklwd  %%ymm7,%%ymm1,%%ymm1          \n"  // 11223344 (32b, 1u1v)
++      "vpmovzxwd   %%xmm0,%%ymm0                 \n"  // 01234567 (32b, 1u1v)
++      "vpmovzxwd   %%xmm1,%%ymm1                 \n"  // 12345678 (32b, 1u1v)
+       "vpshufd     $0b01001110,%%ymm0,%%ymm2     \n"  // 11003322 (lo, far)
+       "vpshufd     $0b01001110,%%ymm1,%%ymm3     \n"  // 22114433 (hi, far)
+       "vpaddd      %%ymm0,%%ymm2,%%ymm2          \n"  // near+far (lo)
+@@ -2600,10 +2886,8 @@ void ScaleUVRowUp2_Bilinear_16_AVX2(const uint16_t* src_ptr,
+ 
+       "vmovdqu     (%0,%3,2),%%xmm2              \n"  // 00112233 (16b, 1u1v)
+       "vmovdqu     4(%0,%3,2),%%xmm3             \n"  // 11223344 (16b, 1u1v)
+-      "vpermq      $0b11011000,%%ymm2,%%ymm2     \n"  // 0011000022330000
+-      "vpermq      $0b11011000,%%ymm3,%%ymm3     \n"  // 1122000033440000
+-      "vpunpcklwd  %%ymm7,%%ymm2,%%ymm2          \n"  // 00112233 (32b, 1u1v)
+-      "vpunpcklwd  %%ymm7,%%ymm3,%%ymm3          \n"  // 11223344 (32b, 1u1v)
++      "vpmovzxwd   %%xmm2,%%ymm2                 \n"  // 01234567 (32b, 1u1v)
++      "vpmovzxwd   %%xmm3,%%ymm3                 \n"  // 12345678 (32b, 1u1v)
+       "vpshufd     $0b01001110,%%ymm2,%%ymm4     \n"  // 11003322 (lo, far)
+       "vpshufd     $0b01001110,%%ymm3,%%ymm5     \n"  // 22114433 (hi, far)
+       "vpaddd      %%ymm2,%%ymm4,%%ymm4          \n"  // near+far (lo)
+@@ -2652,8 +2936,7 @@ void ScaleUVRowUp2_Bilinear_16_AVX2(const uint16_t* src_ptr,
+         "+r"(dst_width)               // %2
+       : "r"((intptr_t)(src_stride)),  // %3
+         "r"((intptr_t)(dst_stride))   // %4
+-      : "memory", "cc", "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5", "xmm6",
+-        "xmm7");
++      : "memory", "cc", "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5", "xmm6");
+ }
+ #endif
+ 
+diff --git a/source/scale_neon.cc b/source/scale_neon.cc
+index 41dba3e8..6a0d6e1b 100644
+--- a/source/scale_neon.cc
++++ b/source/scale_neon.cc
+@@ -603,7 +603,7 @@ void ScaleRowUp2_Bilinear_NEON(const uint8_t* src_ptr,
+   );
+ }
+ 
+-void ScaleRowUp2_Linear_16_NEON(const uint16_t* src_ptr,
++void ScaleRowUp2_Linear_12_NEON(const uint16_t* src_ptr,
+                                 uint16_t* dst_ptr,
+                                 int dst_width) {
+   const uint16_t* src_temp = src_ptr + 1;
+@@ -633,7 +633,7 @@ void ScaleRowUp2_Linear_16_NEON(const uint16_t* src_ptr,
+   );
+ }
+ 
+-void ScaleRowUp2_Bilinear_16_NEON(const uint16_t* src_ptr,
++void ScaleRowUp2_Bilinear_12_NEON(const uint16_t* src_ptr,
+                                   ptrdiff_t src_stride,
+                                   uint16_t* dst_ptr,
+                                   ptrdiff_t dst_stride,
+@@ -647,7 +647,6 @@ void ScaleRowUp2_Bilinear_16_NEON(const uint16_t* src_ptr,
+       "vmov.u16    q15, #3                       \n"
+ 
+       "1:                                        \n"
+-      "add         %5, %0, #2                    \n"
+       "vld1.16     {q0}, [%0]!                   \n"  // 01234567 (16b)
+       "vld1.16     {q1}, [%5]!                   \n"  // 12345678 (16b)
+ 
+@@ -655,7 +654,6 @@ void ScaleRowUp2_Bilinear_16_NEON(const uint16_t* src_ptr,
+       "vmla.u16    q0, q1, q15                   \n"  // 3*near+far (odd)
+       "vmla.u16    q1, q2, q15                   \n"  // 3*near+far (even)
+ 
+-      "add         %5, %1, #2                    \n"
+       "vld1.16     {q2}, [%1]!                   \n"  // 01234567 (16b)
+       "vld1.16     {q3}, [%6]!                   \n"  // 12345678 (16b)
+ 
+@@ -692,6 +690,102 @@ void ScaleRowUp2_Bilinear_16_NEON(const uint16_t* src_ptr,
+   );
+ }
+ 
++void ScaleRowUp2_Linear_16_NEON(const uint16_t* src_ptr,
++                                uint16_t* dst_ptr,
++                                int dst_width) {
++  const uint16_t* src_temp = src_ptr + 1;
++  asm volatile(
++      "vmov.u16    d31, #3                       \n"
++
++      "1:                                        \n"
++      "vld1.16     {q0}, [%0]!                   \n"  // 01234567 (16b)
++      "vld1.16     {q1}, [%3]!                   \n"  // 12345678 (16b)
++
++      "vmovl.u16   q2, d0                        \n"  // 0123 (32b)
++      "vmovl.u16   q3, d1                        \n"  // 4567 (32b)
++      "vmovl.u16   q4, d2                        \n"  // 1234 (32b)
++      "vmovl.u16   q5, d3                        \n"  // 5678 (32b)
++
++      "vmlal.u16   q2, d2, d31                   \n"
++      "vmlal.u16   q3, d3, d31                   \n"
++      "vmlal.u16   q4, d0, d31                   \n"
++      "vmlal.u16   q5, d1, d31                   \n"
++
++      "vrshrn.u32  d0, q4, #2                    \n"
++      "vrshrn.u32  d1, q5, #2                    \n"
++      "vrshrn.u32  d2, q2, #2                    \n"
++      "vrshrn.u32  d3, q3, #2                    \n"
++
++      "vst2.16     {q0, q1}, [%1]!               \n"  // store
++      "subs        %2, %2, #16                   \n"  // 8 sample -> 16 sample
++      "bgt         1b                            \n"
++      : "+r"(src_ptr),    // %0
++        "+r"(dst_ptr),    // %1
++        "+r"(dst_width),  // %2
++        "+r"(src_temp)    // %3
++      :
++      : "memory", "cc", "q0", "q1", "q2", "q15"  // Clobber List
++  );
++}
++
++void ScaleRowUp2_Bilinear_16_NEON(const uint16_t* src_ptr,
++                                  ptrdiff_t src_stride,
++                                  uint16_t* dst_ptr,
++                                  ptrdiff_t dst_stride,
++                                  int dst_width) {
++  const uint16_t* src_ptr1 = src_ptr + src_stride;
++  uint16_t* dst_ptr1 = dst_ptr + dst_stride;
++  const uint16_t* src_temp = src_ptr + 1;
++  const uint16_t* src_temp1 = src_ptr1 + 1;
++
++  asm volatile(
++      "vmov.u16    d31, #3                       \n"
++      "vmov.u32    q14, #3                       \n"
++
++      "1:                                        \n"
++      "vld1.16     {d0}, [%0]!                   \n"  // 0123 (16b)
++      "vld1.16     {d1}, [%5]!                   \n"  // 1234 (16b)
++      "vmovl.u16   q2, d0                        \n"  // 0123 (32b)
++      "vmovl.u16   q3, d1                        \n"  // 1234 (32b)
++      "vmlal.u16   q2, d1, d31                   \n"
++      "vmlal.u16   q3, d0, d31                   \n"
++
++      "vld1.16     {d0}, [%1]!                   \n"  // 0123 (16b)
++      "vld1.16     {d1}, [%6]!                   \n"  // 1234 (16b)
++      "vmovl.u16   q4, d0                        \n"  // 0123 (32b)
++      "vmovl.u16   q5, d1                        \n"  // 1234 (32b)
++      "vmlal.u16   q4, d1, d31                   \n"
++      "vmlal.u16   q5, d0, d31                   \n"
++
++      "vmovq       q0, q4                        \n"
++      "vmovq       q1, q5                        \n"
++      "vmla.u32    q4, q2, q14                   \n"
++      "vmla.u32    q5, q3, q14                   \n"
++      "vmla.u32    q2, q0, q14                   \n"
++      "vmla.u32    q3, q1, q14                   \n"
++
++      "vrshrn.u32  d1, q4, #4                    \n"
++      "vrshrn.u32  d0, q5, #4                    \n"
++      "vrshrn.u32  d3, q2, #4                    \n"
++      "vrshrn.u32  d2, q3, #4                    \n"
++
++      "vst2.16     {d0, d1}, [%2]!               \n"  // store
++      "vst2.16     {d2, d3}, [%3]!               \n"  // store
++      "subs        %4, %4, #8                    \n"  // 4 sample -> 8 sample
++      "bgt         1b                            \n"
++      : "+r"(src_ptr),    // %0
++        "+r"(src_ptr1),   // %1
++        "+r"(dst_ptr),    // %2
++        "+r"(dst_ptr1),   // %3
++        "+r"(dst_width),  // %4
++        "+r"(src_temp),   // %5
++        "+r"(src_temp1)   // %6
++      :
++      : "memory", "cc", "q0", "q1", "q2", "q3", "q4", "q5", "q14",
++        "d31"  // Clobber List
++  );
++}
++
+ void ScaleUVRowUp2_Linear_NEON(const uint8_t* src_ptr,
+                                uint8_t* dst_ptr,
+                                int dst_width) {
+diff --git a/source/scale_neon64.cc b/source/scale_neon64.cc
+index 22fedcb5..cde4ee39 100644
+--- a/source/scale_neon64.cc
++++ b/source/scale_neon64.cc
+@@ -630,7 +630,7 @@ void ScaleRowUp2_Bilinear_NEON(const uint8_t* src_ptr,
+   );
+ }
+ 
+-void ScaleRowUp2_Linear_16_NEON(const uint16_t* src_ptr,
++void ScaleRowUp2_Linear_12_NEON(const uint16_t* src_ptr,
+                                 uint16_t* dst_ptr,
+                                 int dst_width) {
+   const uint16_t* src_temp = src_ptr + 1;
+@@ -661,7 +661,7 @@ void ScaleRowUp2_Linear_16_NEON(const uint16_t* src_ptr,
+   );
+ }
+ 
+-void ScaleRowUp2_Bilinear_16_NEON(const uint16_t* src_ptr,
++void ScaleRowUp2_Bilinear_12_NEON(const uint16_t* src_ptr,
+                                   ptrdiff_t src_stride,
+                                   uint16_t* dst_ptr,
+                                   ptrdiff_t dst_stride,
+@@ -721,6 +721,106 @@ void ScaleRowUp2_Bilinear_16_NEON(const uint16_t* src_ptr,
+   );
+ }
+ 
++void ScaleRowUp2_Linear_16_NEON(const uint16_t* src_ptr,
++                                uint16_t* dst_ptr,
++                                int dst_width) {
++  const uint16_t* src_temp = src_ptr + 1;
++  asm volatile(
++      "movi        v31.8h, #3                    \n"
++
++      "1:                                        \n"
++      "ld1         {v0.8h}, [%0], #16            \n"  // 01234567 (16b)
++      "ld1         {v1.8h}, [%1], #16            \n"  // 12345678 (16b)
++      "prfm        pldl1keep, [%0, 448]          \n"  // prefetch 7 lines ahead
++
++      "ushll       v2.4s, v0.4h, #0              \n"  // 0123 (32b)
++      "ushll2      v3.4s, v0.8h, #0              \n"  // 4567 (32b)
++      "ushll       v4.4s, v1.4h, #0              \n"  // 1234 (32b)
++      "ushll2      v5.4s, v1.8h, #0              \n"  // 5678 (32b)
++
++      "umlal       v2.4s, v1.4h, v31.4h          \n"  // 3*near+far (1, odd)
++      "umlal2      v3.4s, v1.8h, v31.8h          \n"  // 3*near+far (2, odd)
++      "umlal       v4.4s, v0.4h, v31.4h          \n"  // 3*near+far (1, even)
++      "umlal2      v5.4s, v0.8h, v31.8h          \n"  // 3*near+far (2, even)
++
++      "rshrn       v0.4h, v4.4s, #2              \n"  // 3/4*near+1/4*far
++      "rshrn2      v0.8h, v5.4s, #2              \n"  // 3/4*near+1/4*far (even)
++      "rshrn       v1.4h, v2.4s, #2              \n"  // 3/4*near+1/4*far
++      "rshrn2      v1.8h, v3.4s, #2              \n"  // 3/4*near+1/4*far (odd)
++
++      "st2         {v0.8h, v1.8h}, [%2], #32     \n"  // store
++      "subs        %w3, %w3, #16                 \n"  // 8 sample -> 16 sample
++      "b.gt        1b                            \n"
++      : "+r"(src_ptr),   // %0
++        "+r"(src_temp),  // %1
++        "+r"(dst_ptr),   // %2
++        "+r"(dst_width)  // %3
++      :
++      : "memory", "cc", "v0", "v1", "v2", "v31"  // Clobber List
++  );
++}
++
++void ScaleRowUp2_Bilinear_16_NEON(const uint16_t* src_ptr,
++                                  ptrdiff_t src_stride,
++                                  uint16_t* dst_ptr,
++                                  ptrdiff_t dst_stride,
++                                  int dst_width) {
++  const uint16_t* src_ptr1 = src_ptr + src_stride;
++  uint16_t* dst_ptr1 = dst_ptr + dst_stride;
++  const uint16_t* src_temp = src_ptr + 1;
++  const uint16_t* src_temp1 = src_ptr1 + 1;
++
++  asm volatile(
++      "movi        v31.4h, #3                    \n"
++      "movi        v30.4s, #3                    \n"
++
++      "1:                                        \n"
++      "ldr         d0, [%0], #8                  \n"  // 0123 (16b)
++      "ldr         d1, [%2], #8                  \n"  // 1234 (16b)
++      "prfm        pldl1keep, [%0, 448]          \n"  // prefetch 7 lines ahead
++      "ushll       v2.4s, v0.4h, #0              \n"  // 0123 (32b)
++      "ushll       v3.4s, v1.4h, #0              \n"  // 1234 (32b)
++      "umlal       v2.4s, v1.4h, v31.4h          \n"  // 3*near+far (1, odd)
++      "umlal       v3.4s, v0.4h, v31.4h          \n"  // 3*near+far (1, even)
++
++      "ldr         d0, [%1], #8                  \n"  // 0123 (16b)
++      "ldr         d1, [%3], #8                  \n"  // 1234 (16b)
++      "prfm        pldl1keep, [%1, 448]          \n"  // prefetch 7 lines ahead
++      "ushll       v4.4s, v0.4h, #0              \n"  // 0123 (32b)
++      "ushll       v5.4s, v1.4h, #0              \n"  // 1234 (32b)
++      "umlal       v4.4s, v1.4h, v31.4h          \n"  // 3*near+far (2, odd)
++      "umlal       v5.4s, v0.4h, v31.4h          \n"  // 3*near+far (2, even)
++
++      "mov         v0.4s, v4.4s                  \n"
++      "mov         v1.4s, v5.4s                  \n"
++      "mla         v4.4s, v2.4s, v30.4s          \n"  // 9 3 3 1 (1, odd)
++      "mla         v5.4s, v3.4s, v30.4s          \n"  // 9 3 3 1 (1, even)
++      "mla         v2.4s, v0.4s, v30.4s          \n"  // 9 3 3 1 (2, odd)
++      "mla         v3.4s, v1.4s, v30.4s          \n"  // 9 3 3 1 (2, even)
++
++      "rshrn       v1.4h, v4.4s, #4              \n"  // 3/4*near+1/4*far
++      "rshrn       v0.4h, v5.4s, #4              \n"  // 3/4*near+1/4*far
++      "rshrn       v5.4h, v2.4s, #4              \n"  // 3/4*near+1/4*far
++      "rshrn       v4.4h, v3.4s, #4              \n"  // 3/4*near+1/4*far
++
++      "st2         {v0.4h, v1.4h}, [%4], #16     \n"  // store 1
++      "st2         {v4.4h, v5.4h}, [%5], #16     \n"  // store 2
++
++      "subs        %w6, %w6, #8                  \n"  // 4 sample -> 8 sample
++      "b.gt        1b                            \n"
++      : "+r"(src_ptr),    // %0
++        "+r"(src_ptr1),   // %1
++        "+r"(src_temp),   // %2
++        "+r"(src_temp1),  // %3
++        "+r"(dst_ptr),    // %4
++        "+r"(dst_ptr1),   // %5
++        "+r"(dst_width)   // %6
++      :
++      : "memory", "cc", "v0", "v1", "v2", "v3", "v4", "v5", "v30",
++        "v31"  // Clobber List
++  );
++}
++
+ void ScaleUVRowUp2_Linear_NEON(const uint8_t* src_ptr,
+                                uint8_t* dst_ptr,
+                                int dst_width) {
+diff --git a/unit_test/scale_test.cc b/unit_test/scale_test.cc
+index d24806a6..066bcfde 100644
+--- a/unit_test/scale_test.cc
++++ b/unit_test/scale_test.cc
+@@ -259,6 +259,123 @@ static int I420TestFilter_12(int src_width,
+   return max_diff;
+ }
+ 
++// Test scaling with 8 bit C vs 16 bit C and return maximum pixel difference.
++// 0 = exact.
++static int I420TestFilter_16(int src_width,
++                             int src_height,
++                             int dst_width,
++                             int dst_height,
++                             FilterMode f,
++                             int benchmark_iterations,
++                             int disable_cpu_flags,
++                             int benchmark_cpu_info) {
++  if (!SizeValid(src_width, src_height, dst_width, dst_height)) {
++    return 0;
++  }
++
++  int i;
++  int src_width_uv = (Abs(src_width) + 1) >> 1;
++  int src_height_uv = (Abs(src_height) + 1) >> 1;
++
++  int64_t src_y_plane_size = (Abs(src_width)) * (Abs(src_height));
++  int64_t src_uv_plane_size = (src_width_uv) * (src_height_uv);
++
++  int src_stride_y = Abs(src_width);
++  int src_stride_uv = src_width_uv;
++
++  align_buffer_page_end(src_y, src_y_plane_size);
++  align_buffer_page_end(src_u, src_uv_plane_size);
++  align_buffer_page_end(src_v, src_uv_plane_size);
++  align_buffer_page_end(src_y_16, src_y_plane_size * 2);
++  align_buffer_page_end(src_u_16, src_uv_plane_size * 2);
++  align_buffer_page_end(src_v_16, src_uv_plane_size * 2);
++  if (!src_y || !src_u || !src_v || !src_y_16 || !src_u_16 || !src_v_16) {
++    printf("Skipped.  Alloc failed " FILELINESTR(__FILE__, __LINE__) "\n");
++    return 0;
++  }
++  uint16_t* p_src_y_16 = reinterpret_cast<uint16_t*>(src_y_16);
++  uint16_t* p_src_u_16 = reinterpret_cast<uint16_t*>(src_u_16);
++  uint16_t* p_src_v_16 = reinterpret_cast<uint16_t*>(src_v_16);
++
++  MemRandomize(src_y, src_y_plane_size);
++  MemRandomize(src_u, src_uv_plane_size);
++  MemRandomize(src_v, src_uv_plane_size);
++
++  for (i = 0; i < src_y_plane_size; ++i) {
++    p_src_y_16[i] = src_y[i];
++  }
++  for (i = 0; i < src_uv_plane_size; ++i) {
++    p_src_u_16[i] = src_u[i];
++    p_src_v_16[i] = src_v[i];
++  }
++
++  int dst_width_uv = (dst_width + 1) >> 1;
++  int dst_height_uv = (dst_height + 1) >> 1;
++
++  int dst_y_plane_size = (dst_width) * (dst_height);
++  int dst_uv_plane_size = (dst_width_uv) * (dst_height_uv);
++
++  int dst_stride_y = dst_width;
++  int dst_stride_uv = dst_width_uv;
++
++  align_buffer_page_end(dst_y_8, dst_y_plane_size);
++  align_buffer_page_end(dst_u_8, dst_uv_plane_size);
++  align_buffer_page_end(dst_v_8, dst_uv_plane_size);
++  align_buffer_page_end(dst_y_16, dst_y_plane_size * 2);
++  align_buffer_page_end(dst_u_16, dst_uv_plane_size * 2);
++  align_buffer_page_end(dst_v_16, dst_uv_plane_size * 2);
++
++  uint16_t* p_dst_y_16 = reinterpret_cast<uint16_t*>(dst_y_16);
++  uint16_t* p_dst_u_16 = reinterpret_cast<uint16_t*>(dst_u_16);
++  uint16_t* p_dst_v_16 = reinterpret_cast<uint16_t*>(dst_v_16);
++
++  MaskCpuFlags(disable_cpu_flags);  // Disable all CPU optimization.
++  I420Scale(src_y, src_stride_y, src_u, src_stride_uv, src_v, src_stride_uv,
++            src_width, src_height, dst_y_8, dst_stride_y, dst_u_8,
++            dst_stride_uv, dst_v_8, dst_stride_uv, dst_width, dst_height, f);
++  MaskCpuFlags(benchmark_cpu_info);  // Enable all CPU optimization.
++  for (i = 0; i < benchmark_iterations; ++i) {
++    I420Scale_16(p_src_y_16, src_stride_y, p_src_u_16, src_stride_uv,
++                 p_src_v_16, src_stride_uv, src_width, src_height, p_dst_y_16,
++                 dst_stride_y, p_dst_u_16, dst_stride_uv, p_dst_v_16,
++                 dst_stride_uv, dst_width, dst_height, f);
++  }
++
++  // Expect an exact match.
++  int max_diff = 0;
++  for (i = 0; i < dst_y_plane_size; ++i) {
++    int abs_diff = Abs(dst_y_8[i] - p_dst_y_16[i]);
++    if (abs_diff > max_diff) {
++      max_diff = abs_diff;
++    }
++  }
++  for (i = 0; i < dst_uv_plane_size; ++i) {
++    int abs_diff = Abs(dst_u_8[i] - p_dst_u_16[i]);
++    if (abs_diff > max_diff) {
++      max_diff = abs_diff;
++    }
++    abs_diff = Abs(dst_v_8[i] - p_dst_v_16[i]);
++    if (abs_diff > max_diff) {
++      max_diff = abs_diff;
++    }
++  }
++
++  free_aligned_buffer_page_end(dst_y_8);
++  free_aligned_buffer_page_end(dst_u_8);
++  free_aligned_buffer_page_end(dst_v_8);
++  free_aligned_buffer_page_end(dst_y_16);
++  free_aligned_buffer_page_end(dst_u_16);
++  free_aligned_buffer_page_end(dst_v_16);
++  free_aligned_buffer_page_end(src_y);
++  free_aligned_buffer_page_end(src_u);
++  free_aligned_buffer_page_end(src_v);
++  free_aligned_buffer_page_end(src_y_16);
++  free_aligned_buffer_page_end(src_u_16);
++  free_aligned_buffer_page_end(src_v_16);
++
++  return max_diff;
++}
++
+ // Test scaling with C vs Opt and return maximum pixel difference. 0 = exact.
+ static int I444TestFilter(int src_width,
+                           int src_height,
+@@ -494,6 +611,123 @@ static int I444TestFilter_12(int src_width,
+   return max_diff;
+ }
+ 
++// Test scaling with 8 bit C vs 16 bit C and return maximum pixel difference.
++// 0 = exact.
++static int I444TestFilter_16(int src_width,
++                             int src_height,
++                             int dst_width,
++                             int dst_height,
++                             FilterMode f,
++                             int benchmark_iterations,
++                             int disable_cpu_flags,
++                             int benchmark_cpu_info) {
++  if (!SizeValid(src_width, src_height, dst_width, dst_height)) {
++    return 0;
++  }
++
++  int i;
++  int src_width_uv = Abs(src_width);
++  int src_height_uv = Abs(src_height);
++
++  int64_t src_y_plane_size = (Abs(src_width)) * (Abs(src_height));
++  int64_t src_uv_plane_size = (src_width_uv) * (src_height_uv);
++
++  int src_stride_y = Abs(src_width);
++  int src_stride_uv = src_width_uv;
++
++  align_buffer_page_end(src_y, src_y_plane_size);
++  align_buffer_page_end(src_u, src_uv_plane_size);
++  align_buffer_page_end(src_v, src_uv_plane_size);
++  align_buffer_page_end(src_y_16, src_y_plane_size * 2);
++  align_buffer_page_end(src_u_16, src_uv_plane_size * 2);
++  align_buffer_page_end(src_v_16, src_uv_plane_size * 2);
++  if (!src_y || !src_u || !src_v || !src_y_16 || !src_u_16 || !src_v_16) {
++    printf("Skipped.  Alloc failed " FILELINESTR(__FILE__, __LINE__) "\n");
++    return 0;
++  }
++  uint16_t* p_src_y_16 = reinterpret_cast<uint16_t*>(src_y_16);
++  uint16_t* p_src_u_16 = reinterpret_cast<uint16_t*>(src_u_16);
++  uint16_t* p_src_v_16 = reinterpret_cast<uint16_t*>(src_v_16);
++
++  MemRandomize(src_y, src_y_plane_size);
++  MemRandomize(src_u, src_uv_plane_size);
++  MemRandomize(src_v, src_uv_plane_size);
++
++  for (i = 0; i < src_y_plane_size; ++i) {
++    p_src_y_16[i] = src_y[i];
++  }
++  for (i = 0; i < src_uv_plane_size; ++i) {
++    p_src_u_16[i] = src_u[i];
++    p_src_v_16[i] = src_v[i];
++  }
++
++  int dst_width_uv = dst_width;
++  int dst_height_uv = dst_height;
++
++  int dst_y_plane_size = (dst_width) * (dst_height);
++  int dst_uv_plane_size = (dst_width_uv) * (dst_height_uv);
++
++  int dst_stride_y = dst_width;
++  int dst_stride_uv = dst_width_uv;
++
++  align_buffer_page_end(dst_y_8, dst_y_plane_size);
++  align_buffer_page_end(dst_u_8, dst_uv_plane_size);
++  align_buffer_page_end(dst_v_8, dst_uv_plane_size);
++  align_buffer_page_end(dst_y_16, dst_y_plane_size * 2);
++  align_buffer_page_end(dst_u_16, dst_uv_plane_size * 2);
++  align_buffer_page_end(dst_v_16, dst_uv_plane_size * 2);
++
++  uint16_t* p_dst_y_16 = reinterpret_cast<uint16_t*>(dst_y_16);
++  uint16_t* p_dst_u_16 = reinterpret_cast<uint16_t*>(dst_u_16);
++  uint16_t* p_dst_v_16 = reinterpret_cast<uint16_t*>(dst_v_16);
++
++  MaskCpuFlags(disable_cpu_flags);  // Disable all CPU optimization.
++  I444Scale(src_y, src_stride_y, src_u, src_stride_uv, src_v, src_stride_uv,
++            src_width, src_height, dst_y_8, dst_stride_y, dst_u_8,
++            dst_stride_uv, dst_v_8, dst_stride_uv, dst_width, dst_height, f);
++  MaskCpuFlags(benchmark_cpu_info);  // Enable all CPU optimization.
++  for (i = 0; i < benchmark_iterations; ++i) {
++    I444Scale_16(p_src_y_16, src_stride_y, p_src_u_16, src_stride_uv,
++                 p_src_v_16, src_stride_uv, src_width, src_height, p_dst_y_16,
++                 dst_stride_y, p_dst_u_16, dst_stride_uv, p_dst_v_16,
++                 dst_stride_uv, dst_width, dst_height, f);
++  }
++
++  // Expect an exact match.
++  int max_diff = 0;
++  for (i = 0; i < dst_y_plane_size; ++i) {
++    int abs_diff = Abs(dst_y_8[i] - p_dst_y_16[i]);
++    if (abs_diff > max_diff) {
++      max_diff = abs_diff;
++    }
++  }
++  for (i = 0; i < dst_uv_plane_size; ++i) {
++    int abs_diff = Abs(dst_u_8[i] - p_dst_u_16[i]);
++    if (abs_diff > max_diff) {
++      max_diff = abs_diff;
++    }
++    abs_diff = Abs(dst_v_8[i] - p_dst_v_16[i]);
++    if (abs_diff > max_diff) {
++      max_diff = abs_diff;
++    }
++  }
++
++  free_aligned_buffer_page_end(dst_y_8);
++  free_aligned_buffer_page_end(dst_u_8);
++  free_aligned_buffer_page_end(dst_v_8);
++  free_aligned_buffer_page_end(dst_y_16);
++  free_aligned_buffer_page_end(dst_u_16);
++  free_aligned_buffer_page_end(dst_v_16);
++  free_aligned_buffer_page_end(src_y);
++  free_aligned_buffer_page_end(src_u);
++  free_aligned_buffer_page_end(src_v);
++  free_aligned_buffer_page_end(src_y_16);
++  free_aligned_buffer_page_end(src_u_16);
++  free_aligned_buffer_page_end(src_v_16);
++
++  return max_diff;
++}
++
+ // Test scaling with C vs Opt and return maximum pixel difference. 0 = exact.
+ static int NV12TestFilter(int src_width,
+                           int src_height,
+@@ -700,6 +934,20 @@ TEST_FACTOR(3, 1, 3, 0)
+         benchmark_iterations_, disable_cpu_flags_, benchmark_cpu_info_);      \
+     EXPECT_LE(diff, max_diff);                                                \
+   }                                                                           \
++  TEST_F(LibYUVScaleTest,                                                     \
++         DISABLED_##I420##name##To##width##x##height##_##filter##_16) {       \
++    int diff = I420TestFilter_16(                                             \
++        benchmark_width_, benchmark_height_, width, height, kFilter##filter,  \
++        benchmark_iterations_, disable_cpu_flags_, benchmark_cpu_info_);      \
++    EXPECT_LE(diff, max_diff);                                                \
++  }                                                                           \
++  TEST_F(LibYUVScaleTest,                                                     \
++         DISABLED_##I444##name##To##width##x##height##_##filter##_16) {       \
++    int diff = I444TestFilter_16(                                             \
++        benchmark_width_, benchmark_height_, width, height, kFilter##filter,  \
++        benchmark_iterations_, disable_cpu_flags_, benchmark_cpu_info_);      \
++    EXPECT_LE(diff, max_diff);                                                \
++  }                                                                           \
+   TEST_F(LibYUVScaleTest, NV12##name##To##width##x##height##_##filter) {      \
+     int diff = NV12TestFilter(benchmark_width_, benchmark_height_, width,     \
+                               height, kFilter##filter, benchmark_iterations_, \
+@@ -736,6 +984,22 @@ TEST_FACTOR(3, 1, 3, 0)
+                                  benchmark_cpu_info_);                        \
+     EXPECT_LE(diff, max_diff);                                                \
+   }                                                                           \
++  TEST_F(LibYUVScaleTest,                                                     \
++         DISABLED_##I420##name##From##width##x##height##_##filter##_16) {     \
++    int diff = I420TestFilter_16(width, height, Abs(benchmark_width_),        \
++                                 Abs(benchmark_height_), kFilter##filter,     \
++                                 benchmark_iterations_, disable_cpu_flags_,   \
++                                 benchmark_cpu_info_);                        \
++    EXPECT_LE(diff, max_diff);                                                \
++  }                                                                           \
++  TEST_F(LibYUVScaleTest,                                                     \
++         DISABLED_##I444##name##From##width##x##height##_##filter##_16) {     \
++    int diff = I444TestFilter_16(width, height, Abs(benchmark_width_),        \
++                                 Abs(benchmark_height_), kFilter##filter,     \
++                                 benchmark_iterations_, disable_cpu_flags_,   \
++                                 benchmark_cpu_info_);                        \
++    EXPECT_LE(diff, max_diff);                                                \
++  }                                                                           \
+   TEST_F(LibYUVScaleTest, NV12##name##From##width##x##height##_##filter) {    \
+     int diff = NV12TestFilter(width, height, Abs(benchmark_width_),           \
+                               Abs(benchmark_height_), kFilter##filter,        \
+@@ -801,6 +1065,20 @@ TEST_SCALETO(Scale, 1920, 1080)
+                                  disable_cpu_flags_, benchmark_cpu_info_); \
+     EXPECT_LE(diff, max_diff);                                             \
+   }                                                                        \
++  TEST_F(LibYUVScaleTest, DISABLED_##I420##name##SwapXY_##filter##_16) {   \
++    int diff = I420TestFilter_16(benchmark_width_, benchmark_height_,      \
++                                 benchmark_height_, benchmark_width_,      \
++                                 kFilter##filter, benchmark_iterations_,   \
++                                 disable_cpu_flags_, benchmark_cpu_info_); \
++    EXPECT_LE(diff, max_diff);                                             \
++  }                                                                        \
++  TEST_F(LibYUVScaleTest, DISABLED_##I444##name##SwapXY_##filter##_16) {   \
++    int diff = I444TestFilter_16(benchmark_width_, benchmark_height_,      \
++                                 benchmark_height_, benchmark_width_,      \
++                                 kFilter##filter, benchmark_iterations_,   \
++                                 disable_cpu_flags_, benchmark_cpu_info_); \
++    EXPECT_LE(diff, max_diff);                                             \
++  }                                                                        \
+   TEST_F(LibYUVScaleTest, NV12##name##SwapXY_##filter) {                   \
+     int diff = NV12TestFilter(benchmark_width_, benchmark_height_,         \
+                               benchmark_height_, benchmark_width_,         \
+-- 
+2.25.1
+
