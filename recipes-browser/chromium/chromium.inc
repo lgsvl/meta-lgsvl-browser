@@ -263,6 +263,10 @@ GN_ARGS_append_arm = ' enable_libaom=false'
 GN_ARGS_append_raspberrypi4 = " use_wayland_gbm=false"
 GN_ARGS_append_raspberrypi4-64 = " use_wayland_gbm=false"
 
+CHROMIUM_EXTRA_ARGS ?= "\
+  --enable-features=UseOzonePlatform \
+"
+
 do_add_nodejs_symlink () {
 	# Adds a symlink to the node binary to the location expected by
 	# Chromium's build system.
