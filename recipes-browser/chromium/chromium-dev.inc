@@ -170,6 +170,7 @@ SRC_URI += " \
 "
 
 # Temporary fix while libyuv ARM64 neon support is broken on GCC
+SRC_URI += " file://0001-GCC-allow-to-disable-NEON-with-GN.patch;patchdir=third_party/libyuv "
 GN_ARGS_append_aarch64 = " libyuv_use_neon=false "
 
 do_install_append() {
