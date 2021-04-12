@@ -1,8 +1,8 @@
 require chromium-upstream-tarball.inc
 
-PV = "91.0.4455.2"
+PV = "91.0.4469.4"
 
-SRC_URI[sha256sum] = "71c093fd8980eda2876b4a931ba291c68cca123f9ae2255e13877aedbb0c1c5b"
+SRC_URI[sha256sum] = "ae7c0bcc707d773a5b80e228c5fc6e408d5296a29146a8398ff66be624768e22"
 
 # Chromium itself is licensed under the 3-clause BSD license. However, it
 # depends upon several other projects whose copyright files are listed in
@@ -163,10 +163,7 @@ LIC_FILES_CHKSUM = "\
 "
 
 SRC_URI += " \
-  file://0001-GCC-fix-type-confusion-in-pcscan.patch \
-  file://0001-GCC-fix-type-confusion-in-EffectPaintPropertyNode.patch \
-  file://0001-GCC-fix-template-specialization-in-ToV8Traits-IDLArr.patch \
-  file://0001-GCC-move-attribute-to-the-start-of-function-definiti.patch \
+    file://0001-GCC-fix-ternary-operator-in-gtk_util.patch \
 "
 
 # Temporary fix while libyuv ARM64 neon support is broken on GCC

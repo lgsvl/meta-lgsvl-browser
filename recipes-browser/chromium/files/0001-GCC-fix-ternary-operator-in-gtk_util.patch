@@ -1,0 +1,35 @@
+From 1bccded9941c53c3c66edc43df8f4a57b5813e27 Mon Sep 17 00:00:00 2001
+From: Stephan Hartmann <stha09@googlemail.com>
+Date: Wed, 7 Apr 2021 06:32:37 +0000
+Subject: GCC: fix ternary operator in gtk_util
+
+Ternary operator requires that operands after ? have
+same type, but is std::nullptr_t and ScopedGObject<GtkWidget>.
+Use ScopedGObject<GtkWidget>() for std::nullptr_t instead.
+
+Bug: 819294
+Change-Id: Ia5669cc97744e4cc361844c3e5f476fba46ab90e
+Reviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/2804680
+Reviewed-by: Thomas Anderson <thomasanderson@chromium.org>
+Commit-Queue: Stephan Hartmann <stha09@googlemail.com>
+Cr-Commit-Position: refs/heads/master@{#869894}
+---
+ ui/gtk/gtk_util.cc | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/ui/gtk/gtk_util.cc b/ui/gtk/gtk_util.cc
+index 73b22d4d5beb..2ebc700da39d 100644
+--- a/ui/gtk/gtk_util.cc
++++ b/ui/gtk/gtk_util.cc
+@@ -285,7 +285,7 @@ GtkCssContext::operator GtkStyleContext*() {
+ GtkCssContext GtkCssContext::GetParent() {
+   if (GtkCheckVersion(4)) {
+     return GtkCssContext(WrapGObject(gtk_widget_get_parent(widget_)),
+-                         root_ == widget_ ? nullptr : root_);
++                         root_ == widget_ ? ScopedGObject<GtkWidget>() : root_);
+   }
+   return GtkCssContext(WrapGObject(gtk_style_context_get_parent(context_)));
+ }
+-- 
+2.25.1
+
