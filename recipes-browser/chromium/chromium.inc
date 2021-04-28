@@ -23,6 +23,11 @@ inherit gtk-icon-cache
 inherit python3native setuptools
 DEPENDS += "python-native"
 EXTRANATIVEPATH += "python-native"
+# We need to define this to allow using Python2. Yes, I swear we are on it. Hopefully
+# soon Chromium will drop python2_action. So, if you want build to work, add this to your
+# local.conf or equivalent
+# I_SWEAR_TO_MIGRATE_TO_PYTHON3 = "yes"
+
 
 B = "${WORKDIR}/build"
 
