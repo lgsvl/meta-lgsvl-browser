@@ -1,8 +1,8 @@
 require chromium-upstream-tarball.inc
 
-PV = "91.0.4469.4"
+PV = "92.0.4491.6"
 
-SRC_URI[sha256sum] = "ae7c0bcc707d773a5b80e228c5fc6e408d5296a29146a8398ff66be624768e22"
+SRC_URI[sha256sum] = "0a5954495f4ad8e909a6c83be3deeaaf67f4effd55155a4a395efb933f669537"
 
 # Chromium itself is licensed under the 3-clause BSD license. However, it
 # depends upon several other projects whose copyright files are listed in
@@ -161,14 +161,6 @@ LIC_FILES_CHKSUM = "\
   file://${S}/v8/LICENSE.fdlibm;md5=b17367d6c97e638599071d99a3049dfe \
   file://${S}/v8/LICENSE.strongtalk;md5=956a43818dd13f2e93088fc2c93589d2 \
 "
-
-SRC_URI += " \
-    file://0001-GCC-fix-ternary-operator-in-gtk_util.patch \
-"
-
-# Temporary fix while libyuv ARM64 neon support is broken on GCC
-SRC_URI += " file://0001-GCC-allow-to-disable-NEON-with-GN.patch;patchdir=third_party/libyuv "
-GN_ARGS_append_aarch64 = " libyuv_use_neon=false "
 
 do_install_append() {
         install -m 0755 crashpad_handler ${D}${libdir}/chromium/crashpad_handler
