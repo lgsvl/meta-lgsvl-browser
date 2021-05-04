@@ -29,6 +29,8 @@ EXTRANATIVEPATH += "python-native"
 # local.conf or equivalent
 # I_SWEAR_TO_MIGRATE_TO_PYTHON3 = "yes"
 
+inherit mime-xdg
+
 
 B = "${WORKDIR}/build"
 
