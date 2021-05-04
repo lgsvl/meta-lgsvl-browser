@@ -3,6 +3,7 @@ HOMEPAGE = "https://www.chromium.org/Home"
 
 DEPENDS = "\
     ca-certificates-native \
+    curl \
     gn-native \
     gtk+3 \
     ninja-native \
