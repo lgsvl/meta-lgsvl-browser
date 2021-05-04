@@ -291,7 +291,7 @@ addtask add_nodejs_symlink after do_configure before do_compile
 
 do_configure() {
 	cd ${S}
-	gn gen --args='${GN_ARGS}' --script-executable="${PYTHON}" "${B}"
+	gn gen --args='${GN_ARGS}' "${B}"
 }
 
 do_compile[progress] = "outof:^\[(\d+)/(\d+)\]\s+"
