@@ -1,8 +1,8 @@
 require chromium-upstream-tarball.inc
 
-PV = "92.0.4491.6"
+PV = "92.0.4496.0"
 
-SRC_URI[sha256sum] = "0a5954495f4ad8e909a6c83be3deeaaf67f4effd55155a4a395efb933f669537"
+SRC_URI[sha256sum] = "b13d879fbfc6920d7b384f291294b523fab3dad692faa700faa35b43975f61ce"
 
 # Chromium itself is licensed under the 3-clause BSD license. However, it
 # depends upon several other projects whose copyright files are listed in
@@ -103,7 +103,7 @@ LIC_FILES_CHKSUM = "\
   file://${S}/third_party/libXNVCtrl/LICENSE;md5=9e6c209899aa4986d090320bbca2fc76 \
   file://${S}/third_party/libaddressinput/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57 \
   file://${S}/third_party/libjingle_xmpp/LICENSE;md5=ad296492125bc71530d06234d9bfebe0 \
-  file://${S}/third_party/libjpeg_turbo/LICENSE.md;md5=26d6491346496a57f75f00a78199122e \
+  file://${S}/third_party/libjpeg_turbo/LICENSE.md;md5=970f17d51650fe54e4f839c6e6121f79 \
   file://${S}/third_party/liblouis/LICENSE;md5=8ab69863de0d3a0e00c4f97a4d78dd4a \
   file://${S}/third_party/libphonenumber/LICENSE;md5=e23fadd6ceef8c618fc1c65191d846fa \
   file://${S}/third_party/libpng/LICENSE;md5=b0085051bf265bac2bfc38bc89f50000 \
@@ -160,6 +160,11 @@ LIC_FILES_CHKSUM = "\
   file://${S}/v8/LICENSE;md5=6611673a9587a522034a4be8f4df564c \
   file://${S}/v8/LICENSE.fdlibm;md5=b17367d6c97e638599071d99a3049dfe \
   file://${S}/v8/LICENSE.strongtalk;md5=956a43818dd13f2e93088fc2c93589d2 \
+"
+
+SRC_URI += " \
+  file://0001-libstdc-fix-incomplete-type-in-rtcp_receiver.patch;patchdir=third_party/webrtc \
+  file://0001-IWYU-add-algorithm-for-std-sort.patch \
 "
 
 do_install_append() {
