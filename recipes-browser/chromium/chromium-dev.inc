@@ -1,8 +1,8 @@
 require chromium-upstream-tarball.inc
 
-PV = "92.0.4496.0"
+PV = "92.0.4503.0"
 
-SRC_URI[sha256sum] = "b13d879fbfc6920d7b384f291294b523fab3dad692faa700faa35b43975f61ce"
+SRC_URI[sha256sum] = "eb89f80418268a59d170dc505f152e49fae0fd57df57e2d98da302d4cdefe4ba"
 
 # Chromium itself is licensed under the 3-clause BSD license. However, it
 # depends upon several other projects whose copyright files are listed in
@@ -163,8 +163,9 @@ LIC_FILES_CHKSUM = "\
 "
 
 SRC_URI += " \
-  file://0001-libstdc-fix-incomplete-type-in-rtcp_receiver.patch;patchdir=third_party/webrtc \
-  file://0001-IWYU-add-algorithm-for-std-sort.patch \
+  file://0001-IWYU-include-atomic-for-std-atomic.patch \
+  file://0001-GCC-drop-anonymous-namespace-from-ClassPropertyCaste.patch \
+  file://0001-ARM64-VRegister-from_code-expected-to-be-constexpr.patch;patchdir=v8 \
 "
 
 do_install_append() {

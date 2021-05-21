@@ -1,0 +1,30 @@
+From a844e2b83f8bd99b3c53a8d01b2569951e78985f Mon Sep 17 00:00:00 2001
+From: Stephan Hartmann <stha09@googlemail.com>
+Date: Wed, 12 May 2021 16:45:33 +0000
+Subject: IWYU: include atomic for std::atomic
+
+Bug: None
+Change-Id: Iff3e6f51f036bf0264d873add7c957dce16e3eb7
+Reviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/2880543
+Reviewed-by: Lei Zhang <thestig@chromium.org>
+Commit-Queue: Stephan Hartmann <stha09@googlemail.com>
+Cr-Commit-Position: refs/heads/master@{#882125}
+---
+ base/threading/platform_thread.cc | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/base/threading/platform_thread.cc b/base/threading/platform_thread.cc
+index 3dc218163877..f167af4ff9a2 100644
+--- a/base/threading/platform_thread.cc
++++ b/base/threading/platform_thread.cc
+@@ -4,6 +4,7 @@
+ 
+ #include "base/threading/platform_thread.h"
+ 
++#include <atomic>
+ #include <memory>
+ 
+ #include "base/feature_list.h"
+-- 
+2.25.1
+

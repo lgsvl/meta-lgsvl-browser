@@ -1,0 +1,53 @@
+From ef8c0f333e34be4a7633f4bdcf62423af76e8b58 Mon Sep 17 00:00:00 2001
+From: Stephan Hartmann <stha09@googlemail.com>
+Date: Mon, 17 May 2021 22:44:40 +0000
+Subject: GCC: drop anonymous namespace from ClassPropertyCaster
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Explicit template specialization is done for ui::ElementIdentifier
+in another header. This is a GCC bug (https://gcc.gnu.org/PR92598)
+and compile fails with, e.g.:
+
+../../ui/base/interaction/element_identifier.h:208:7: error:
+ explicit specialization of 'template<class T>
+ class ui::{anonymous}::ClassPropertyCaster' outside its
+ namespace must use a nested-name-specifier
+
+Bug: 819294
+Change-Id: I7b62102035f96393855a9f118d995575ca75461b
+Reviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/2880003
+Reviewed-by: Allen Bauer <kylixrd@chromium.org>
+Reviewed-by: Peter Boström <pbos@chromium.org>
+Commit-Queue: Stephan Hartmann <stha09@googlemail.com>
+Cr-Commit-Position: refs/heads/master@{#883681}
+---
+ ui/base/class_property.h | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/ui/base/class_property.h b/ui/base/class_property.h
+index 4af52aef43d1..25c00e7d0642 100644
+--- a/ui/base/class_property.h
++++ b/ui/base/class_property.h
+@@ -137,8 +137,6 @@ class COMPONENT_EXPORT(UI_BASE) PropertyHandler {
+   std::map<const void*, Value> prop_map_;
+ };
+ 
+-namespace {
+-
+ // No single new-style cast works for every conversion to/from int64_t, so we
+ // need this helper class.
+ template<typename T>
+@@ -162,8 +160,6 @@ class ClassPropertyCaster<base::TimeDelta> {
+   }
+ };
+ 
+-}  // namespace
+-
+ namespace subtle {
+ 
+ class COMPONENT_EXPORT(UI_BASE) PropertyHelper {
+-- 
+2.25.1
+
