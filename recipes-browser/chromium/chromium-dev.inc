@@ -1,8 +1,8 @@
 require chromium-upstream-tarball.inc
 
-PV = "92.0.4503.0"
+PV = "92.0.4515.20"
 
-SRC_URI[sha256sum] = "eb89f80418268a59d170dc505f152e49fae0fd57df57e2d98da302d4cdefe4ba"
+SRC_URI[sha256sum] = "4c016e7613a9da547b0b2edd5c81e9f62ddeb54a7e86d384f16f91dcafacb776"
 
 # Chromium itself is licensed under the 3-clause BSD license. However, it
 # depends upon several other projects whose copyright files are listed in
@@ -163,8 +163,6 @@ LIC_FILES_CHKSUM = "\
 "
 
 SRC_URI += " \
-  file://0001-IWYU-include-atomic-for-std-atomic.patch \
-  file://0001-GCC-drop-anonymous-namespace-from-ClassPropertyCaste.patch \
   file://0001-ARM64-VRegister-from_code-expected-to-be-constexpr.patch;patchdir=v8 \
 "
 
